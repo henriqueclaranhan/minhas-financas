@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Transaction, PlannedExpense } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
+import { useAuth } from './AuthContext';
 
 interface FinanceContextData {
   initialBalance: number | null;
@@ -23,32 +24,50 @@ interface FinanceContextData {
 const FinanceContext = createContext<FinanceContextData>({} as FinanceContextData);
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
+  const { user } = useAuth();
+  const uid = user?.uid || 'guest';
+  const BALANCE_KEY = `@financas:initialBalance:${uid}`;
+  const TX_KEY = `@financas:transactions:${uid}`;
+  const PLANNED_KEY = `@financas:planned:${uid}`;
+
   const [initialBalance, setInitialBalanceState] = useState<number | null>(() => {
-    const localIB = localStorage.getItem('@financas:initialBalance');
+    const localIB = localStorage.getItem(BALANCE_KEY);
     return localIB ? JSON.parse(localIB) : null;
   });
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const localT = localStorage.getItem('@financas:transactions');
+    const localT = localStorage.getItem(TX_KEY);
     return localT ? JSON.parse(localT) : [];
   });
   const [plannedExpenses, setPlannedExpenses] = useState<PlannedExpense[]>(() => {
-    const localP = localStorage.getItem('@financas:planned');
+    const localP = localStorage.getItem(PLANNED_KEY);
     return localP ? JSON.parse(localP) : [];
   });
+
+  // Re-initialize state when user changes
+  useEffect(() => {
+    const localIB = localStorage.getItem(BALANCE_KEY);
+    setInitialBalanceState(localIB ? JSON.parse(localIB) : null);
+    
+    const localT = localStorage.getItem(TX_KEY);
+    setTransactions(localT ? JSON.parse(localT) : []);
+    
+    const localP = localStorage.getItem(PLANNED_KEY);
+    setPlannedExpenses(localP ? JSON.parse(localP) : []);
+  }, [uid]);
 
   // Sync to local storage
   const setInitialBalance = (val: number) => {
     setInitialBalanceState(val);
-    localStorage.setItem('@financas:initialBalance', JSON.stringify(val));
+    localStorage.setItem(BALANCE_KEY, JSON.stringify(val));
   };
 
   useEffect(() => {
-    localStorage.setItem('@financas:transactions', JSON.stringify(transactions));
-  }, [transactions]);
+    localStorage.setItem(TX_KEY, JSON.stringify(transactions));
+  }, [transactions, uid]);
 
   useEffect(() => {
-    localStorage.setItem('@financas:planned', JSON.stringify(plannedExpenses));
-  }, [plannedExpenses]);
+    localStorage.setItem(PLANNED_KEY, JSON.stringify(plannedExpenses));
+  }, [plannedExpenses, uid]);
 
   const addTransaction = (t: Omit<Transaction, 'id'>) => {
     setTransactions(prev => [...prev, { ...t, id: Date.now().toString() }]);
@@ -154,7 +173,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       
       // Update local storage directly for initialBalance since setInitialBalanceState doesn't do it
       if (data.initialBalance !== undefined) {
-        localStorage.setItem('@financas:initialBalance', JSON.stringify(data.initialBalance));
+        localStorage.setItem(BALANCE_KEY, JSON.stringify(data.initialBalance));
       }
       return true;
     } catch (e) {
@@ -166,7 +185,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const clearData = () => {
     if (window.confirm('Tem certeza que deseja apagar todos os seus dados? Esta ação não pode ser desfeita.')) {
       setInitialBalanceState(0);
-      localStorage.setItem('@financas:initialBalance', JSON.stringify(0));
+      localStorage.setItem(BALANCE_KEY, JSON.stringify(0));
       setTransactions([]);
       setPlannedExpenses([]);
     }

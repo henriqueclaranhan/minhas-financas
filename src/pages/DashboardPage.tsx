@@ -5,9 +5,11 @@ import { Plus, Wallet, CalendarClock } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { TransactionForm } from '../components/TransactionForm';
 import { PlannedExpenseForm } from '../components/PlannedExpenseForm';
+import { useAuth } from '../store/AuthContext';
 
 export function DashboardPage() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
+  const { user } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState<'none' | 'transaction' | 'planning'>('none');
 
@@ -27,7 +29,7 @@ export function DashboardPage() {
     setActionType('none');
   };
 
-  const userName = "Nome"; // Em breve virá da autenticação
+  const userName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário';
 
   return (
     <div className="animate-fade-in">

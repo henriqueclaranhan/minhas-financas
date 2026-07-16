@@ -1,11 +1,13 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { FinanceProvider } from './store/FinanceContext';
+import { AuthProvider, useAuth } from './store/AuthContext';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { PlannedExpensesPage } from './pages/PlannedExpensesPage';
 import { CreditCardPage } from './pages/CreditCardPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { AuthPage } from './pages/AuthPage';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import './App.css';
 
@@ -24,19 +26,25 @@ const router = createBrowserRouter([
 ]);
 
 function AppContent() {
+  const { user } = useAuth();
+
+  if (!user) {
+    return <AuthPage />;
+  }
+
   return (
-    <>
+    <FinanceProvider>
       <OnboardingWizard />
       <RouterProvider router={router} />
-    </>
+    </FinanceProvider>
   );
 }
 
 function App() {
   return (
-    <FinanceProvider>
+    <AuthProvider>
       <AppContent />
-    </FinanceProvider>
+    </AuthProvider>
   );
 }
 

@@ -1,12 +1,14 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFinance } from '../store/FinanceContext';
+import { useAuth } from '../store/AuthContext';
 import { ThemeToggle } from '../components/ThemeToggle';
-import { ChevronLeft, Download, Upload, Trash2, Moon } from 'lucide-react';
+import { ChevronLeft, Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
 
 export function SettingsPage() {
   const navigate = useNavigate();
   const { exportData, importData, clearData } = useFinance();
+  const { logout } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string>('');
 
@@ -38,7 +40,7 @@ export function SettingsPage() {
       <header style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', alignItems: 'center' }}>
         <button 
           onClick={() => navigate(-1)} 
-          className="btn" 
+          className="btn hide-on-desktop" 
           style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
         >
           <ChevronLeft size={24} /> Voltar
@@ -104,7 +106,7 @@ export function SettingsPage() {
           />
 
           <div 
-            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', cursor: 'pointer', transition: 'background 0.2s' }}
+            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', borderBottom: '1px solid var(--clr-border)', cursor: 'pointer', transition: 'background 0.2s' }}
             onClick={clearData}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
@@ -114,6 +116,21 @@ export function SettingsPage() {
               <div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 500, color: 'var(--clr-danger)' }}>Apagar Todos os Dados</div>
                 <div style={{ fontSize: '0.85rem', color: 'var(--clr-text-secondary)' }}>Limpar histórico e saldo</div>
+              </div>
+            </div>
+          </div>
+
+          <div 
+            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', cursor: 'pointer', transition: 'background 0.2s' }}
+            onClick={logout}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
+              <div style={{ background: 'var(--clr-surface-alt)', padding: '8px', borderRadius: '8px' }}>
+                <LogOut size={20} color="var(--clr-text-primary)" />
+              </div>
+              <div>
+                <div style={{ fontSize: '1.1rem', fontWeight: 500 }}>Sair da Conta</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--clr-text-secondary)' }}>Fazer logout do aplicativo</div>
               </div>
             </div>
           </div>
