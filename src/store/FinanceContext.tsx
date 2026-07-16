@@ -15,6 +15,9 @@ interface FinanceContextData {
   confirmPlannedExpense: (id: string, transactionData: Omit<Transaction, 'id'>) => void;
   rejectPlannedExpense: (id: string) => void;
   deletePlannedExpense: (id: string) => void;
+  exportData: () => void;
+  importData: (jsonData: string) => boolean;
+  clearData: () => void;
 }
 
 const FinanceContext = createContext<FinanceContextData>({} as FinanceContextData);
@@ -127,6 +130,48 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     setPlannedExpenses(prev => prev.filter(p => p.id !== id));
   };
 
+  const exportData = () => {
+    const data = {
+      initialBalance,
+      transactions,
+      plannedExpenses
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `minhas-financas-export-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const importData = (jsonData: string) => {
+    try {
+      const data = JSON.parse(jsonData);
+      if (data.initialBalance !== undefined) setInitialBalanceState(data.initialBalance);
+      if (data.transactions) setTransactions(data.transactions);
+      if (data.plannedExpenses) setPlannedExpenses(data.plannedExpenses);
+      
+      // Update local storage directly for initialBalance since setInitialBalanceState doesn't do it
+      if (data.initialBalance !== undefined) {
+        localStorage.setItem('@financas:initialBalance', JSON.stringify(data.initialBalance));
+      }
+      return true;
+    } catch (e) {
+      console.error("Failed to import data", e);
+      return false;
+    }
+  };
+
+  const clearData = () => {
+    if (window.confirm('Tem certeza que deseja apagar todos os seus dados? Esta ação não pode ser desfeita.')) {
+      setInitialBalanceState(0);
+      localStorage.setItem('@financas:initialBalance', JSON.stringify(0));
+      setTransactions([]);
+      setPlannedExpenses([]);
+    }
+  };
+
   return (
     <FinanceContext.Provider value={{
       initialBalance,
@@ -140,7 +185,10 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       updatePlannedExpense,
       confirmPlannedExpense,
       rejectPlannedExpense,
-      deletePlannedExpense
+      deletePlannedExpense,
+      exportData,
+      importData,
+      clearData
     }}>
       {children}
     </FinanceContext.Provider>

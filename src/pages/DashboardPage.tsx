@@ -27,11 +27,13 @@ export function DashboardPage() {
     setActionType('none');
   };
 
+  const userName = "Nome"; // Em breve virá da autenticação
+
   return (
     <div className="animate-fade-in">
       <header style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1>Visão Geral</h1>
+          <h1>Olá, {userName}!</h1>
           <p style={{ color: 'var(--clr-text-secondary)' }}>Acompanhe o resumo das suas finanças e a evolução do seu saldo.</p>
         </div>
         <button 

@@ -1,9 +1,12 @@
+import { useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { LayoutDashboard, Wallet, CalendarClock, PieChart, CreditCard } from 'lucide-react';
-import { ThemeToggle } from './ThemeToggle';
+import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart } from 'lucide-react';
 import './Layout.css';
 
 export function Layout() {
+  const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const userName = "Nome"; // Em breve virá da autenticação
+
   const navItems = [
     { to: '/', icon: <LayoutDashboard size={22} />, label: 'Dashboard' },
     { to: '/transactions', icon: <Wallet size={22} />, label: 'Transações' },
@@ -14,19 +17,53 @@ export function Layout() {
   return (
     <div className="layout-container">
       {/* Mobile Header */}
-      <div className="mobile-header" style={{ display: 'none', padding: 'var(--spacing-md)', alignItems: 'center', justifyContent: 'space-between', borderBottom: '1px solid var(--clr-border)', background: 'var(--clr-surface)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 600, color: 'var(--clr-primary)' }}>
-          <PieChart size={24} /> Minhas Finanças
+      <div className="mobile-header" style={{ display: 'none', padding: 'var(--spacing-md)', alignItems: 'center', justifyContent: 'space-between', background: 'var(--clr-background)' }}>
+        <button onClick={() => setIsMobileDrawerOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--clr-primary)', display: 'flex', cursor: 'pointer' }}>
+          <div style={{ background: 'var(--clr-surface-alt)', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+            <User size={20} />
+          </div>
+        </button>
+        <div style={{ fontWeight: 600, color: 'var(--clr-primary)', fontSize: '1.1rem' }}>
+          Minhas Finanças
         </div>
-        <ThemeToggle />
+        <div style={{ width: 32 }} /> {/* Placeholder to center title */}
+      </div>
+
+      {/* Mobile Drawer */}
+      <div className={`mobile-drawer ${isMobileDrawerOpen ? 'open' : ''}`}>
+        <div className="mobile-drawer-overlay" onClick={() => setIsMobileDrawerOpen(false)} />
+        <div className="mobile-drawer-content">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ background: 'var(--clr-primary-glow)', color: 'var(--clr-primary)', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+                <User size={24} />
+              </div>
+              <div style={{ fontWeight: 600, fontSize: '1.2rem', color: 'var(--clr-text-primary)' }}>{userName}</div>
+            </div>
+            <button onClick={() => setIsMobileDrawerOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--clr-text-secondary)', cursor: 'pointer' }}>
+              <X size={24} />
+            </button>
+          </div>
+          
+          <div style={{ flex: 1 }}></div>
+
+          <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: 'var(--spacing-md)' }}>
+            <NavLink to="/settings" className="nav-item" onClick={() => setIsMobileDrawerOpen(false)}>
+              <Settings size={22} /> Ajustes
+            </NavLink>
+          </div>
+        </div>
       </div>
 
       {/* Desktop Sidebar */}
       <aside className="sidebar">
-        <div className="sidebar-header">
-          <PieChart size={28} />
-          Minhas Finanças
+        <div className="sidebar-header" style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '0 var(--spacing-xl)', marginBottom: 'var(--spacing-xl)' }}>
+          <div style={{ background: 'var(--clr-primary-glow)', color: 'var(--clr-primary)', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%' }}>
+            <User size={20} />
+          </div>
+          <div style={{ fontWeight: 600, fontSize: '1.1rem', color: 'var(--clr-text-primary)' }}>{userName}</div>
         </div>
+        
         <nav className="nav-links">
           {navItems.map((item) => (
             <NavLink 
@@ -39,8 +76,11 @@ export function Layout() {
             </NavLink>
           ))}
         </nav>
-        <div style={{ marginTop: 'auto', padding: 'var(--spacing-md) var(--spacing-xl)' }}>
-          <ThemeToggle />
+        
+        <div style={{ marginTop: 'auto', padding: 'var(--spacing-md) var(--spacing-md)' }}>
+          <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
+            <Settings size={22} /> Ajustes
+          </NavLink>
         </div>
       </aside>
 
