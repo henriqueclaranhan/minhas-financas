@@ -1,0 +1,113 @@
+.wizard-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.wizard-content {
+  background: var(--clr-background);
+  border: 1px solid var(--clr-border);
+  width: 100%;
+  max-width: 450px;
+  min-height: 500px;
+  border-radius: var(--radius-xl);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
+}
+
+.wizard-body {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-xl);
+  text-align: center;
+}
+
+.wizard-slide {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.wizard-icon-wrapper {
+  width: 120px;
+  height: 120px;
+  background: var(--clr-surface-alt);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--spacing-xl);
+  box-shadow: 0 0 40px var(--clr-primary-glow);
+}
+
+.wizard-slide h2 {
+  font-size: 1.75rem;
+  margin-bottom: var(--spacing-md);
+  color: var(--clr-text-primary);
+}
+
+.wizard-slide p {
+  font-size: 1.125rem;
+  color: var(--clr-text-secondary);
+  line-height: 1.6;
+}
+
+.wizard-footer {
+  padding: var(--spacing-xl);
+  border-top: 1px solid var(--clr-border);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.wizard-progress {
+  display: flex;
+  gap: 8px;
+}
+
+.wizard-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--clr-border);
+  transition: all var(--transition-normal);
+}
+
+.wizard-dot.active {
+  background: var(--clr-primary);
+  transform: scale(1.3);
+}
+
+/* Fullscreen on Mobile */
+@media (max-width: 768px) {
+  .wizard-overlay {
+    padding: 0;
+  }
+  
+  .wizard-content {
+    max-width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+    min-height: 100vh;
+  }
+
+  .wizard-body {
+    padding: var(--spacing-lg);
+  }
+}

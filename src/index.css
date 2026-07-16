@@ -1,0 +1,297 @@
+:root {
+  /* Core Colors - iOS */
+  --clr-background: #F2F2F7;
+  --clr-surface: #FFFFFF;
+  --clr-surface-alt: #E5E5EA;
+  
+  --clr-text-primary: #000000;
+  --clr-text-secondary: #6B7280;
+  --clr-text-muted: #9CA3AF;
+  
+  --clr-primary: #007AFF; /* System Blue */
+  --clr-primary-hover: #0066D6;
+  --clr-primary-glow: rgba(0, 122, 255, 0.2);
+  
+  --clr-success: #34C759; /* System Green */
+  --clr-danger: #FF3B30; /* System Red */
+  --clr-warning: #FF9500; /* System Orange */
+  
+  --clr-border: #C6C6C8;
+  
+  /* Glassmorphism */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-shadow: 0 4px 30px rgba(0, 0, 0, 0.05);
+  
+  /* Spacing */
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  
+  /* Typography */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  
+  /* Radii */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 9999px;
+  
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+:root[data-theme="dark"] {
+  /* iOS Dark Theme */
+  --clr-background: #000000;
+  --clr-surface: #1C1C1E;
+  --clr-surface-alt: #2C2C2E;
+  
+  --clr-text-primary: #FFFFFF;
+  --clr-text-secondary: rgba(235, 235, 245, 0.8);
+  --clr-text-muted: rgba(235, 235, 245, 0.5);
+  
+  --clr-primary: #0A84FF; /* System Blue Dark */
+  --clr-primary-hover: #0073E6;
+  --clr-primary-glow: rgba(10, 132, 255, 0.2);
+  
+  --clr-success: #30D158; /* System Green Dark */
+  --clr-danger: #FF453A; /* System Red Dark */
+  --clr-warning: #FF9F0A; /* System Orange Dark */
+  
+  --clr-border: #38383A;
+  
+  --glass-bg: rgba(28, 28, 30, 0.75);
+  --glass-border: rgba(56, 56, 58, 0.5);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--clr-text-primary);
+  background-color: var(--clr-background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.5;
+  transition: background-color var(--transition-normal), color var(--transition-normal);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--clr-text-primary);
+}
+
+p {
+  margin: 0;
+}
+
+/* Base Utility Classes */
+
+/* Glassmorphism */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-lg);
+}
+
+/* Micro-animations */
+.hover-glow {
+  /* Removed glow for iOS HIG compliance, kept class for backward compatibility */
+  transition: opacity var(--transition-fast);
+}
+
+.hover-glow:active {
+  opacity: 0.6;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px; /* balanced default size */
+  font-family: var(--font-sans);
+  font-weight: 600; /* iOS Semibold */
+  font-size: 16px;
+  border-radius: 10px;
+  border: none;
+  background-color: transparent;
+  color: var(--clr-primary); /* iOS default text button style */
+  cursor: pointer;
+  transition: opacity 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-lg {
+  padding: 14px 20px; /* iOS large button padding */
+  font-size: 17px;
+  border-radius: 12px;
+}
+
+.btn-primary {
+  background-color: var(--clr-primary);
+  color: #FFFFFF;
+}
+
+.btn-primary:hover {
+  background-color: var(--clr-primary-hover); /* Gentle color change, no shadow or lift */
+}
+
+.btn-primary:active {
+  opacity: 0.6; /* Authentic iOS active state */
+}
+
+/* Forms */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-md);
+}
+
+.form-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--clr-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.form-input, .form-select {
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: none;
+  background: var(--clr-surface-alt);
+  color: var(--clr-text-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  transition: all var(--transition-fast);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.form-input:focus, .form-select:focus {
+  box-shadow: 0 0 0 2px var(--clr-primary);
+}
+
+.form-input::placeholder {
+  color: var(--clr-text-secondary);
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+@media (max-width: 640px) {
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+}
+
+/* Remove Recharts outlines on click, keep for keyboard navigation */
+.recharts-wrapper:focus,
+.recharts-wrapper *:focus {
+  outline: none;
+}
+.recharts-wrapper:focus-visible,
+.recharts-wrapper *:focus-visible {
+  outline: revert;
+}
+
+
+@media (min-width: 769px) {
+  .hide-on-desktop {
+    display: none !important;
+  }
+}
+
+.fab {
+  position: fixed;
+  bottom: 80px;
+  right: var(--spacing-md);
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  padding: 0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+@media (max-width: 768px) {
+  .glass-panel {
+    padding: var(--spacing-md) !important;
+  }
+}
+
+/* Filter Tabs */
+.filter-tabs-container {
+  display: flex;
+  gap: 8px;
+  margin-bottom: var(--spacing-md);
+}
+
+.filter-tab-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+  font-size: var(--text-base);
+}
+
+@media (max-width: 768px) {
+  .filter-tabs-container {
+    flex-wrap: wrap;
+    padding-bottom: 4px;
+  }
+  .filter-tab-btn {
+    flex: 1;
+    min-width: 90px;
+    font-size: 13px; /* Smaller font on mobile to fit icons and text */
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+}
+

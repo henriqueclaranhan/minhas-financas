@@ -1,0 +1,21 @@
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+@media (min-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 2fr 1fr;
+    align-items: start;
+  }
+  
+  .dashboard-card.wide {
+    grid-column: 1 / 2;
+  }
+}
+
+.dashboard-card {
+  display: flex;
+  flex-direction: column;
+}
