@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import { useFinance } from '../store/FinanceContext';
-import { CheckCircle, Trash2, Plus, Pencil, Filter, XCircle, ArrowUpCircle, ArrowDownCircle, List } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { PlannedExpenseForm } from '../components/PlannedExpenseForm';
 import { TransactionForm } from '../components/TransactionForm';
-import { parseISO, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import type { PlannedExpense } from '../types';
+import { FilterType, ExpenseStatus, TransactionType } from '../enums/FinanceEnums';
+import { FilterTabs } from '../components/shared/FilterTabs';
+import { PlannedExpenseTable } from '../components/planning/PlannedExpenseTable';
 
 export function PlannedExpensesPage() {
   const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense } = useFinance();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filter, setFilter] = useState<'all' | 'income' | 'expense'>('all');
+  const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
   const [searchQuery, setSearchQuery] = useState('');
 
   const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(new Date().getMonth());
@@ -48,8 +50,8 @@ export function PlannedExpensesPage() {
       const pMonth = parseISO(p.dueDate).getUTCMonth();
       const pYear = parseISO(p.dueDate).getUTCFullYear();
       
-      const isPending = p.status === 'pending';
-      const matchesFilter = filter === 'all' || p.type === filter || (!p.type && filter === 'expense');
+      const isPending = p.status === ExpenseStatus.PENDING;
+      const matchesFilter = filter === FilterType.ALL || p.type === filter || (!p.type && filter === FilterType.EXPENSE);
       const matchesMonth = selectedMonth === 'all' || pMonth === selectedMonth;
       const matchesYear = pYear === selectedYear;
       const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -73,115 +75,22 @@ export function PlannedExpensesPage() {
         </button>
       </header>
 
-      <div className="glass-panel" style={{ padding: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
-        <div className="filter-tabs-container">
-          <button onClick={() => setFilter('all')} className="btn filter-tab-btn" style={{ background: filter === 'all' ? 'var(--clr-primary)' : 'var(--clr-surface-alt)', color: filter === 'all' ? '#fff' : 'var(--clr-text-secondary)' }}><List size={16} /> Todos</button>
-          <button onClick={() => setFilter('income')} className="btn filter-tab-btn" style={{ background: filter === 'income' ? 'var(--clr-success)' : 'var(--clr-surface-alt)', color: filter === 'income' ? '#fff' : 'var(--clr-text-secondary)' }}><ArrowUpCircle size={16} /> Receitas</button>
-          <button onClick={() => setFilter('expense')} className="btn filter-tab-btn" style={{ background: filter === 'expense' ? 'var(--clr-danger)' : 'var(--clr-surface-alt)', color: filter === 'expense' ? '#fff' : 'var(--clr-text-secondary)' }}><ArrowDownCircle size={16} /> Despesas</button>
-        </div>
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <input 
-            type="search" 
-            placeholder="Buscar por nome..." 
-            className="form-input"
-            style={{ flex: 1 }}
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-          />
-          <button 
-            className="btn" 
-            style={{ background: 'var(--clr-surface-alt)', color: 'var(--clr-primary)', padding: '10px 14px' }} 
-            onClick={() => setIsFilterModalOpen(true)}
-            title="Filtros"
-          >
-            <Filter size={20} />
-          </button>
-        </div>
-      </div>
+      <FilterTabs 
+        filter={filter}
+        setFilter={setFilter}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        onOpenFilters={() => setIsFilterModalOpen(true)}
+      />
 
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
-        {pendingExpenses.length === 0 ? (
-          <div style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--clr-text-muted)' }}>
-            Nenhum gasto planejado pendente.
-          </div>
-        ) : (
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '400px' }}>
-              <thead>
-                <tr style={{ background: 'var(--clr-surface)', borderBottom: '1px solid var(--clr-border)' }}>
-                  <th style={{ padding: 'var(--spacing-md)' }}>Vencimento</th>
-                  <th style={{ padding: 'var(--spacing-md)' }}>Descrição</th>
-                  <th style={{ padding: 'var(--spacing-md)' }}>Valor</th>
-                  <th style={{ padding: 'var(--spacing-md)', textAlign: 'center' }}>Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pendingExpenses.map(p => {
-                  const pDate = parseISO(p.dueDate);
-                  const isCurrent = pDate.getUTCMonth() === new Date().getMonth() && pDate.getUTCFullYear() === new Date().getFullYear();
-
-                  return (
-                  <tr key={p.id} style={{ borderBottom: '1px solid var(--clr-border)' }}>
-                    <td style={{ padding: 'var(--spacing-md)', color: p.type === 'income' ? 'var(--clr-success)' : 'var(--clr-danger)', fontWeight: 500, whiteSpace: 'nowrap' }}>
-                      <span className="hide-on-mobile">{format(pDate, 'dd/MM/yyyy', { locale: ptBR })}</span>
-                      <span className="hide-on-desktop">{format(pDate, 'dd/MM', { locale: ptBR })}</span>
-                    </td>
-                    <td style={{ padding: 'var(--spacing-md)', fontWeight: 500 }}>
-                      {p.description}
-                      {p.isRecurring && (
-                        <span style={{ marginLeft: '8px', fontSize: '10px', background: 'var(--clr-surface-alt)', color: 'var(--clr-text-secondary)', padding: '2px 6px', borderRadius: '4px' }}>
-                          Recorrente ({p.recurrenceInterval}m)
-                        </span>
-                      )}
-                    </td>
-                    <td style={{ padding: 'var(--spacing-md)', color: p.type === 'income' ? 'var(--clr-success)' : 'var(--clr-danger)', fontWeight: 600 }}>
-                      {p.type === 'income' ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.amount)}
-                    </td>
-                    <td style={{ padding: 'var(--spacing-md)', display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                      {isCurrent && (
-                        <>
-                          <button 
-                            onClick={() => setExpenseToConfirm(p)}
-                            className="btn"
-                            style={{ padding: '8px', background: 'transparent', color: 'var(--clr-success)' }}
-                            title="Confirmar"
-                          >
-                            <CheckCircle size={18} />
-                          </button>
-                          <button 
-                            onClick={() => rejectPlannedExpense(p.id!)}
-                            className="btn"
-                            style={{ padding: '8px', background: 'transparent', color: 'var(--clr-warning)' }}
-                            title="Recusar/Pular"
-                          >
-                            <XCircle size={18} />
-                          </button>
-                        </>
-                      )}
-                      <button 
-                        onClick={() => openEditModal(p)}
-                        className="btn"
-                        style={{ padding: '8px', background: 'transparent', color: 'var(--clr-primary)' }}
-                        title="Editar"
-                      >
-                        <Pencil size={18} />
-                      </button>
-                      <button 
-                        onClick={() => setExpenseToDelete(p.id!)}
-                        className="btn"
-                        style={{ padding: '8px', background: 'transparent', color: 'var(--clr-danger)' }}
-                        title="Apagar"
-                      >
-                        <Trash2 size={18} />
-                      </button>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
+        <PlannedExpenseTable 
+          expenses={pendingExpenses}
+          onConfirm={setExpenseToConfirm}
+          onReject={rejectPlannedExpense}
+          onEdit={openEditModal}
+          onDelete={setExpenseToDelete}
+        />
       </div>
 
       <button className="btn btn-primary fab hide-on-desktop" onClick={openNewModal}>
@@ -192,7 +101,7 @@ export function PlannedExpensesPage() {
         <PlannedExpenseForm 
           onSubmit={handleAddOrUpdate} 
           initialData={editingExpense || undefined} 
-          defaultType={filter === 'income' ? 'income' : 'expense'}
+          defaultType={filter === FilterType.INCOME ? TransactionType.INCOME : TransactionType.EXPENSE}
         />
       </Modal>
 
