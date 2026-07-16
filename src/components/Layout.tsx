@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart } from 'lucide-react';
 import { useAuth } from '../store/AuthContext';
 import './Layout.css';
@@ -8,7 +8,8 @@ export function Layout() {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const { user } = useAuth();
   const userName = user?.displayName || user?.email?.split('@')[0] || 'Usuário';
-
+  const location = useLocation();
+  
   const navItems = [
     { to: '/', icon: <LayoutDashboard size={22} />, label: 'Dashboard' },
     { to: '/transactions', icon: <Wallet size={22} />, label: 'Transações' },
@@ -16,20 +17,24 @@ export function Layout() {
     { to: '/credit', icon: <CreditCard size={22} />, label: 'Faturas' },
   ];
 
+  const isMainTab = navItems.some(item => item.to === location.pathname) || location.pathname === '/';
+
   return (
     <div className="layout-container">
       {/* Mobile Header */}
-      <div className="mobile-header" style={{ display: 'none', padding: 'var(--spacing-md)', alignItems: 'center', justifyContent: 'space-between', background: 'var(--clr-background)' }}>
-        <button onClick={() => setIsMobileDrawerOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--clr-primary)', display: 'flex', cursor: 'pointer' }}>
-          <div style={{ background: 'var(--clr-surface-alt)', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', flexShrink: 0 }}>
-            <User size={20} />
+      {isMainTab && (
+        <div className="mobile-header" style={{ display: 'none', padding: 'var(--spacing-md)', alignItems: 'center', justifyContent: 'space-between', background: 'var(--clr-background)' }}>
+          <button onClick={() => setIsMobileDrawerOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--clr-primary)', display: 'flex', cursor: 'pointer' }}>
+            <div style={{ background: 'var(--clr-surface-alt)', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', flexShrink: 0 }}>
+              <User size={20} />
+            </div>
+          </button>
+          <div style={{ fontWeight: 600, color: 'var(--clr-primary)', fontSize: '1.1rem' }}>
+            Minhas Finanças
           </div>
-        </button>
-        <div style={{ fontWeight: 600, color: 'var(--clr-primary)', fontSize: '1.1rem' }}>
-          Minhas Finanças
+          <div style={{ width: 32 }} /> {/* Placeholder to center title */}
         </div>
-        <div style={{ width: 32 }} /> {/* Placeholder to center title */}
-      </div>
+      )}
 
       {/* Mobile Drawer */}
       <div className={`mobile-drawer ${isMobileDrawerOpen ? 'open' : ''}`}>
@@ -103,20 +108,22 @@ export function Layout() {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="bottom-nav">
-        <div className="bottom-nav-inner">
-          {navItems.map((item) => (
-            <NavLink 
-              key={item.to} 
-              to={item.to} 
-              className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </NavLink>
-          ))}
-        </div>
-      </nav>
+      {isMainTab && (
+        <nav className="bottom-nav">
+          <div className="bottom-nav-inner">
+            {navItems.map((item) => (
+              <NavLink 
+                key={item.to} 
+                to={item.to} 
+                className={({ isActive }) => `bottom-nav-item ${isActive ? 'active' : ''}`}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </NavLink>
+            ))}
+          </div>
+        </nav>
+      )}
     </div>
   );
 }
