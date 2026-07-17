@@ -73,7 +73,7 @@ export function CreditCardPage() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="glass-panel" style={{ padding: 'var(--spacing-md)' }}>
+        <div className="glass-panel hide-on-mobile" style={{ padding: 'var(--spacing-md)' }}>
           <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>{payload[0].payload.labelFull}</p>
           <p style={{ margin: 0, color: 'var(--clr-danger)' }}>
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
@@ -93,9 +93,9 @@ export function CreditCardPage() {
 
       {/* Chart Section */}
       <div className="glass-panel" style={{ padding: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
-        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-lg)', fontSize: '1.125rem' }}>Evolução das Faturas</h3>
+        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)', fontSize: '1.125rem' }}>Evolução das Faturas</h3>
         <div ref={scrollRef} style={{ width: '100%', overflowX: 'auto', paddingBottom: '8px' }}>
-          <div style={{ height: 200, minWidth: '600px' }}>
+          <div style={{ height: 160, minWidth: '600px' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
               data={nextMonths} 
@@ -137,10 +137,10 @@ export function CreditCardPage() {
                   );
                 }}
               />
-              <Tooltip content={<CustomTooltip />} cursor={false} />
+              <Tooltip content={<CustomTooltip />} cursor={false} wrapperClassName="hide-on-mobile" />
               <Bar 
                 dataKey="data.total" 
-                barSize={36}
+                barSize={56}
                 style={{ outline: 'none', cursor: 'pointer' }}
                 background={{ fill: 'transparent', cursor: 'pointer' }}
                 onClick={(_, index: number) => {
@@ -175,51 +175,54 @@ export function CreditCardPage() {
       </div>
 
       {/* Selected Invoice Details */}
-      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
-        <div style={{ 
-          background: isCurrentInvoice ? 'var(--clr-primary)' : 'var(--clr-surface-alt)', 
-          color: isCurrentInvoice ? '#fff' : 'var(--clr-text-primary)',
-          padding: 'var(--spacing-md) var(--spacing-lg)',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          borderBottom: '1px solid var(--clr-border)'
-        }}>
-          <h3 style={{ display: 'flex', alignItems: 'center', gap: '8px', margin: 0, color: isCurrentInvoice ? '#fff' : 'var(--clr-text-primary)' }}>
-            <Calendar size={20} color={isCurrentInvoice ? '#fff' : 'currentColor'} />
-            {isCurrentInvoice ? `Fatura Atual (${selectedMonthData.labelFull})` : selectedMonthData.labelFull}
+      <div className="glass-panel invoice-details-panel">
+        <div className="invoice-header-panel">
+          <h3 className="invoice-header-title">
+            <Calendar className="invoice-icon" />
+            <span>{selectedMonthData.labelFull}</span>
+            {isCurrentInvoice && (
+              <span className="badge-installments" style={{ marginLeft: '4px', padding: '2px 6px' }}>Atual</span>
+            )}
           </h3>
-          <div style={{ fontSize: '1.25rem', fontWeight: 'bold' }}>
+          <div className="invoice-header-total">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedMonthData.data.total)}
           </div>
         </div>
         
-        <div style={{ padding: 'var(--spacing-md) var(--spacing-lg)' }}>
+        <div className="invoice-table-wrapper">
           {selectedMonthData.data.items.length === 0 ? (
             <div style={{ color: 'var(--clr-text-muted)', textAlign: 'center', padding: 'var(--spacing-md) 0' }}>
               Nenhuma compra no crédito para este mês.
             </div>
           ) : (
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
-              <tbody>
-                {selectedMonthData.data.items.map((item, idx) => (
-                  <tr key={`${item.id}-${idx}`} style={{ borderBottom: idx < selectedMonthData.data.items.length - 1 ? '1px solid var(--clr-border)' : 'none' }}>
-                    <td style={{ padding: 'var(--spacing-sm) 0', fontWeight: 500, display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <CreditCard size={16} style={{ color: 'var(--clr-text-secondary)' }} />
-                      {item.description}
-                      {item.installments > 1 && (
-                        <span style={{ fontSize: '0.75rem', background: 'var(--clr-surface-alt)', color: 'var(--clr-text-secondary)', padding: '2px 6px', borderRadius: '4px' }}>
-                          {item.installmentNumber}/{item.installments}x
-                        </span>
-                      )}
-                    </td>
-                    <td style={{ padding: 'var(--spacing-sm) 0', textAlign: 'right', color: 'var(--clr-danger)', fontWeight: 600 }}>
-                      {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.installmentValue)}
-                    </td>
+            <div style={{ overflowX: 'auto' }}>
+              <table className="data-table" style={{ minWidth: 'auto' }}>
+                <thead>
+                  <tr>
+                    <th className="col-desc">Descrição</th>
+                    <th className="col-amount" style={{ textAlign: 'right' }}>Valor</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {selectedMonthData.data.items.map((item, idx) => (
+                    <tr key={`${item.id}-${idx}`}>
+                      <td className="td-bold td-flex-center">
+                        <CreditCard size={16} className="icon-secondary-shrink" />
+                        <span>{item.description}</span>
+                        {item.installments > 1 && (
+                          <span className="badge-installments">
+                            {item.installmentNumber}/{item.installments}x
+                          </span>
+                        )}
+                      </td>
+                      <td className="td-amount-expense" style={{ textAlign: 'right' }}>
+                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.installmentValue)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
         </div>
       </div>
