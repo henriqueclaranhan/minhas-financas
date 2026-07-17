@@ -2,9 +2,9 @@ import { useState, useRef } from 'react';
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import type { PlannedExpense } from '../../../types';
-import { TransactionType } from '../../../enums/FinanceEnums';
-import { Modal } from '../../Modal';
+import type { PlannedExpense } from '../../../../types';
+import { TransactionType } from '../../../../enums/FinanceEnums';
+import { Modal } from '../../../../components/Modal';
 import { PlannedExpenseMobileCard } from '../PlannedExpenseMobileCard';
 import '../PlannedExpense.css';
 

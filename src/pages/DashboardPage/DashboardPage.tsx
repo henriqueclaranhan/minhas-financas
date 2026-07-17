@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useFinance } from '../../store/FinanceContext';
-import { Dashboard } from '../../components/Dashboard';
+import { Dashboard } from './components/Dashboard';
 import { Plus, Wallet, CalendarClock } from 'lucide-react';
 import { Modal } from '../../components/Modal';
 import { TransactionForm } from '../../components/TransactionForm';

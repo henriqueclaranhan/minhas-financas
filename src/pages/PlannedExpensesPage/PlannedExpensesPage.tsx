@@ -8,7 +8,7 @@ import { parseISO } from 'date-fns';
 import type { PlannedExpense } from '../../types';
 import { FilterType, ExpenseStatus, TransactionType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
-import { PlannedExpenseTable } from '../../components/planning/PlannedExpenseTable';
+import { PlannedExpenseTable } from './components/PlannedExpenseTable';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {

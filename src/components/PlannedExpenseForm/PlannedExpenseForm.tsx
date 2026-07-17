@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { CurrencyInput } from '../CurrencyInput';
 import type { PlannedExpense } from '../../types';
 import { handleDatePaste } from '../../utils/dateUtils';
-import '../FormStyles.css';
+import '../../styles/FormStyles.css';
 
 interface PlannedExpenseFormProps {
   onSubmit: (data: any) => void;

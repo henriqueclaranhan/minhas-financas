@@ -1,8 +1,8 @@
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { MoreHorizontal } from 'lucide-react';
-import type { PlannedExpense } from '../../../types';
-import { TransactionType } from '../../../enums/FinanceEnums';
+import type { PlannedExpense } from '../../../../types';
+import { TransactionType } from '../../../../enums/FinanceEnums';
 import '../PlannedExpense.css';
 
 interface Props {

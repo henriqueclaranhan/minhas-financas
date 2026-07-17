@@ -2,9 +2,9 @@ import { useState, useRef } from 'react';
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Pencil, Trash2 } from 'lucide-react';
-import type { Transaction } from '../../../types';
-import { TransactionType } from '../../../enums/FinanceEnums';
-import { Modal } from '../../Modal';
+import type { Transaction } from '../../../../types';
+import { TransactionType } from '../../../../enums/FinanceEnums';
+import { Modal } from '../../../../components/Modal';
 import { TransactionMobileCard } from '../TransactionMobileCard';
 import '../Transaction.css';
 

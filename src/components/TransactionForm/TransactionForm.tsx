@@ -3,7 +3,7 @@ import { Calendar, DollarSign, CreditCard, AlignLeft, Layers } from 'lucide-reac
 import type { Transaction } from '../../types';
 import { CurrencyInput } from '../CurrencyInput';
 import { handleDatePaste } from '../../utils/dateUtils';
-import '../FormStyles.css';
+import '../../styles/FormStyles.css';
 
 interface TransactionFormProps {
   onSubmit: (transaction: Omit<Transaction, 'id'>) => void;

@@ -7,7 +7,7 @@ import { Plus } from 'lucide-react';
 import type { Transaction } from '../../types';
 import { FilterType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
-import { TransactionTable } from '../../components/transactions/TransactionTable';
+import { TransactionTable } from './components/TransactionTable';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
