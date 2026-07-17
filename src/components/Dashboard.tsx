@@ -60,23 +60,36 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
     plannedExpenses.forEach(pe => {
       if (pe.status === 'pending') {
         const isIncome = pe.type === 'income';
+        const isCredit = pe.paymentMethod?.toLowerCase().includes('crédito');
+        const numInstallments = pe.installments || 1;
+        const instAmount = pe.amount / numInstallments;
+        
         let currentDateIter = parseISO(pe.dueDate);
         const limitDate = addMonths(currentDate, endOffset);
         
-        if (!pe.isRecurring) {
-          const monthKey = format(currentDateIter, 'yyyy-MM');
-          // Only project if it's strictly in a future month
-          if (monthKey > format(currentDate, 'yyyy-MM')) {
-            if (isIncome) getMonthData(monthKey).income += pe.amount;
-            else getMonthData(monthKey).expense += pe.amount;
-          }
-        } else {
-          while (!isBefore(limitDate, currentDateIter)) {
-            const monthKey = format(currentDateIter, 'yyyy-MM');
+        const addAmountToMonths = (dateIter: Date) => {
+          if (isCredit && !isIncome) {
+            for (let i = 1; i <= numInstallments; i++) {
+              const instDate = addMonths(dateIter, i);
+              const monthKey = format(instDate, 'yyyy-MM');
+              if (monthKey > format(currentDate, 'yyyy-MM')) {
+                getMonthData(monthKey).expense += instAmount;
+              }
+            }
+          } else {
+            const monthKey = format(dateIter, 'yyyy-MM');
             if (monthKey > format(currentDate, 'yyyy-MM')) {
               if (isIncome) getMonthData(monthKey).income += pe.amount;
               else getMonthData(monthKey).expense += pe.amount;
             }
+          }
+        };
+
+        if (!pe.isRecurring) {
+          addAmountToMonths(currentDateIter);
+        } else {
+          while (!isBefore(limitDate, currentDateIter)) {
+            addAmountToMonths(currentDateIter);
             currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
           }
         }

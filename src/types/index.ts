@@ -21,4 +21,6 @@ export interface PlannedExpense {
   status: ExpenseStatus;
   userId?: string;
   type?: TransactionType;
+  paymentMethod?: PaymentMethod | string;
+  installments?: number;
 }

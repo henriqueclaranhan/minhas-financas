@@ -62,24 +62,37 @@ export function ForecastPage() {
         if (isIncome && !includePlannedIncome) return;
         if (!isIncome && !includePlannedExpense) return;
 
+        const isCredit = pe.paymentMethod?.toLowerCase().includes('crédito');
+        const numInstallments = pe.installments || 1;
+        const instAmount = pe.amount / numInstallments;
+
         let currentDateIter = parseISO(pe.dueDate);
         
-        if (!pe.isRecurring) {
-          const monthKey = format(currentDateIter, 'yyyy-MM');
-          // Forecast only considers future projections for pending items
-          if (monthKey > format(currentDate, 'yyyy-MM')) {
-            if (isIncome) getMonthData(monthKey).income += pe.amount;
-            else getMonthData(monthKey).expense += pe.amount;
-          }
-        } else {
-          // Project far enough to cover our endDate
-          const limitDate = addMonths(endDate, 1);
-          while (!isBefore(limitDate, currentDateIter)) {
-            const monthKey = format(currentDateIter, 'yyyy-MM');
+        const addAmountToMonths = (dateIter: Date) => {
+          if (isCredit && !isIncome) {
+            for (let i = 1; i <= numInstallments; i++) {
+              const instDate = addMonths(dateIter, i);
+              const monthKey = format(instDate, 'yyyy-MM');
+              if (monthKey > format(currentDate, 'yyyy-MM')) {
+                getMonthData(monthKey).expense += instAmount;
+              }
+            }
+          } else {
+            const monthKey = format(dateIter, 'yyyy-MM');
             if (monthKey > format(currentDate, 'yyyy-MM')) {
               if (isIncome) getMonthData(monthKey).income += pe.amount;
               else getMonthData(monthKey).expense += pe.amount;
             }
+          }
+        };
+
+        if (!pe.isRecurring) {
+            addAmountToMonths(currentDateIter);
+        } else {
+          // Project far enough to cover our endDate
+          const limitDate = addMonths(endDate, 1);
+          while (!isBefore(limitDate, currentDateIter)) {
+            addAmountToMonths(currentDateIter);
             currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
           }
         }

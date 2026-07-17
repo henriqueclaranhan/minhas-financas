@@ -16,6 +16,8 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
   const [isRecurring, setIsRecurring] = useState(initialData?.isRecurring || false);
   const [recurrenceInterval, setRecurrenceInterval] = useState(initialData?.recurrenceInterval?.toString() || '1');
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
+  const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
+  const [installments, setInstallments] = useState(initialData?.installments || 1);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +31,9 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
       isRecurring,
       recurrenceInterval: parseInt(recurrenceInterval) || 1,
       status: 'pending',
-      type
+      type,
+      paymentMethod,
+      installments: paymentMethod.toLowerCase().includes('crédito') ? installments : 1
     });
     
     // Reset
@@ -37,6 +41,15 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
     setAmount('');
     setDueDate('');
     setIsRecurring(false);
+    setPaymentMethod('Crédito');
+    setInstallments(1);
+  };
+
+  const handleTypeChange = (newType: 'income' | 'expense') => {
+    setType(newType);
+    if (newType === 'income' && (paymentMethod === 'Crédito' || paymentMethod === 'Débito')) {
+      setPaymentMethod('Pix');
+    }
   };
 
   return (
@@ -44,8 +57,8 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
       <div className="form-group">
         <label className="form-label">Tipo</label>
         <div style={{ display: 'flex', gap: '8px' }}>
-          <button type="button" onClick={() => setType('expense')} className="btn" style={{ flex: 1, background: type === 'expense' ? 'var(--clr-danger)' : 'var(--clr-surface-alt)', color: type === 'expense' ? '#fff' : 'var(--clr-text-primary)' }}>Despesa</button>
-          <button type="button" onClick={() => setType('income')} className="btn" style={{ flex: 1, background: type === 'income' ? 'var(--clr-success)' : 'var(--clr-surface-alt)', color: type === 'income' ? '#fff' : 'var(--clr-text-primary)' }}>Receita</button>
+          <button type="button" onClick={() => handleTypeChange('expense')} className="btn" style={{ flex: 1, background: type === 'expense' ? 'var(--clr-danger)' : 'var(--clr-surface-alt)', color: type === 'expense' ? '#fff' : 'var(--clr-text-primary)' }}>Despesa</button>
+          <button type="button" onClick={() => handleTypeChange('income')} className="btn" style={{ flex: 1, background: type === 'income' ? 'var(--clr-success)' : 'var(--clr-surface-alt)', color: type === 'income' ? '#fff' : 'var(--clr-text-primary)' }}>Receita</button>
         </div>
       </div>
       
@@ -83,6 +96,36 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
             className="form-input"
           />
         </div>
+      </div>
+
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Forma de Pagamento</label>
+          <select 
+            value={paymentMethod} 
+            onChange={e => setPaymentMethod(e.target.value)}
+            className="form-select"
+          >
+            {type === 'expense' && <option value="Crédito">Crédito</option>}
+            {type === 'expense' && <option value="Débito">Débito</option>}
+            <option value="Pix">Pix</option>
+            <option value="Dinheiro">Dinheiro</option>
+            {type === 'income' && <option value="Transferência">Transferência</option>}
+          </select>
+        </div>
+
+        {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
+          <div className="form-group">
+            <label className="form-label">Parcelas</label>
+            <input 
+              type="number" 
+              min="1" 
+              value={installments} 
+              onChange={e => setInstallments(parseInt(e.target.value))}
+              className="form-input"
+            />
+          </div>
+        )}
       </div>
       
       <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '16px', fontSize: '0.875rem' }}>

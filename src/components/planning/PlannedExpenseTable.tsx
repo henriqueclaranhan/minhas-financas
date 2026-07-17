@@ -47,13 +47,14 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
   return (
     <>
       <div className="hide-on-mobile" style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '400px' }}>
+        <table className="data-table">
           <thead>
-            <tr style={{ background: 'var(--clr-surface)', borderBottom: '1px solid var(--clr-border)' }}>
-              <th style={{ padding: 'var(--spacing-md)' }}>Vencimento</th>
-              <th style={{ padding: 'var(--spacing-md)' }}>Descrição</th>
-              <th style={{ padding: 'var(--spacing-md)' }}>Valor</th>
-              <th style={{ padding: 'var(--spacing-md)', textAlign: 'center' }}>Ações</th>
+            <tr>
+              <th className="col-date">Vencimento</th>
+              <th className="col-desc">Descrição</th>
+              <th className="col-method">Método</th>
+              <th className="col-amount">Valor</th>
+              <th className="col-actions">Ações</th>
             </tr>
           </thead>
           <tbody>
@@ -69,36 +70,44 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                 : 'var(--clr-text-secondary)';
 
               return (
-                <tr key={p.id} style={{ borderBottom: '1px solid var(--clr-border)' }}>
-                  <td style={{ padding: 'var(--spacing-md)', color: dateColor, fontWeight: isDueOrPast ? 500 : 400, whiteSpace: 'nowrap' }}>
+                <tr key={p.id}>
+                  <td className="td-nowrap" style={{ color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
                     {format(pDate, 'dd/MM/yyyy', { locale: ptBR })}
                   </td>
-                  <td style={{ padding: 'var(--spacing-md)', fontWeight: 500 }}>
+                  <td className="td-bold">
                     {p.description}
                     {p.isRecurring && (
-                      <span style={{ marginLeft: '8px', fontSize: '10px', background: 'var(--clr-surface-alt)', color: 'var(--clr-text-secondary)', padding: '2px 6px', borderRadius: '4px' }}>
+                      <span className="badge-recurring">
                         Recorrente ({p.recurrenceInterval}m)
                       </span>
                     )}
+                    {String(p.paymentMethod).toLowerCase().includes('crédito') && p.installments && p.installments > 1 ? (
+                      <span className="badge-installments">
+                        {p.installments}x
+                      </span>
+                    ) : null}
                   </td>
-                  <td style={{ padding: 'var(--spacing-md)', color: p.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)', fontWeight: 600 }}>
+                  <td className="td-secondary">
+                    {p.paymentMethod || '-'}
+                  </td>
+                  <td className={p.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
                     {p.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.amount)}
                   </td>
-                  <td style={{ padding: 'var(--spacing-md)', display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                  <td className="td-actions">
                     {isCurrent && (
                       <>
-                        <button onClick={() => onConfirm(p)} className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--clr-success)' }} title="Confirmar">
+                        <button onClick={() => onConfirm(p)} className="btn btn-action success" title="Confirmar">
                           <CheckCircle size={18} />
                         </button>
-                        <button onClick={() => onReject(p.id!)} className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--clr-warning)' }} title="Recusar/Pular">
+                        <button onClick={() => onReject(p.id!)} className="btn btn-action warning" title="Recusar/Pular">
                           <XCircle size={18} />
                         </button>
                       </>
                     )}
-                    <button onClick={() => onEdit(p)} className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--clr-primary)' }} title="Editar">
+                    <button onClick={() => onEdit(p)} className="btn btn-action primary" title="Editar">
                       <Pencil size={18} />
                     </button>
-                    <button onClick={() => onDelete(p.id!)} className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--clr-danger)' }} title="Apagar">
+                    <button onClick={() => onDelete(p.id!)} className="btn btn-action danger" title="Apagar">
                       <Trash2 size={18} />
                     </button>
                   </td>

@@ -45,39 +45,39 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
   return (
     <>
       <div className="hide-on-mobile" style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', minWidth: '500px' }}>
+        <table className="data-table">
           <thead>
-            <tr style={{ background: 'var(--clr-surface)', borderBottom: '1px solid var(--clr-border)' }}>
-              <th style={{ padding: 'var(--spacing-md)' }}>Data</th>
-              <th style={{ padding: 'var(--spacing-md)' }}>Descrição</th>
-              <th style={{ padding: 'var(--spacing-md)' }}>Método</th>
-              <th style={{ padding: 'var(--spacing-md)' }}>Valor</th>
-              <th style={{ padding: 'var(--spacing-md)', textAlign: 'center' }}>Ações</th>
+            <tr>
+              <th className="col-date">Data</th>
+              <th className="col-desc">Descrição</th>
+              <th className="col-method">Método</th>
+              <th className="col-amount">Valor</th>
+              <th className="col-actions">Ações</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map(t => (
-              <tr key={t.id} style={{ borderBottom: '1px solid var(--clr-border)' }}>
-                <td style={{ padding: 'var(--spacing-md)', color: 'var(--clr-text-secondary)', whiteSpace: 'nowrap' }}>
+              <tr key={t.id}>
+                <td className="td-secondary td-nowrap">
                   {format(parseISO(t.date), 'dd/MM/yyyy', { locale: ptBR })}
                 </td>
-                <td style={{ padding: 'var(--spacing-md)', fontWeight: 500 }}>
+                <td className="td-bold">
                   {t.description}
                   {t.installments > 1 && (
-                    <span style={{ marginLeft: '8px', fontSize: '10px', background: 'var(--clr-primary-glow)', color: 'var(--clr-primary)', padding: '2px 6px', borderRadius: '4px' }}>
+                    <span className="badge-installments">
                       {t.installments}x
                     </span>
                   )}
                 </td>
-                <td style={{ padding: 'var(--spacing-md)', color: 'var(--clr-text-secondary)' }}>{t.paymentMethod}</td>
-                <td style={{ padding: 'var(--spacing-md)', color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)', fontWeight: 600 }}>
+                <td className="td-secondary">{t.paymentMethod}</td>
+                <td className={t.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
                   {t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
                 </td>
-                <td style={{ padding: 'var(--spacing-md)', display: 'flex', gap: '8px', justifyContent: 'center' }}>
-                  <button onClick={() => onEdit(t)} className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--clr-primary)' }} title="Editar">
+                <td className="td-actions">
+                  <button onClick={() => onEdit(t)} className="btn btn-action primary" title="Editar">
                     <Pencil size={18} />
                   </button>
-                  <button onClick={() => onDelete(t.id!)} className="btn" style={{ padding: '8px', background: 'transparent', color: 'var(--clr-danger)' }} title="Apagar">
+                  <button onClick={() => onDelete(t.id!)} className="btn btn-action danger" title="Apagar">
                     <Trash2 size={18} />
                   </button>
                 </td>

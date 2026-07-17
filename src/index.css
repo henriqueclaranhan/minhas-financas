@@ -295,3 +295,103 @@ p {
   }
 }
 
+/* Table Styles */
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 500px;
+}
+
+.data-table thead tr {
+  background: var(--clr-surface);
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.data-table tbody tr {
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.data-table th, .data-table td {
+  padding: var(--spacing-md);
+}
+
+.data-table .col-date {
+  width: 140px;
+}
+
+.data-table .col-desc {
+  width: auto;
+}
+
+.data-table .col-method {
+  width: 120px;
+}
+
+.data-table .col-amount {
+  width: 150px;
+}
+
+.data-table .col-actions {
+  width: 150px;
+  text-align: center;
+}
+
+.data-table .td-nowrap {
+  white-space: nowrap;
+}
+
+.data-table .td-secondary {
+  color: var(--clr-text-secondary);
+}
+
+.data-table .td-bold {
+  font-weight: 500;
+}
+
+.data-table .td-amount-income {
+  font-weight: 600;
+  color: var(--clr-success);
+}
+
+.data-table .td-amount-expense {
+  font-weight: 600;
+  color: var(--clr-danger);
+}
+
+.data-table .td-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+/* Table Badges & Action Buttons */
+.badge-recurring {
+  margin-left: 8px;
+  font-size: 10px;
+  background: var(--clr-surface-alt);
+  color: var(--clr-text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.badge-installments {
+  margin-left: 8px;
+  font-size: 10px;
+  background: var(--clr-primary-glow);
+  color: var(--clr-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.btn-action {
+  padding: 8px;
+  background: transparent;
+}
+.btn-action.primary { color: var(--clr-primary); }
+.btn-action.danger { color: var(--clr-danger); }
+.btn-action.success { color: var(--clr-success); }
+.btn-action.warning { color: var(--clr-warning); }
+

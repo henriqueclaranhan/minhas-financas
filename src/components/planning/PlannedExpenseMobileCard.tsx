@@ -41,13 +41,18 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
           <h4 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>
             {p.description}
             {p.isRecurring && (
-              <span style={{ marginLeft: '8px', fontSize: '10px', background: 'var(--clr-surface-alt)', color: 'var(--clr-text-secondary)', padding: '2px 6px', borderRadius: '4px' }}>
+              <span style={{ marginLeft: '8px', fontSize: '10px', background: 'var(--clr-surface-alt)', color: 'var(--clr-text-secondary)', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
                 Recorrência ({p.recurrenceInterval}m)
               </span>
             )}
+            {String(p.paymentMethod).toLowerCase().includes('crédito') && p.installments && p.installments > 1 ? (
+              <span style={{ marginLeft: '8px', fontSize: '10px', background: 'var(--clr-primary-glow)', color: 'var(--clr-primary)', padding: '2px 6px', borderRadius: '4px', whiteSpace: 'nowrap' }}>
+                {p.installments}x
+              </span>
+            ) : null}
           </h4>
           <p style={{ margin: 0, fontSize: '0.875rem', color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
-            {format(pDate, "dd/MM/yy", { locale: ptBR })}
+            {format(pDate, "dd/MM/yy", { locale: ptBR })} {p.paymentMethod ? `• ${p.paymentMethod}` : ''}
           </p>
         </div>
         <button 
