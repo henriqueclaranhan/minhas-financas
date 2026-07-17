@@ -23,11 +23,11 @@ const steps = [
 ];
 
 export function OnboardingWizard() {
-  const { initialBalance, setInitialBalance, addTransaction } = useFinance();
+  const { initialBalance, setInitialBalance, addTransaction, isLoading } = useFinance();
   const [currentStep, setCurrentStep] = useState(0);
   const [balanceInput, setBalanceInput] = useState<number | ''>('');
 
-  if (initialBalance !== null) return null;
+  if (isLoading || initialBalance !== null) return null;
 
   const nextStep = () => {
     if (currentStep < steps.length) {
@@ -73,7 +73,7 @@ export function OnboardingWizard() {
                 <span style={{ fontSize: '3rem' }}>💰</span>
               </div>
               <h2>Qual o seu saldo hoje?</h2>
-              <p>Para o gráfico de evolução funcionar perfeitamente, precisamos saber o seu ponto de partida.</p>
+              <p>Defina o seu ponto de partida.</p>
               
               <form onSubmit={handleFinish} style={{ width: '100%', marginTop: 'var(--spacing-lg)' }}>
                 <div className="form-group" style={{ textAlign: 'left' }}>
@@ -83,12 +83,19 @@ export function OnboardingWizard() {
                     onChangeValue={setBalanceInput}
                     className="form-input"
                     style={{ fontSize: '1.25rem', padding: '16px' }}
-                    required
                     autoFocus
                   />
                 </div>
                 <button type="submit" className="btn btn-primary hover-glow" style={{ width: '100%', padding: '16px', fontSize: '1.125rem', marginTop: '16px' }}>
                   Começar Jornada <Check size={20} style={{ marginLeft: '8px' }} />
+                </button>
+                <button 
+                  type="button" 
+                  onClick={() => setInitialBalance(0)} 
+                  className="btn" 
+                  style={{ width: '100%', padding: '16px', fontSize: '1rem', marginTop: '8px', background: 'transparent', color: 'var(--clr-text-secondary)', border: 'none' }}
+                >
+                  Pular por enquanto
                 </button>
               </form>
             </div>

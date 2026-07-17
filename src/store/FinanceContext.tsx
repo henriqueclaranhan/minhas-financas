@@ -24,6 +24,7 @@ interface FinanceContextData {
   exportData: () => void;
   importData: (jsonData: string) => Promise<boolean>;
   clearData: () => void;
+  isLoading: boolean;
 }
 
 const FinanceContext = createContext<FinanceContextData>({} as FinanceContextData);
@@ -35,14 +36,18 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [initialBalance, setInitialBalanceState] = useState<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [plannedExpenses, setPlannedExpenses] = useState<PlannedExpense[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (!uid) {
       setInitialBalanceState(null);
       setTransactions([]);
       setPlannedExpenses([]);
+      setIsLoading(false);
       return;
     }
+
+    setIsLoading(true);
 
     const unsubUser = onSnapshot(doc(db, 'users', uid), (docSnap) => {
       if (docSnap.exists()) {
@@ -51,6 +56,7 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
           setInitialBalanceState(data.initialBalance);
         }
       }
+      setIsLoading(false);
     });
 
     const unsubTx = onSnapshot(collection(db, 'users', uid, 'transactions'), (snapshot) => {
@@ -208,7 +214,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       initialBalance, setInitialBalance, transactions, plannedExpenses,
       addTransaction, updateTransaction, deleteTransaction,
       addPlannedExpense, updatePlannedExpense, confirmPlannedExpense,
-      rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData
+      rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData,
+      isLoading
     }}>
       {children}
     </FinanceContext.Provider>
