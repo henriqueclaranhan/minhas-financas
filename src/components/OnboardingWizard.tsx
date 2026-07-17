@@ -23,11 +23,13 @@ const steps = [
 ];
 
 export function OnboardingWizard() {
-  const { initialBalance, setInitialBalance, addTransaction, isLoading } = useFinance();
+  const { initialBalance, setInitialBalance, addTransaction, transactions, plannedExpenses, isLoading } = useFinance();
   const [currentStep, setCurrentStep] = useState(0);
   const [balanceInput, setBalanceInput] = useState<number | ''>('');
 
-  if (isLoading || initialBalance !== null) return null;
+  const hasData = transactions.length > 0 || plannedExpenses.length > 0;
+
+  if (isLoading || initialBalance !== null || hasData) return null;
 
   const nextStep = () => {
     if (currentStep < steps.length) {

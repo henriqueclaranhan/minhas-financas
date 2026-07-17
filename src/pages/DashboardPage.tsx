@@ -13,9 +13,13 @@ export function DashboardPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState<'none' | 'transaction' | 'planning'>('none');
 
-  if (initialBalance === null) {
+  const hasData = transactions.length > 0 || plannedExpenses.length > 0;
+
+  if (initialBalance === null && !hasData) {
     return null; // Wait for OnboardingWizard to set the balance
   }
+
+  const resolvedInitialBalance = initialBalance ?? 0;
 
   const handleTransactionAdd = (data: any) => {
     addTransaction(data);
@@ -46,7 +50,9 @@ export function DashboardPage() {
         </button>
       </header>
       
-      <Dashboard transactions={transactions} plannedExpenses={plannedExpenses} initialBalance={initialBalance} />
+      <div className="dashboard-widget dashboard-main animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <Dashboard transactions={transactions} plannedExpenses={plannedExpenses} initialBalance={resolvedInitialBalance} />
+      </div>
 
       {/* Mobile FAB */}
       <button 
