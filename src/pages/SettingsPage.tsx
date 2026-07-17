@@ -21,9 +21,9 @@ export function SettingsPage() {
     if (!file) return;
 
     const reader = new FileReader();
-    reader.onload = (event) => {
+    reader.onload = async (event) => {
       const content = event.target?.result as string;
-      const success = importData(content);
+      const success = await importData(content);
       if (success) {
         setImportStatus('Dados importados com sucesso!');
         setTimeout(() => setImportStatus(''), 3000);

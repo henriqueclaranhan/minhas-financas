@@ -2,6 +2,11 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Transaction, PlannedExpense } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
 import { useAuth } from './AuthContext';
+import { db } from '../config/firebase';
+import { 
+  collection, doc, setDoc, updateDoc, deleteDoc, 
+  onSnapshot, addDoc, writeBatch
+} from 'firebase/firestore';
 
 interface FinanceContextData {
   initialBalance: number | null;
@@ -17,7 +22,7 @@ interface FinanceContextData {
   rejectPlannedExpense: (id: string) => void;
   deletePlannedExpense: (id: string) => void;
   exportData: () => void;
-  importData: (jsonData: string) => boolean;
+  importData: (jsonData: string) => Promise<boolean>;
   clearData: () => void;
 }
 
@@ -25,136 +30,123 @@ const FinanceContext = createContext<FinanceContextData>({} as FinanceContextDat
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
-  const uid = user?.uid || 'guest';
-  const BALANCE_KEY = `@financas:initialBalance:${uid}`;
-  const TX_KEY = `@financas:transactions:${uid}`;
-  const PLANNED_KEY = `@financas:planned:${uid}`;
+  const uid = user?.uid || '';
 
-  const [initialBalance, setInitialBalanceState] = useState<number | null>(() => {
-    const localIB = localStorage.getItem(BALANCE_KEY);
-    return localIB ? JSON.parse(localIB) : null;
-  });
-  const [transactions, setTransactions] = useState<Transaction[]>(() => {
-    const localT = localStorage.getItem(TX_KEY);
-    return localT ? JSON.parse(localT) : [];
-  });
-  const [plannedExpenses, setPlannedExpenses] = useState<PlannedExpense[]>(() => {
-    const localP = localStorage.getItem(PLANNED_KEY);
-    return localP ? JSON.parse(localP) : [];
-  });
+  const [initialBalance, setInitialBalanceState] = useState<number | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [plannedExpenses, setPlannedExpenses] = useState<PlannedExpense[]>([]);
 
-  // Re-initialize state when user changes
   useEffect(() => {
-    const localIB = localStorage.getItem(BALANCE_KEY);
-    setInitialBalanceState(localIB ? JSON.parse(localIB) : null);
-    
-    const localT = localStorage.getItem(TX_KEY);
-    setTransactions(localT ? JSON.parse(localT) : []);
-    
-    const localP = localStorage.getItem(PLANNED_KEY);
-    setPlannedExpenses(localP ? JSON.parse(localP) : []);
+    if (!uid) {
+      setInitialBalanceState(null);
+      setTransactions([]);
+      setPlannedExpenses([]);
+      return;
+    }
+
+    const unsubUser = onSnapshot(doc(db, 'users', uid), (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data.initialBalance !== undefined) {
+          setInitialBalanceState(data.initialBalance);
+        }
+      }
+    });
+
+    const unsubTx = onSnapshot(collection(db, 'users', uid, 'transactions'), (snapshot) => {
+      const txs: Transaction[] = [];
+      snapshot.forEach(d => txs.push({ ...d.data(), id: d.id } as Transaction));
+      setTransactions(txs);
+    });
+
+    const unsubPlan = onSnapshot(collection(db, 'users', uid, 'plannedExpenses'), (snapshot) => {
+      const plans: PlannedExpense[] = [];
+      snapshot.forEach(d => plans.push({ ...d.data(), id: d.id } as PlannedExpense));
+      setPlannedExpenses(plans);
+    });
+
+    return () => {
+      unsubUser();
+      unsubTx();
+      unsubPlan();
+    };
   }, [uid]);
 
-  // Sync to local storage
-  const setInitialBalance = (val: number) => {
-    setInitialBalanceState(val);
-    localStorage.setItem(BALANCE_KEY, JSON.stringify(val));
+  const setInitialBalance = async (val: number) => {
+    if (!uid) return;
+    await setDoc(doc(db, 'users', uid), { initialBalance: val }, { merge: true });
   };
 
-  useEffect(() => {
-    localStorage.setItem(TX_KEY, JSON.stringify(transactions));
-  }, [transactions, uid]);
-
-  useEffect(() => {
-    localStorage.setItem(PLANNED_KEY, JSON.stringify(plannedExpenses));
-  }, [plannedExpenses, uid]);
-
-  const addTransaction = (t: Omit<Transaction, 'id'>) => {
-    setTransactions(prev => [...prev, { ...t, id: Date.now().toString() }]);
+  const addTransaction = async (t: Omit<Transaction, 'id'>) => {
+    if (!uid) return;
+    await addDoc(collection(db, 'users', uid, 'transactions'), t);
   };
 
-  const updateTransaction = (id: string, updatedData: Partial<Transaction>) => {
-    setTransactions(prev => prev.map(t => t.id === id ? { ...t, ...updatedData } : t));
+  const updateTransaction = async (id: string, updatedData: Partial<Transaction>) => {
+    if (!uid) return;
+    await updateDoc(doc(db, 'users', uid, 'transactions', id), updatedData);
   };
 
-  const deleteTransaction = (id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
+  const deleteTransaction = async (id: string) => {
+    if (!uid) return;
+    await deleteDoc(doc(db, 'users', uid, 'transactions', id));
   };
 
-  const addPlannedExpense = (pe: Omit<PlannedExpense, 'id'>) => {
-    setPlannedExpenses(prev => [...prev, { ...pe, id: Date.now().toString() }]);
+  const addPlannedExpense = async (pe: Omit<PlannedExpense, 'id'>) => {
+    if (!uid) return;
+    await addDoc(collection(db, 'users', uid, 'plannedExpenses'), pe);
   };
 
-  const updatePlannedExpense = (id: string, updatedData: Partial<PlannedExpense>) => {
-    setPlannedExpenses(prev => prev.map(p => p.id === id ? { ...p, ...updatedData } : p));
+  const updatePlannedExpense = async (id: string, updatedData: Partial<PlannedExpense>) => {
+    if (!uid) return;
+    await updateDoc(doc(db, 'users', uid, 'plannedExpenses', id), updatedData);
   };
 
-  const confirmPlannedExpense = (id: string, transactionData: Omit<Transaction, 'id'>) => {
-    setPlannedExpenses(prev => {
-      const idx = prev.findIndex(p => p.id === id);
-      if (idx === -1) return prev;
-      const expense = prev[idx];
-      const newList = [...prev];
-      
-      // Update status to confirmed
-      newList[idx] = { ...expense, status: 'confirmed' };
-      
-      // Create actual transaction
-      addTransaction({
-        ...transactionData,
-        plannedExpenseId: expense.id
-      });
+  const confirmPlannedExpense = async (id: string, transactionData: Omit<Transaction, 'id'>) => {
+    if (!uid) return;
+    const expense = plannedExpenses.find(p => p.id === id);
+    if (!expense) return;
 
-      // Handle recurrence
-      if (expense.isRecurring) {
-        const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
-        newList.push({
-          ...expense,
-          id: (Date.now() + 1).toString(),
-          dueDate: format(nextDate, 'yyyy-MM-dd'),
-          status: 'pending'
-        });
-      }
+    const batch = writeBatch(db);
+    
+    batch.update(doc(db, 'users', uid, 'plannedExpenses', id), { status: 'confirmed' });
+    
+    const newTxRef = doc(collection(db, 'users', uid, 'transactions'));
+    batch.set(newTxRef, { ...transactionData, plannedExpenseId: expense.id });
 
-      return newList;
-    });
+    if (expense.isRecurring) {
+      const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
+      const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
+      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: 'pending' });
+    }
+
+    await batch.commit();
   };
 
-  const rejectPlannedExpense = (id: string) => {
-    setPlannedExpenses(prev => {
-      const idx = prev.findIndex(p => p.id === id);
-      if (idx === -1) return prev;
-      const expense = prev[idx];
-      const newList = [...prev];
-      
-      // Update status to cancelled
-      newList[idx] = { ...expense, status: 'cancelled' };
-      
-      // Handle recurrence
-      if (expense.isRecurring) {
-        const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
-        newList.push({
-          ...expense,
-          id: (Date.now() + 1).toString(),
-          dueDate: format(nextDate, 'yyyy-MM-dd'),
-          status: 'pending'
-        });
-      }
+  const rejectPlannedExpense = async (id: string) => {
+    if (!uid) return;
+    const expense = plannedExpenses.find(p => p.id === id);
+    if (!expense) return;
 
-      return newList;
-    });
+    const batch = writeBatch(db);
+    batch.update(doc(db, 'users', uid, 'plannedExpenses', id), { status: 'cancelled' });
+
+    if (expense.isRecurring) {
+      const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
+      const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
+      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: 'pending' });
+    }
+
+    await batch.commit();
   };
 
-  const deletePlannedExpense = (id: string) => {
-    setPlannedExpenses(prev => prev.filter(p => p.id !== id));
+  const deletePlannedExpense = async (id: string) => {
+    if (!uid) return;
+    await deleteDoc(doc(db, 'users', uid, 'plannedExpenses', id));
   };
 
   const exportData = () => {
-    const data = {
-      initialBalance,
-      transactions,
-      plannedExpenses
-    };
+    const data = { initialBalance, transactions, plannedExpenses };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -164,17 +156,33 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     URL.revokeObjectURL(url);
   };
 
-  const importData = (jsonData: string) => {
+  const importData = async (jsonData: string) => {
+    if (!uid) return false;
     try {
       const data = JSON.parse(jsonData);
-      if (data.initialBalance !== undefined) setInitialBalanceState(data.initialBalance);
-      if (data.transactions) setTransactions(data.transactions);
-      if (data.plannedExpenses) setPlannedExpenses(data.plannedExpenses);
-      
-      // Update local storage directly for initialBalance since setInitialBalanceState doesn't do it
+      const batch = writeBatch(db);
+
       if (data.initialBalance !== undefined) {
-        localStorage.setItem(BALANCE_KEY, JSON.stringify(data.initialBalance));
+        batch.set(doc(db, 'users', uid), { initialBalance: data.initialBalance }, { merge: true });
       }
+
+      if (data.transactions && Array.isArray(data.transactions)) {
+        for (const t of data.transactions) {
+          const { id, ...rest } = t;
+          const ref = id ? doc(db, 'users', uid, 'transactions', id) : doc(collection(db, 'users', uid, 'transactions'));
+          batch.set(ref, rest);
+        }
+      }
+
+      if (data.plannedExpenses && Array.isArray(data.plannedExpenses)) {
+        for (const p of data.plannedExpenses) {
+          const { id, ...rest } = p;
+          const ref = id ? doc(db, 'users', uid, 'plannedExpenses', id) : doc(collection(db, 'users', uid, 'plannedExpenses'));
+          batch.set(ref, rest);
+        }
+      }
+      
+      await batch.commit();
       return true;
     } catch (e) {
       console.error("Failed to import data", e);
@@ -182,32 +190,25 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const clearData = () => {
-    if (window.confirm('Tem certeza que deseja apagar todos os seus dados? Esta ação não pode ser desfeita.')) {
-      setInitialBalanceState(0);
-      localStorage.setItem(BALANCE_KEY, JSON.stringify(0));
-      setTransactions([]);
-      setPlannedExpenses([]);
+  const clearData = async () => {
+    if (!uid) return;
+    if (window.confirm('Tem certeza que deseja apagar todos os seus dados da nuvem? Esta ação não pode ser desfeita.')) {
+      const batch = writeBatch(db);
+      
+      batch.set(doc(db, 'users', uid), { initialBalance: 0 }, { merge: true });
+      transactions.forEach(t => batch.delete(doc(db, 'users', uid, 'transactions', t.id)));
+      plannedExpenses.forEach(p => batch.delete(doc(db, 'users', uid, 'plannedExpenses', p.id)));
+      
+      await batch.commit();
     }
   };
 
   return (
     <FinanceContext.Provider value={{
-      initialBalance,
-      setInitialBalance,
-      transactions,
-      plannedExpenses,
-      addTransaction,
-      updateTransaction,
-      deleteTransaction,
-      addPlannedExpense,
-      updatePlannedExpense,
-      confirmPlannedExpense,
-      rejectPlannedExpense,
-      deletePlannedExpense,
-      exportData,
-      importData,
-      clearData
+      initialBalance, setInitialBalance, transactions, plannedExpenses,
+      addTransaction, updateTransaction, deleteTransaction,
+      addPlannedExpense, updatePlannedExpense, confirmPlannedExpense,
+      rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData
     }}>
       {children}
     </FinanceContext.Provider>
