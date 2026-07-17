@@ -239,3 +239,44 @@
     display: flex;
   }
 }
+
+.auth-alert-error {
+  background: var(--clr-danger);
+  color: #fff;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2);
+}
+
+.auth-alert-success {
+  background: var(--clr-success);
+  color: #fff;
+  padding: 14px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  font-size: 0.95rem;
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);
+}
+
+.auth-alert-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.auth-forgot-password-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.auth-forgot-password-link {
+  font-size: 0.85rem;
+}

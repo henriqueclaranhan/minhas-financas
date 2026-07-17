@@ -6,6 +6,7 @@ import type { PlannedExpense } from '../../types';
 import { TransactionType } from '../../enums/FinanceEnums';
 import { Modal } from '../Modal';
 import { PlannedExpenseMobileCard } from './PlannedExpenseMobileCard';
+import './PlannedExpense.css';
 
 interface PlannedExpenseTableProps {
   expenses: PlannedExpense[];
@@ -22,7 +23,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
 
   if (expenses.length === 0) {
     return (
-      <div style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--clr-text-muted)' }}>
+      <div className="empty-state-text">
         Nenhum gasto planejado pendente.
       </div>
     );
@@ -46,7 +47,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
 
   return (
     <>
-      <div className="hide-on-mobile" style={{ overflowX: 'auto' }}>
+      <div className="hide-on-mobile table-responsive">
         <table className="data-table">
           <thead>
             <tr>
@@ -118,7 +119,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
         </table>
       </div>
 
-      <div className="hide-on-desktop" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="hide-on-desktop mobile-card-list">
         {expenses.map(p => (
           <PlannedExpenseMobileCard 
             key={`${p.id}-mobile`}
@@ -132,7 +133,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
       </div>
 
       <Modal isOpen={!!mobileActionItem} onClose={() => setMobileActionItem(null)} title="Opções do Planejamento">
-        <div style={{ display: 'grid', gap: '16px' }}>
+        <div className="modal-grid">
           {(() => {
             const currentItem = mobileActionItem;
             if (!currentItem) return null;
@@ -145,72 +146,68 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                 {isCurrent && (
                   <>
                     <button 
-                      className="glass-panel hover-lift" 
-                      style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+                      className="glass-panel hover-lift modal-action-btn"
                       onClick={() => {
                         onConfirm(currentItem);
                         setMobileActionItem(null);
                       }}
                     >
-                      <div style={{ background: 'var(--clr-success)', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div className="icon-circle success">
                         <CheckCircle size={24} color="#fff" />
                       </div>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>Confirmar</h3>
-                        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Marcar como paga neste mês.</p>
+                        <h3 className="modal-action-title">Confirmar</h3>
+                        <p className="modal-action-desc">Marcar como paga neste mês.</p>
                       </div>
                     </button>
                     
                     <button 
-                      className="glass-panel hover-lift" 
-                      style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+                      className="glass-panel hover-lift modal-action-btn"
                       onClick={() => {
                         if (currentItem.id) onReject(currentItem.id);
                         setMobileActionItem(null);
                       }}
                     >
-                      <div style={{ background: 'var(--clr-warning)', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                      <div className="icon-circle warning">
                         <XCircle size={24} color="#fff" />
                       </div>
                       <div>
-                        <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>Ignorar</h3>
-                        <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Pular o pagamento deste mês.</p>
+                        <h3 className="modal-action-title">Ignorar</h3>
+                        <p className="modal-action-desc">Pular o pagamento deste mês.</p>
                       </div>
                     </button>
                   </>
                 )}
                 
                 <button 
-                  className="glass-panel hover-lift" 
-                  style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+                  className="glass-panel hover-lift modal-action-btn"
                   onClick={() => {
                     onEdit(currentItem);
                     setMobileActionItem(null);
                   }}
                 >
-                  <div style={{ background: 'var(--clr-primary)', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div className="icon-circle primary">
                     <Pencil size={24} color="#fff" />
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>Editar</h3>
-                    <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Modificar os dados originais.</p>
+                    <h3 className="modal-action-title">Editar</h3>
+                    <p className="modal-action-desc">Modificar os dados originais.</p>
                   </div>
                 </button>
                 
                 <button 
-                  className="glass-panel hover-lift" 
-                  style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+                  className="glass-panel hover-lift modal-action-btn"
                   onClick={() => {
                     if (currentItem.id) onDelete(currentItem.id);
                     setMobileActionItem(null);
                   }}
                 >
-                  <div style={{ background: 'var(--clr-danger)', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <div className="icon-circle danger">
                     <Trash2 size={24} color="#fff" />
                   </div>
                   <div>
-                    <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>Apagar</h3>
-                    <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Remover planejamento de vez.</p>
+                    <h3 className="modal-action-title">Apagar</h3>
+                    <p className="modal-action-desc">Remover planejamento de vez.</p>
                   </div>
                 </button>
               </>

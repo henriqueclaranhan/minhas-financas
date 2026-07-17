@@ -111,3 +111,41 @@
     padding: var(--spacing-lg);
   }
 }
+
+.wizard-emoji {
+  font-size: 3rem;
+}
+.wizard-form {
+  width: 100%;
+  margin-top: var(--spacing-lg);
+}
+.wizard-form-group {
+  text-align: left;
+}
+.wizard-form-input {
+  font-size: 1.25rem;
+  padding: 16px;
+}
+.wizard-btn-primary {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.125rem;
+}
+.wizard-btn-primary-form {
+  width: 100%;
+  padding: 16px;
+  font-size: 1.125rem;
+  margin-top: 16px;
+}
+.wizard-btn-primary-icon {
+  margin-left: 8px;
+}
+.wizard-btn-secondary {
+  width: 100%;
+  padding: 16px;
+  font-size: 1rem;
+  margin-top: 8px;
+  background: transparent;
+  color: var(--clr-text-secondary);
+  border: none;
+}

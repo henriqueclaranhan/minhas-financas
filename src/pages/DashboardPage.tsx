@@ -6,6 +6,7 @@ import { Modal } from '../components/Modal';
 import { TransactionForm } from '../components/TransactionForm';
 import { PlannedExpenseForm } from '../components/PlannedExpenseForm';
 import { useAuth } from '../store/AuthContext';
+import './DashboardPage.css';
 
 export function DashboardPage() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
@@ -37,20 +38,20 @@ export function DashboardPage() {
 
   return (
     <div className="animate-fade-in">
-      <header style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+      <header className="dashboard-header">
         <div>
           <h1>Olá, {userName}!</h1>
-          <p style={{ color: 'var(--clr-text-secondary)' }}>Acompanhe o resumo das suas finanças e a evolução do seu saldo.</p>
+          <p className="text-secondary">Acompanhe o resumo das suas finanças e a evolução do seu saldo.</p>
         </div>
         <button 
           className="btn btn-primary hover-glow hide-on-mobile" 
           onClick={() => { setIsModalOpen(true); setActionType('none'); }}
         >
-          <Plus size={18} style={{ marginRight: '8px' }} /> Nova Ação
+          <Plus size={18} className="mr-sm" /> Nova Ação
         </button>
       </header>
       
-      <div className="dashboard-widget dashboard-main animate-fade-in" style={{ animationDelay: '0.1s' }}>
+      <div className="dashboard-widget dashboard-main animate-fade-in">
         <Dashboard transactions={transactions} plannedExpenses={plannedExpenses} initialBalance={resolvedInitialBalance} />
       </div>
 
@@ -68,32 +69,30 @@ export function DashboardPage() {
         title={actionType === 'none' ? 'O que deseja fazer?' : actionType === 'transaction' ? 'Nova Transação' : 'Planejar'}
       >
         {actionType === 'none' && (
-          <div style={{ display: 'grid', gap: '16px' }}>
+          <div className="dashboard-modal-grid">
             <button 
-              className="glass-panel hover-lift" 
-              style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+              className="glass-panel hover-lift dashboard-modal-btn" 
               onClick={() => setActionType('transaction')}
             >
-              <div style={{ background: 'var(--clr-primary)', padding: '12px', borderRadius: '50%' }}>
+              <div className="dashboard-icon-bg primary">
                 <Wallet size={24} color="#fff" />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--clr-text-primary)' }}>Nova Transação</h3>
-                <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Registrar uma entrada ou saída de dinheiro.</p>
+                <h3 className="dashboard-modal-title">Nova Transação</h3>
+                <p className="dashboard-modal-desc">Registrar uma entrada ou saída de dinheiro.</p>
               </div>
             </button>
 
             <button 
-              className="glass-panel hover-lift" 
-              style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+              className="glass-panel hover-lift dashboard-modal-btn" 
               onClick={() => setActionType('planning')}
             >
-              <div style={{ background: 'var(--clr-warning)', padding: '12px', borderRadius: '50%' }}>
+              <div className="dashboard-icon-bg warning">
                 <CalendarClock size={24} color="#fff" />
               </div>
               <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--clr-text-primary)' }}>Novo Planejamento</h3>
-                <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Agendar uma conta futura ou recorrente.</p>
+                <h3 className="dashboard-modal-title">Novo Planejamento</h3>
+                <p className="dashboard-modal-desc">Agendar uma conta futura ou recorrente.</p>
               </div>
             </button>
           </div>

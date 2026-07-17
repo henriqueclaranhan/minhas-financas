@@ -6,6 +6,7 @@ import type { Transaction } from '../../types';
 import { TransactionType } from '../../enums/FinanceEnums';
 import { Modal } from '../Modal';
 import { TransactionMobileCard } from './TransactionMobileCard';
+import './Transaction.css';
 
 interface TransactionTableProps {
   transactions: Transaction[];
@@ -20,7 +21,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
 
   if (transactions.length === 0) {
     return (
-      <div style={{ padding: 'var(--spacing-xl)', textAlign: 'center', color: 'var(--clr-text-muted)' }}>
+      <div className="empty-state-text">
         Nenhuma transação registrada ainda.
       </div>
     );
@@ -44,7 +45,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
 
   return (
     <>
-      <div className="hide-on-mobile" style={{ overflowX: 'auto' }}>
+      <div className="hide-on-mobile table-responsive">
         <table className="data-table">
           <thead>
             <tr>
@@ -87,7 +88,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
         </table>
       </div>
 
-      <div className="hide-on-desktop" style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+      <div className="hide-on-desktop mobile-card-list">
         {transactions.map(t => (
           <TransactionMobileCard 
             key={`${t.id}-mobile`}
@@ -101,38 +102,36 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
       </div>
 
       <Modal isOpen={!!mobileActionItem} onClose={() => setMobileActionItem(null)} title="Opções da Transação">
-        <div style={{ display: 'grid', gap: '16px' }}>
+        <div className="modal-grid">
           <button 
-            className="glass-panel hover-lift" 
-            style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+            className="glass-panel hover-lift modal-action-btn"
             onClick={() => {
               if (mobileActionItem) onEdit(mobileActionItem);
               setMobileActionItem(null);
             }}
           >
-            <div style={{ background: 'var(--clr-primary)', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div className="icon-circle primary">
               <Pencil size={24} color="#fff" />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>Editar</h3>
-              <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Modificar os dados desta transação.</p>
+              <h3 className="modal-action-title">Editar</h3>
+              <p className="modal-action-desc">Modificar os dados desta transação.</p>
             </div>
           </button>
           
           <button 
-            className="glass-panel hover-lift" 
-            style={{ display: 'flex', alignItems: 'center', gap: '16px', border: 'none', width: '100%', textAlign: 'left', cursor: 'pointer', padding: '16px' }}
+            className="glass-panel hover-lift modal-action-btn"
             onClick={() => {
               if (mobileActionItem?.id) onDelete(mobileActionItem.id);
               setMobileActionItem(null);
             }}
           >
-            <div style={{ background: 'var(--clr-danger)', padding: '12px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <div className="icon-circle danger">
               <Trash2 size={24} color="#fff" />
             </div>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1rem', color: 'var(--clr-text-primary)' }}>Apagar</h3>
-              <p style={{ margin: 0, fontSize: '0.875rem', color: 'var(--clr-text-secondary)' }}>Remover transação permanentemente.</p>
+              <h3 className="modal-action-title">Apagar</h3>
+              <p className="modal-action-desc">Remover transação permanentemente.</p>
             </div>
           </button>
         </div>

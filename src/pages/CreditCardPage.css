@@ -1,0 +1,39 @@
+.credit-card-tooltip-title {
+  margin: 0 0 8px 0;
+}
+.credit-card-tooltip-value {
+  margin: 0;
+}
+.credit-card-chart-title {
+  margin-top: 0;
+  font-size: 1.125rem;
+}
+.credit-card-scroll-wrapper {
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+.credit-card-chart-container {
+  height: 160px;
+  min-width: 600px;
+}
+.credit-card-interactive {
+  cursor: pointer;
+  outline: none;
+}
+.credit-card-label {
+  cursor: pointer;
+  user-select: none;
+}
+.credit-card-badge-current {
+  margin-left: 4px;
+  padding: 2px 6px;
+}
+.credit-card-empty-state {
+  padding: var(--spacing-md) 0;
+}
+.credit-card-table-wrapper {
+  overflow-x: auto;
+}
+.credit-card-table {
+  min-width: auto;
+}

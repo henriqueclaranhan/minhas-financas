@@ -1,5 +1,6 @@
 import { FilterType } from '../../enums/FinanceEnums';
 import { List, ArrowUpCircle, ArrowDownCircle, Filter, CalendarDays, CreditCard } from 'lucide-react';
+import './FilterTabs.css';
 
 interface FilterTabsProps {
   filter: FilterType;
@@ -13,58 +14,53 @@ interface FilterTabsProps {
 
 export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onOpenFilters, activeDateLabel, activeMethodLabel }: FilterTabsProps) {
   return (
-    <div className="glass-panel" style={{ padding: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
+    <div className="glass-panel filter-tabs-panel">
       <div className="filter-tabs-container">
         <button 
           onClick={() => setFilter(FilterType.ALL)} 
-          className="btn filter-tab-btn" 
-          style={{ background: filter === FilterType.ALL ? 'var(--clr-primary)' : 'var(--clr-surface-alt)', color: filter === FilterType.ALL ? '#fff' : 'var(--clr-text-secondary)' }}
+          className={`btn filter-tab-btn ${filter === FilterType.ALL ? 'filter-tab-btn-active' : 'filter-tab-btn-inactive'}`}
         >
           <List size={16} /> Todas
         </button>
         <button 
           onClick={() => setFilter(FilterType.INCOME)} 
-          className="btn filter-tab-btn" 
-          style={{ background: filter === FilterType.INCOME ? 'var(--clr-success)' : 'var(--clr-surface-alt)', color: filter === FilterType.INCOME ? '#fff' : 'var(--clr-text-secondary)' }}
+          className={`btn filter-tab-btn ${filter === FilterType.INCOME ? 'filter-tab-btn-active-success' : 'filter-tab-btn-inactive'}`}
         >
           <ArrowUpCircle size={16} /> Receitas
         </button>
         <button 
           onClick={() => setFilter(FilterType.EXPENSE)} 
-          className="btn filter-tab-btn" 
-          style={{ background: filter === FilterType.EXPENSE ? 'var(--clr-danger)' : 'var(--clr-surface-alt)', color: filter === FilterType.EXPENSE ? '#fff' : 'var(--clr-text-secondary)' }}
+          className={`btn filter-tab-btn ${filter === FilterType.EXPENSE ? 'filter-tab-btn-active-danger' : 'filter-tab-btn-inactive'}`}
         >
           <ArrowDownCircle size={16} /> Despesas
         </button>
       </div>
 
       {(activeDateLabel || activeMethodLabel) && (
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: 'var(--spacing-md)' }}>
+        <div className="filter-active-labels">
           {activeDateLabel && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 500, color: 'var(--clr-text-secondary)', background: 'var(--clr-surface-alt)', padding: '4px 12px', borderRadius: '16px', whiteSpace: 'nowrap' }}>
+            <div className="filter-active-label">
               <CalendarDays size={14} /> {activeDateLabel}
             </div>
           )}
           {activeMethodLabel && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 500, color: 'var(--clr-text-secondary)', background: 'var(--clr-surface-alt)', padding: '4px 12px', borderRadius: '16px', whiteSpace: 'nowrap' }}>
+            <div className="filter-active-label">
               <CreditCard size={14} /> {activeMethodLabel}
             </div>
           )}
         </div>
       )}
 
-      <div style={{ display: 'flex', gap: '8px' }}>
+      <div className="flex gap-sm">
         <input 
           type="search" 
           placeholder="Buscar por nome..." 
-          className="form-input"
-          style={{ flex: 1 }}
+          className="form-input filter-search-input"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
         <button 
-          className="btn" 
-          style={{ background: 'var(--clr-surface-alt)', color: 'var(--clr-primary)', padding: '10px 14px' }} 
+          className="btn filter-action-btn" 
           onClick={onOpenFilters}
           title="Filtros"
         >

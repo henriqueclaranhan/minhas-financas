@@ -1,0 +1,112 @@
+.empty-state-text {
+  padding: var(--spacing-xl);
+  text-align: center;
+  color: var(--clr-text-muted);
+}
+.table-responsive {
+  overflow-x: auto;
+}
+.mobile-card-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.modal-grid {
+  display: grid;
+  gap: 16px;
+}
+.modal-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: 16px;
+}
+.icon-circle {
+  padding: 12px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.icon-circle.success { background: var(--clr-success); }
+.icon-circle.warning { background: var(--clr-warning); }
+.icon-circle.primary { background: var(--clr-primary); }
+.icon-circle.danger { background: var(--clr-danger); }
+
+.modal-action-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--clr-text-primary);
+}
+.modal-action-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--clr-text-secondary);
+}
+
+.mobile-card-container {
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1);
+}
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+.mobile-card-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--clr-text-primary);
+}
+.mobile-badge-secondary {
+  margin-left: 8px;
+  font-size: 10px;
+  background: var(--clr-surface-alt);
+  color: var(--clr-text-secondary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.mobile-badge-primary {
+  margin-left: 8px;
+  font-size: 10px;
+  background: var(--clr-primary-glow);
+  color: var(--clr-primary);
+  padding: 2px 6px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.mobile-card-subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+}
+.mobile-card-more-btn {
+  padding: 4px;
+  background: transparent;
+  color: var(--clr-text-secondary);
+}
+.mobile-card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mobile-type-badge {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+.mobile-amount {
+  font-size: 1.125rem;
+  font-weight: 600;
+}

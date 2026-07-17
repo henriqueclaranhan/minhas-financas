@@ -25,16 +25,16 @@ export function Layout() {
     <div className="layout-container">
       {/* Mobile Header */}
       {isMainTab && (
-        <div className="mobile-header" style={{ display: 'none', padding: 'var(--spacing-md)', alignItems: 'center', justifyContent: 'space-between', background: 'var(--clr-background)' }}>
-          <button onClick={() => setIsMobileDrawerOpen(true)} style={{ background: 'transparent', border: 'none', color: 'var(--clr-primary)', display: 'flex', cursor: 'pointer' }}>
-            <div style={{ background: 'var(--clr-surface-alt)', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', flexShrink: 0 }}>
+        <div className="mobile-header hide-on-desktop">
+          <button onClick={() => setIsMobileDrawerOpen(true)} className="mobile-header-btn">
+            <div className="avatar-icon-small">
               <User size={20} />
             </div>
           </button>
-          <div style={{ fontWeight: 600, color: 'var(--clr-primary)', fontSize: '1.1rem' }}>
+          <div className="mobile-header-title">
             Minhas Finanças
           </div>
-          <div style={{ width: 32 }} /> {/* Placeholder to center title */}
+          <div className="mobile-header-placeholder" /> {/* Placeholder to center title */}
         </div>
       )}
 
@@ -42,21 +42,21 @@ export function Layout() {
       <div className={`mobile-drawer ${isMobileDrawerOpen ? 'open' : ''}`}>
         <div className="mobile-drawer-overlay" onClick={() => setIsMobileDrawerOpen(false)} />
         <div className="mobile-drawer-content">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <div style={{ background: 'var(--clr-primary-glow)', color: 'var(--clr-primary)', width: '48px', height: '48px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', flexShrink: 0 }}>
+          <div className="drawer-header">
+            <div className="flex items-center gap-sm">
+              <div className="avatar-icon-large">
                 <User size={24} />
               </div>
-              <div style={{ fontWeight: 600, fontSize: '1.2rem', color: 'var(--clr-text-primary)' }}>{userName}</div>
+              <div className="drawer-user-name">{userName}</div>
             </div>
-            <button onClick={() => setIsMobileDrawerOpen(false)} style={{ background: 'transparent', border: 'none', color: 'var(--clr-text-secondary)', cursor: 'pointer' }}>
+            <button onClick={() => setIsMobileDrawerOpen(false)} className="drawer-close-btn">
               <X size={24} />
             </button>
           </div>
           
-          <div style={{ flex: 1 }}>
+          <div className="flex-1">
             {/* Mobile-only secondary nav links in drawer */}
-            <div className="hide-on-desktop" style={{ marginTop: 'var(--spacing-xl)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="hide-on-desktop drawer-nav-group">
               {navItems.filter(i => !i.isMain).map(item => (
                 <NavLink 
                   key={item.to} 
@@ -70,7 +70,7 @@ export function Layout() {
             </div>
           </div>
 
-          <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: 'var(--spacing-md)' }}>
+          <div className="drawer-footer">
             <NavLink to="/settings" className="nav-item" onClick={() => setIsMobileDrawerOpen(false)}>
               <Settings size={22} /> Ajustes
             </NavLink>
@@ -80,19 +80,19 @@ export function Layout() {
 
       {/* Desktop Sidebar */}
       <aside className="sidebar">
-        <div className="sidebar-header" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', padding: '0 var(--spacing-xl)', marginBottom: 'var(--spacing-xl)', gap: '24px' }}>
+        <div className="sidebar-header flex-col gap-lg items-start">
           
           {/* App Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--clr-primary)', fontWeight: 700, fontSize: '1.25rem' }}>
+          <div className="sidebar-logo">
             <PieChart size={28} /> Minhas Finanças
           </div>
 
           {/* User Profile */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ background: 'var(--clr-primary-glow)', color: 'var(--clr-primary)', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center', borderRadius: '50%', flexShrink: 0 }}>
+          <div className="flex items-center gap-sm">
+            <div className="avatar-icon-sidebar">
               <User size={20} />
             </div>
-            <div style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--clr-text-primary)', wordBreak: 'break-word', lineHeight: 1.2 }}>
+            <div className="sidebar-user-name">
               {userName}
             </div>
           </div>
@@ -111,7 +111,7 @@ export function Layout() {
           ))}
         </nav>
         
-        <div style={{ marginTop: 'auto', padding: 'var(--spacing-md) var(--spacing-md)' }}>
+        <div className="sidebar-footer">
           <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
             <Settings size={22} /> Ajustes
           </NavLink>

@@ -99,15 +99,15 @@ export function AuthPage() {
           </p>
 
           {error && (
-            <div style={{ background: 'var(--clr-danger)', color: '#fff', padding: '14px', borderRadius: '12px', marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'flex-start', fontSize: '0.95rem', boxShadow: '0 4px 12px rgba(239, 68, 68, 0.2)' }}>
-              <AlertCircle size={20} style={{ flexShrink: 0, marginTop: '2px' }} /> 
+            <div className="auth-alert-error">
+              <AlertCircle size={20} className="auth-alert-icon" /> 
               <div>{error}</div>
             </div>
           )}
 
           {message && (
-            <div style={{ background: 'var(--clr-success)', color: '#fff', padding: '14px', borderRadius: '12px', marginBottom: '24px', display: 'flex', gap: '12px', alignItems: 'flex-start', fontSize: '0.95rem', boxShadow: '0 4px 12px rgba(34, 197, 94, 0.2)' }}>
-              <CheckCircle2 size={20} style={{ flexShrink: 0, marginTop: '2px' }} />
+            <div className="auth-alert-success">
+              <CheckCircle2 size={20} className="auth-alert-icon" />
               <div>{message}</div>
             </div>
           )}
@@ -155,8 +155,8 @@ export function AuthPage() {
             )}
 
             {isLogin && !isReset && (
-              <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '1rem' }}>
-                <button type="button" className="auth-link" style={{ fontSize: '0.85rem' }} onClick={() => setIsReset(true)}>
+              <div className="auth-forgot-password-wrapper">
+                <button type="button" className="auth-link auth-forgot-password-link" onClick={() => setIsReset(true)}>
                   Esqueci minha senha
                 </button>
               </div>

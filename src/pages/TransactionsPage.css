@@ -1,0 +1,15 @@
+.page-header {
+  margin-bottom: var(--spacing-lg);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.mr-sm { margin-right: 8px; }
+.panel-no-padding { padding: 0; overflow: hidden; }
+.delete-modal-content { margin-bottom: 24px; }
+.delete-modal-text { color: var(--clr-text-primary); }
+.delete-modal-subtext { color: var(--clr-text-secondary); font-size: 0.875rem; margin-top: 8px; }
+.modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
+.modal-actions-filters { display: flex; gap: 12px; margin-top: 16px; }
+.btn-danger-bg { background: var(--clr-danger) !important; }
+.btn-alt-bg { background: var(--clr-surface-alt) !important; }

@@ -72,30 +72,28 @@ export function OnboardingWizard() {
           ) : (
             <div className="wizard-slide animate-fade-in" key="final">
               <div className="wizard-icon-wrapper">
-                <span style={{ fontSize: '3rem' }}>💰</span>
+                <span className="wizard-emoji">💰</span>
               </div>
               <h2>Qual o seu saldo hoje?</h2>
               <p>Defina o seu ponto de partida.</p>
               
-              <form onSubmit={handleFinish} style={{ width: '100%', marginTop: 'var(--spacing-lg)' }}>
-                <div className="form-group" style={{ textAlign: 'left' }}>
+              <form onSubmit={handleFinish} className="wizard-form">
+                <div className="form-group wizard-form-group">
                   <label className="form-label">Saldo Atual</label>
                   <CurrencyInput 
                     value={balanceInput}
                     onChangeValue={setBalanceInput}
-                    className="form-input"
-                    style={{ fontSize: '1.25rem', padding: '16px' }}
+                    className="form-input wizard-form-input"
                     autoFocus
                   />
                 </div>
-                <button type="submit" className="btn btn-primary hover-glow" style={{ width: '100%', padding: '16px', fontSize: '1.125rem', marginTop: '16px' }}>
-                  Começar Jornada <Check size={20} style={{ marginLeft: '8px' }} />
+                <button type="submit" className="btn btn-primary hover-glow wizard-btn-primary-form">
+                  Começar Jornada <Check size={20} className="wizard-btn-primary-icon" />
                 </button>
                 <button 
                   type="button" 
                   onClick={() => setInitialBalance(0)} 
-                  className="btn" 
-                  style={{ width: '100%', padding: '16px', fontSize: '1rem', marginTop: '8px', background: 'transparent', color: 'var(--clr-text-secondary)', border: 'none' }}
+                  className="btn wizard-btn-secondary" 
                 >
                   Pular por enquanto
                 </button>
@@ -112,7 +110,7 @@ export function OnboardingWizard() {
                 <div key={i} className={`wizard-dot ${i === currentStep ? 'active' : ''}`} />
               ))}
             </div>
-            <button onClick={nextStep} className="btn btn-primary hover-glow" style={{ width: '100%', padding: '16px', fontSize: '1.125rem' }}>
+            <button onClick={nextStep} className="btn btn-primary hover-glow wizard-btn-primary">
               Continuar <ChevronRight size={20} />
             </button>
           </div>

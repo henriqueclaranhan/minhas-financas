@@ -1,0 +1,44 @@
+.forecast-page {
+  padding-bottom: var(--spacing-xl);
+}
+.forecast-back-btn {
+  background: transparent;
+  color: var(--clr-primary);
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.forecast-desc {
+  margin: 0;
+}
+.forecast-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xl);
+}
+.forecast-form-group {
+  margin: 0;
+}
+.forecast-options-section {
+  border-top: 1px solid var(--clr-border);
+  padding-top: var(--spacing-lg);
+}
+.forecast-options-title {
+  font-size: 1rem;
+  margin-bottom: 12px;
+}
+.forecast-options-container {
+  display: flex;
+  gap: var(--spacing-xl);
+  flex-wrap: wrap;
+}
+.forecast-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.forecast-checkbox {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--clr-primary);
+}

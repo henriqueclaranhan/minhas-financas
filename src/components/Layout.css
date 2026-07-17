@@ -176,3 +176,103 @@
 .mobile-drawer.open .mobile-drawer-content {
   transform: translateX(0);
 }
+
+.mobile-header {
+  padding: var(--spacing-md);
+  align-items: center;
+  justify-content: space-between;
+  background: var(--clr-background);
+}
+.mobile-header-btn {
+  background: transparent;
+  border: none;
+  color: var(--clr-primary);
+  display: flex;
+  cursor: pointer;
+}
+.avatar-icon-small {
+  background: var(--clr-surface-alt);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.avatar-icon-sidebar {
+  background: var(--clr-primary-glow);
+  color: var(--clr-primary);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.mobile-header-title {
+  font-weight: 600;
+  color: var(--clr-primary);
+  font-size: 1.1rem;
+}
+.mobile-header-placeholder {
+  width: 32px;
+}
+.drawer-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+}
+.avatar-icon-large {
+  background: var(--clr-primary-glow);
+  color: var(--clr-primary);
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.drawer-user-name {
+  font-weight: 600;
+  font-size: 1.2rem;
+  color: var(--clr-text-primary);
+}
+.drawer-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--clr-text-secondary);
+  cursor: pointer;
+}
+.drawer-nav-group {
+  margin-top: var(--spacing-xl);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.drawer-footer {
+  border-top: 1px solid var(--clr-border);
+  padding-top: var(--spacing-md);
+}
+.sidebar-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--clr-primary);
+  font-weight: 700;
+  font-size: 1.25rem;
+}
+.sidebar-user-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--clr-text-primary);
+  word-break: break-word;
+  line-height: 1.2;
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding: var(--spacing-md);
+}

@@ -1,0 +1,53 @@
+.settings-page {
+  padding-bottom: var(--spacing-xl);
+}
+.settings-mobile-header {
+  margin-bottom: var(--spacing-xl);
+}
+.settings-back-btn {
+  background: transparent;
+  font-size: 1.1rem;
+  font-weight: 500;
+}
+.settings-content {
+  padding: 0 var(--spacing-sm);
+}
+.settings-status {
+  border-radius: var(--radius-md);
+  color: #fff;
+}
+.settings-status.error {
+  background: var(--clr-danger);
+}
+.settings-status.success {
+  background: var(--clr-success);
+}
+.settings-panel {
+  overflow: hidden;
+}
+.settings-item-header {
+  border-bottom: 1px solid var(--clr-border);
+}
+.settings-item {
+  border-bottom: 1px solid var(--clr-border);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.settings-item.no-border {
+  border-bottom: none;
+}
+.settings-icon-wrapper {
+  padding: 8px;
+  border-radius: 8px;
+}
+.settings-icon-wrapper.alt { background: var(--clr-surface-alt); }
+.settings-icon-wrapper.primary { background: var(--clr-primary-glow); }
+.settings-icon-wrapper.success { background: var(--clr-success); opacity: 0.9; }
+.settings-icon-wrapper.danger { background: var(--clr-danger); opacity: 0.9; }
+
+.settings-item-title {
+  font-size: 1.1rem;
+}
+.settings-item-desc {
+  font-size: 0.85rem;
+}

@@ -6,6 +6,7 @@ import { ChevronRight } from 'lucide-react';
 import { SummaryCards } from './dashboard/SummaryCards';
 import { DashboardChart } from './dashboard/DashboardChart';
 import type { Transaction, PlannedExpense } from '../types';
+import './Dashboard.css';
 
 interface DashboardProps {
   transactions: Transaction[];
@@ -162,7 +163,7 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xl)' }}>
+    <div className="flex flex-col gap-xl">
       <SummaryCards 
         currentBalance={chartData.currentBalance}
         monthlyIncome={chartData.monthlyIncome}
@@ -176,15 +177,7 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
         headerAction={
           <Link 
             to="/forecast" 
-            style={{ 
-              color: 'var(--clr-primary)', 
-              textDecoration: 'none', 
-              display: 'flex', 
-              alignItems: 'center', 
-              fontSize: '1rem', 
-              fontWeight: 500,
-              opacity: 0.9
-            }}
+            className="dashboard-link"
           >
             <span className="hide-on-mobile">Ver todas</span> <ChevronRight size={20} />
           </Link>

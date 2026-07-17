@@ -6,6 +6,7 @@ import { DashboardChart } from '../components/dashboard/DashboardChart';
 import { TransactionType } from '../enums/FinanceEnums';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import './ForecastPage.css';
 
 export function ForecastPage() {
   const navigate = useNavigate();
@@ -138,27 +139,26 @@ export function ForecastPage() {
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: 'var(--spacing-xl)' }}>
+    <div className="animate-fade-in forecast-page">
       {/* Internal Header for Mobile */}
-      <header className="hide-on-desktop" style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', alignItems: 'center' }}>
+      <header className="hide-on-desktop mb-xl flex items-center">
         <button 
           onClick={() => navigate(-1)} 
-          className="btn" 
-          style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
+          className="btn forecast-back-btn p-0 flex items-center" 
         >
           <ChevronLeft size={24} /> Voltar
         </button>
       </header>
 
-      <header style={{ marginBottom: 'var(--spacing-lg)' }}>
+      <header className="mb-lg">
         <h1>Previsões e Cenários</h1>
-        <p style={{ color: 'var(--clr-text-secondary)', margin: 0 }}>Simule o futuro do seu saldo baseando-se nos seus planejamentos.</p>
+        <p className="text-secondary forecast-desc">Simule o futuro do seu saldo baseando-se nos seus planejamentos.</p>
       </header>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--spacing-xl)' }}>
-        <div className="glass-panel" style={{ padding: 'var(--spacing-lg)' }}>
-          <div className="form-row" style={{ marginBottom: 'var(--spacing-lg)' }}>
-            <div className="form-group" style={{ margin: 0 }}>
+      <div className="forecast-content">
+        <div className="glass-panel p-lg">
+          <div className="form-row mb-lg">
+            <div className="form-group forecast-form-group">
               <label className="form-label">Início da Projeção</label>
               <select 
                 className="form-select" 
@@ -172,7 +172,7 @@ export function ForecastPage() {
               </select>
             </div>
 
-            <div className="form-group" style={{ margin: 0 }}>
+            <div className="form-group forecast-form-group">
               <label className="form-label">Período Visível (Meses)</label>
               <select 
                 className="form-select" 
@@ -187,26 +187,26 @@ export function ForecastPage() {
             </div>
           </div>
 
-          <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: 'var(--spacing-lg)' }}>
-            <h3 style={{ fontSize: '1rem', marginBottom: '12px' }}>O que incluir no futuro?</h3>
+          <div className="forecast-options-section">
+            <h3 className="forecast-options-title">O que incluir no futuro?</h3>
             
-            <div style={{ display: 'flex', gap: 'var(--spacing-xl)', flexWrap: 'wrap' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+            <div className="forecast-options-container">
+              <label className="forecast-checkbox-label">
                 <input 
                   type="checkbox" 
                   checked={includePlannedIncome}
                   onChange={(e) => setIncludePlannedIncome(e.target.checked)}
-                  style={{ width: '20px', height: '20px', accentColor: 'var(--clr-primary)' }}
+                  className="forecast-checkbox"
                 />
                 <span>Entradas Planejadas</span>
               </label>
               
-              <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+              <label className="forecast-checkbox-label">
                 <input 
                   type="checkbox" 
                   checked={includePlannedExpense}
                   onChange={(e) => setIncludePlannedExpense(e.target.checked)}
-                  style={{ width: '20px', height: '20px', accentColor: 'var(--clr-primary)' }}
+                  className="forecast-checkbox"
                 />
                 <span>Gastos Planejados</span>
               </label>

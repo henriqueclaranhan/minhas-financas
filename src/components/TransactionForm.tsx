@@ -3,6 +3,7 @@ import { Calendar, DollarSign, CreditCard, AlignLeft, Layers } from 'lucide-reac
 import type { Transaction } from '../types';
 import { CurrencyInput } from './CurrencyInput';
 import { handleDatePaste } from '../utils/dateUtils';
+import './FormStyles.css';
 
 interface TransactionFormProps {
   onSubmit: (transaction: Omit<Transaction, 'id'>) => void;
@@ -51,9 +52,9 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
       <form onSubmit={handleSubmit}>
         <div className="form-group">
           <label className="form-label">Tipo de Transação</label>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <button type="button" onClick={() => handleTypeChange('expense')} className="btn" style={{ flex: 1, background: type === 'expense' ? 'var(--clr-danger)' : 'var(--clr-surface-alt)', color: type === 'expense' ? '#fff' : 'var(--clr-text-primary)' }}>Despesa</button>
-            <button type="button" onClick={() => handleTypeChange('income')} className="btn" style={{ flex: 1, background: type === 'income' ? 'var(--clr-success)' : 'var(--clr-surface-alt)', color: type === 'income' ? '#fff' : 'var(--clr-text-primary)' }}>Receita</button>
+          <div className="flex gap-sm">
+            <button type="button" onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>Despesa</button>
+            <button type="button" onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>Receita</button>
           </div>
         </div>
 
@@ -123,7 +124,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
           )}
         </div>
 
-        <button type="submit" className="btn btn-primary hover-glow" style={{ width: '100%', marginTop: '8px' }}>
+        <button type="submit" className="btn btn-primary hover-glow form-submit-btn">
           {initialData ? 'Salvar Alterações' : 'Adicionar Transação'}
         </button>
       </form>

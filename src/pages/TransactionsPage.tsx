@@ -8,6 +8,7 @@ import type { Transaction } from '../types';
 import { FilterType } from '../enums/FinanceEnums';
 import { FilterTabs } from '../components/shared/FilterTabs';
 import { TransactionTable } from '../components/transactions/TransactionTable';
+import './TransactionsPage.css';
 
 export function TransactionsPage() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
@@ -99,17 +100,17 @@ export function TransactionsPage() {
 
   return (
     <div className="animate-fade-in">
-      <header style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <header className="page-header">
         <div>
           <h1>Histórico de Transações</h1>
-          <p style={{ color: 'var(--clr-text-secondary)' }}>Todas as suas entradas e saídas.</p>
+          <p className="text-secondary">Todas as suas entradas e saídas.</p>
         </div>
         {/* Desktop Button */}
         <button 
           className="btn btn-primary hover-glow hide-on-mobile" 
           onClick={openNewModal}
         >
-          <Plus size={18} style={{ marginRight: '8px' }} /> Nova Transação
+          <Plus size={18} className="mr-sm" /> Nova Transação
         </button>
       </header>
 
@@ -123,7 +124,7 @@ export function TransactionsPage() {
         activeMethodLabel={methodFilter !== 'all' ? methodFilter : undefined}
       />
       
-      <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
+      <div className="glass-panel panel-no-padding">
         <TransactionTable 
           transactions={sorted}
           onEdit={openEditModal}
@@ -145,15 +146,14 @@ export function TransactionsPage() {
       </Modal>
 
       <Modal isOpen={!!transactionToDelete} onClose={() => setTransactionToDelete(null)} title="Confirmar Exclusão">
-        <div style={{ marginBottom: '24px' }}>
-          <p style={{ color: 'var(--clr-text-primary)' }}>Tem certeza que deseja apagar esta transação?</p>
-          <p style={{ color: 'var(--clr-text-secondary)', fontSize: '0.875rem', marginTop: '8px' }}>Esta ação não pode ser desfeita.</p>
+        <div className="delete-modal-content">
+          <p className="delete-modal-text">Tem certeza que deseja apagar esta transação?</p>
+          <p className="delete-modal-subtext">Esta ação não pode ser desfeita.</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+        <div className="modal-actions">
           <button className="btn" onClick={() => setTransactionToDelete(null)}>Cancelar</button>
           <button 
-            className="btn btn-primary" 
-            style={{ background: 'var(--clr-danger)' }} 
+            className="btn btn-primary btn-danger-bg" 
             onClick={() => {
               if (transactionToDelete) {
                 deleteTransaction(transactionToDelete);
@@ -199,8 +199,8 @@ export function TransactionsPage() {
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-          <button className="btn" style={{ flex: 1, background: 'var(--clr-surface-alt)' }} onClick={handleResetFilters}>
+        <div className="modal-actions-filters">
+          <button className="btn flex-1 btn-alt-bg" onClick={handleResetFilters}>
             Resetar
           </button>
           <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleApplyFilters}>

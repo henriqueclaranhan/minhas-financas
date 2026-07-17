@@ -1,0 +1,27 @@
+.form-type-btn {
+  flex: 1;
+}
+.form-type-btn-expense-active {
+  background: var(--clr-danger);
+  color: #fff;
+}
+.form-type-btn-income-active {
+  background: var(--clr-success);
+  color: #fff;
+}
+.form-type-btn-inactive {
+  background: var(--clr-surface-alt);
+  color: var(--clr-text-primary);
+}
+.form-submit-btn {
+  width: 100%;
+  margin-top: 8px;
+}
+.form-checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin-bottom: 16px;
+  font-size: 0.875rem;
+}

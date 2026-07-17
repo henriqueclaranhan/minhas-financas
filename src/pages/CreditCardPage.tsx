@@ -5,6 +5,7 @@ import { ptBR } from 'date-fns/locale';
 import { CreditCard, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import type { Transaction } from '../types';
+import './CreditCardPage.css';
 
 export function CreditCardPage() {
   const { transactions } = useFinance();
@@ -73,9 +74,9 @@ export function CreditCardPage() {
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
       return (
-        <div className="glass-panel hide-on-mobile" style={{ padding: 'var(--spacing-md)' }}>
-          <p style={{ margin: '0 0 8px 0', fontWeight: 'bold' }}>{payload[0].payload.labelFull}</p>
-          <p style={{ margin: 0, color: 'var(--clr-danger)' }}>
+        <div className="glass-panel hide-on-mobile p-md">
+          <p className="font-bold credit-card-tooltip-title">{payload[0].payload.labelFull}</p>
+          <p className="text-danger credit-card-tooltip-value">
             {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
           </p>
         </div>
@@ -86,20 +87,20 @@ export function CreditCardPage() {
 
   return (
     <div className="animate-fade-in">
-      <header style={{ marginBottom: 'var(--spacing-lg)' }}>
+      <header className="mb-lg">
         <h1>Faturas e Previsões</h1>
-        <p style={{ color: 'var(--clr-text-secondary)' }}>Acompanhe os gastos no cartão de crédito nos próximos meses.</p>
+        <p className="text-secondary">Acompanhe os gastos no cartão de crédito nos próximos meses.</p>
       </header>
 
       {/* Chart Section */}
-      <div className="glass-panel" style={{ padding: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
-        <h3 style={{ marginTop: 0, marginBottom: 'var(--spacing-md)', fontSize: '1.125rem' }}>Evolução das Faturas</h3>
-        <div ref={scrollRef} style={{ width: '100%', overflowX: 'auto', paddingBottom: '8px' }}>
-          <div style={{ height: 160, minWidth: '600px' }}>
+      <div className="glass-panel p-lg mb-lg">
+        <h3 className="credit-card-chart-title mb-md">Evolução das Faturas</h3>
+        <div ref={scrollRef} className="w-full credit-card-scroll-wrapper">
+          <div className="credit-card-chart-container">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart 
               data={nextMonths} 
-              style={{ cursor: 'pointer', outline: 'none' }}
+              className="credit-card-interactive"
               onClick={(data: any) => {
                 if (data && data.activePayload && data.activePayload.length > 0) {
                   setSelectedMonthIndex(data.activePayload[0].payload.index);
@@ -125,7 +126,7 @@ export function CreditCardPage() {
                         fill={isSelected ? 'var(--clr-primary)' : 'var(--clr-text-secondary)'}
                         fontSize={12}
                         fontWeight={isSelected ? 'bold' : 'normal'}
-                        style={{ cursor: 'pointer', userSelect: 'none' }}
+                        className="credit-card-label"
                         onClick={(e) => {
                           e.stopPropagation();
                           setSelectedMonthIndex(index);
@@ -141,7 +142,7 @@ export function CreditCardPage() {
               <Bar 
                 dataKey="data.total" 
                 barSize={56}
-                style={{ outline: 'none', cursor: 'pointer' }}
+                className="credit-card-interactive"
                 background={{ fill: 'transparent', cursor: 'pointer' }}
                 onClick={(_, index: number) => {
                   if (typeof index === 'number') {
@@ -159,7 +160,7 @@ export function CreditCardPage() {
                       fill={index === selectedMonthIndex ? 'var(--clr-primary)' : 'var(--clr-border)'} 
                       rx={4} 
                       ry={4} 
-                      style={{ outline: 'none', cursor: 'pointer' }}
+                      className="credit-card-interactive"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedMonthIndex(index);
@@ -181,7 +182,7 @@ export function CreditCardPage() {
             <Calendar className="invoice-icon" />
             <span>{selectedMonthData.labelFull}</span>
             {isCurrentInvoice && (
-              <span className="badge-installments" style={{ marginLeft: '4px', padding: '2px 6px' }}>Atual</span>
+              <span className="badge-installments credit-card-badge-current">Atual</span>
             )}
           </h3>
           <div className="invoice-header-total">
@@ -191,16 +192,16 @@ export function CreditCardPage() {
         
         <div className="invoice-table-wrapper">
           {selectedMonthData.data.items.length === 0 ? (
-            <div style={{ color: 'var(--clr-text-muted)', textAlign: 'center', padding: 'var(--spacing-md) 0' }}>
+            <div className="text-muted text-center credit-card-empty-state">
               Nenhuma compra no crédito para este mês.
             </div>
           ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="data-table" style={{ minWidth: 'auto' }}>
+            <div className="credit-card-table-wrapper">
+              <table className="data-table credit-card-table">
                 <thead>
                   <tr>
                     <th className="col-desc">Descrição</th>
-                    <th className="col-amount" style={{ textAlign: 'right' }}>Valor</th>
+                    <th className="col-amount text-right">Valor</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -215,7 +216,7 @@ export function CreditCardPage() {
                           </span>
                         )}
                       </td>
-                      <td className="td-amount-expense" style={{ textAlign: 'right' }}>
+                      <td className="td-amount-expense text-right">
                         {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.installmentValue)}
                       </td>
                     </tr>

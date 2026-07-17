@@ -4,6 +4,7 @@ import { useFinance } from '../store/FinanceContext';
 import { useAuth } from '../store/AuthContext';
 import { ThemeToggle } from '../components/ThemeToggle';
 import { ChevronLeft, Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
+import './SettingsPage.css';
 
 export function SettingsPage() {
   const navigate = useNavigate();
@@ -36,66 +37,65 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="animate-fade-in" style={{ paddingBottom: 'var(--spacing-xl)' }}>
-      <header className="hide-on-desktop" style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', alignItems: 'center' }}>
+    <div className="animate-fade-in settings-page">
+      <header className="hide-on-desktop flex items-center settings-mobile-header">
         <button 
           onClick={() => navigate(-1)} 
-          className="btn" 
-          style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
+          className="btn p-0 flex items-center settings-back-btn" 
         >
           <ChevronLeft size={24} /> Voltar
         </button>
       </header>
       
-      <div style={{ padding: '0 var(--spacing-sm)' }}>
-        <header style={{ marginBottom: 'var(--spacing-lg)' }}>
+      <div className="settings-content">
+        <header className="mb-lg">
           <h1>Ajustes</h1>
         </header>
         
         {importStatus && (
-          <div style={{ padding: 'var(--spacing-md)', marginBottom: 'var(--spacing-lg)', borderRadius: 'var(--radius-md)', background: importStatus.includes('Erro') ? 'var(--clr-danger)' : 'var(--clr-success)', color: '#fff' }}>
+          <div className={`p-md mb-lg settings-status ${importStatus.includes('Erro') ? 'error' : 'success'}`}>
             {importStatus}
           </div>
         )}
 
-        <div className="glass-panel" style={{ padding: 0, overflow: 'hidden' }}>
+        <div className="glass-panel p-0 settings-panel">
           
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: 'var(--spacing-lg)', borderBottom: '1px solid var(--clr-border)' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-              <div style={{ background: 'var(--clr-surface-alt)', padding: '8px', borderRadius: '8px' }}>
+          <div className="flex items-center justify-between p-lg settings-item-header">
+            <div className="flex items-center gap-md">
+              <div className="settings-icon-wrapper alt">
                 <Moon size={20} color="var(--clr-text-primary)" />
               </div>
-              <span style={{ fontSize: '1.1rem', fontWeight: 500 }}>Aparência</span>
+              <span className="font-medium settings-item-title">Aparência</span>
             </div>
             <ThemeToggle />
           </div>
 
           <div 
-            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', borderBottom: '1px solid var(--clr-border)', cursor: 'pointer', transition: 'background 0.2s' }}
+            className="settings-item p-lg"
             onClick={exportData}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-              <div style={{ background: 'var(--clr-primary-glow)', padding: '8px', borderRadius: '8px' }}>
+            <div className="flex items-center gap-md">
+              <div className="settings-icon-wrapper primary">
                 <Download size={20} color="var(--clr-primary)" />
               </div>
               <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 500, color: 'var(--clr-primary)' }}>Exportar Dados</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--clr-text-secondary)' }}>Salvar backup no dispositivo</div>
+                <div className="font-medium settings-item-title text-primary">Exportar Dados</div>
+                <div className="settings-item-desc text-secondary">Salvar backup no dispositivo</div>
               </div>
             </div>
           </div>
 
           <div 
-            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', borderBottom: '1px solid var(--clr-border)', cursor: 'pointer', transition: 'background 0.2s' }}
+            className="settings-item p-lg"
             onClick={handleImportClick}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-              <div style={{ background: 'var(--clr-success)', opacity: 0.9, padding: '8px', borderRadius: '8px' }}>
+            <div className="flex items-center gap-md">
+              <div className="settings-icon-wrapper success">
                 <Upload size={20} color="#fff" />
               </div>
               <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 500 }}>Importar Dados</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--clr-text-secondary)' }}>Restaurar de um backup</div>
+                <div className="font-medium settings-item-title">Importar Dados</div>
+                <div className="settings-item-desc text-secondary">Restaurar de um backup</div>
               </div>
             </div>
           </div>
@@ -108,31 +108,31 @@ export function SettingsPage() {
           />
 
           <div 
-            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', borderBottom: '1px solid var(--clr-border)', cursor: 'pointer', transition: 'background 0.2s' }}
+            className="settings-item p-lg"
             onClick={clearData}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-              <div style={{ background: 'var(--clr-danger)', opacity: 0.9, padding: '8px', borderRadius: '8px' }}>
+            <div className="flex items-center gap-md">
+              <div className="settings-icon-wrapper danger">
                 <Trash2 size={20} color="#fff" />
               </div>
               <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 500, color: 'var(--clr-danger)' }}>Apagar Todos os Dados</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--clr-text-secondary)' }}>Limpar histórico e saldo</div>
+                <div className="font-medium settings-item-title text-danger">Apagar Todos os Dados</div>
+                <div className="settings-item-desc text-secondary">Limpar histórico e saldo</div>
               </div>
             </div>
           </div>
 
           <div 
-            style={{ display: 'flex', alignItems: 'center', padding: 'var(--spacing-lg)', cursor: 'pointer', transition: 'background 0.2s' }}
+            className="settings-item no-border p-lg"
             onClick={logout}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--spacing-md)' }}>
-              <div style={{ background: 'var(--clr-surface-alt)', padding: '8px', borderRadius: '8px' }}>
+            <div className="flex items-center gap-md">
+              <div className="settings-icon-wrapper alt">
                 <LogOut size={20} color="var(--clr-text-primary)" />
               </div>
               <div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 500 }}>Sair da Conta</div>
-                <div style={{ fontSize: '0.85rem', color: 'var(--clr-text-secondary)' }}>Fazer logout do aplicativo</div>
+                <div className="font-medium settings-item-title">Sair da Conta</div>
+                <div className="settings-item-desc text-secondary">Fazer logout do aplicativo</div>
               </div>
             </div>
           </div>

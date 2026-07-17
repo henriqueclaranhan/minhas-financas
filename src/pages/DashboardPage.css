@@ -1,0 +1,46 @@
+.dashboard-header {
+  margin-bottom: var(--spacing-xl);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+.dashboard-widget.animate-fade-in {
+  animation-delay: 0.1s;
+}
+.dashboard-modal-grid {
+  display: grid;
+  gap: 16px;
+}
+.dashboard-modal-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: none;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  padding: 16px;
+}
+.dashboard-icon-bg {
+  padding: 12px;
+  border-radius: 50%;
+}
+.dashboard-icon-bg.primary {
+  background: var(--clr-primary);
+}
+.dashboard-icon-bg.warning {
+  background: var(--clr-warning);
+}
+.dashboard-modal-title {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--clr-text-primary);
+}
+.dashboard-modal-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--clr-text-secondary);
+}
+.mr-sm {
+  margin-right: 8px;
+}

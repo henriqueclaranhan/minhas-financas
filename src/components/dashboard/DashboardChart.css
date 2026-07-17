@@ -1,0 +1,39 @@
+.chart-panel {
+  padding: var(--spacing-xl);
+}
+.chart-header-title {
+  margin: 0;
+  color: var(--clr-text-primary);
+}
+.chart-container {
+  width: 100%;
+  height: 300px;
+}
+.chart-table-container {
+  overflow-x: auto;
+  margin-top: var(--spacing-lg);
+}
+.chart-table {
+  min-width: auto;
+}
+.chart-table-month {
+  font-weight: 500;
+}
+.chart-table-mobile-summary {
+  font-size: 0.75rem;
+  margin-top: 4px;
+}
+.chart-table-income {
+  text-align: right;
+  color: var(--clr-success);
+  font-weight: 600;
+}
+.chart-table-expense {
+  text-align: right;
+  color: var(--clr-danger);
+  font-weight: 600;
+}
+.chart-table-balance {
+  text-align: right;
+  font-weight: 600;
+}
