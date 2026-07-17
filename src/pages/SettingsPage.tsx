@@ -48,7 +48,9 @@ export function SettingsPage() {
       </header>
       
       <div style={{ padding: '0 var(--spacing-sm)' }}>
-        <h1 style={{ marginBottom: 'var(--spacing-xl)', fontSize: '2rem' }}>Ajustes</h1>
+        <header style={{ marginBottom: 'var(--spacing-lg)' }}>
+          <h1>Ajustes</h1>
+        </header>
         
         {importStatus && (
           <div style={{ padding: 'var(--spacing-md)', marginBottom: 'var(--spacing-lg)', borderRadius: 'var(--radius-md)', background: importStatus.includes('Erro') ? 'var(--clr-danger)' : 'var(--clr-success)', color: '#fff' }}>

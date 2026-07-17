@@ -151,7 +151,7 @@ export function ForecastPage() {
       </header>
 
       <header style={{ marginBottom: 'var(--spacing-lg)' }}>
-        <h1 style={{ fontSize: '2rem', margin: 0, marginBottom: '8px' }}>Previsões e Cenários</h1>
+        <h1>Previsões e Cenários</h1>
         <p style={{ color: 'var(--clr-text-secondary)', margin: 0 }}>Simule o futuro do seu saldo baseando-se nos seus planejamentos.</p>
       </header>
 
