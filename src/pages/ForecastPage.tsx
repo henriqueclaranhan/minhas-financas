@@ -25,7 +25,11 @@ export function ForecastPage() {
     const startDate = startOfMonth(addMonths(currentDate, startMonthOffset));
     const endDate = endOfMonth(addMonths(startDate, monthsToProject - 1));
     
-    const monthlyFlows: Record<string, number> = {};
+    const monthlyData: Record<string, { income: number, expense: number }> = {};
+    const getMonthData = (m: string) => {
+      if (!monthlyData[m]) monthlyData[m] = { income: 0, expense: 0 };
+      return monthlyData[m];
+    };
     
     // Process confirmed transactions
     transactions.forEach(t => {
@@ -39,12 +43,15 @@ export function ForecastPage() {
         for (let i = 1; i <= numInstallments; i++) {
           const instDate = addMonths(txDate, i);
           const monthKey = format(instDate, 'yyyy-MM');
-          monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) - instAmount;
+          getMonthData(monthKey).expense += instAmount;
         }
       } else {
         const monthKey = format(txDate, 'yyyy-MM');
-        const value = isExpense ? -t.amount : t.amount;
-        monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+        if (isExpense) {
+          getMonthData(monthKey).expense += t.amount;
+        } else {
+          getMonthData(monthKey).income += t.amount;
+        }
       }
     });
 
@@ -55,14 +62,14 @@ export function ForecastPage() {
         if (isIncome && !includePlannedIncome) return;
         if (!isIncome && !includePlannedExpense) return;
 
-        const value = isIncome ? pe.amount : -pe.amount;
         let currentDateIter = parseISO(pe.dueDate);
         
         if (!pe.isRecurring) {
           const monthKey = format(currentDateIter, 'yyyy-MM');
           // Forecast only considers future projections for pending items
           if (monthKey > format(currentDate, 'yyyy-MM')) {
-            monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+            if (isIncome) getMonthData(monthKey).income += pe.amount;
+            else getMonthData(monthKey).expense += pe.amount;
           }
         } else {
           // Project far enough to cover our endDate
@@ -70,7 +77,8 @@ export function ForecastPage() {
           while (!isBefore(limitDate, currentDateIter)) {
             const monthKey = format(currentDateIter, 'yyyy-MM');
             if (monthKey > format(currentDate, 'yyyy-MM')) {
-              monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+              if (isIncome) getMonthData(monthKey).income += pe.amount;
+              else getMonthData(monthKey).expense += pe.amount;
             }
             currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
           }
@@ -78,13 +86,13 @@ export function ForecastPage() {
       }
     });
 
-    const allMonths = Object.keys(monthlyFlows).sort();
+    const allMonths = Object.keys(monthlyData).sort();
     let accumulated = initialBalance ?? 0;
     
     // Accumulate history up to startMonth
     for (const m of allMonths) {
       if (m < format(startDate, 'yyyy-MM')) {
-        accumulated += monthlyFlows[m];
+        accumulated += monthlyData[m].income - monthlyData[m].expense;
       }
     }
 
@@ -93,7 +101,8 @@ export function ForecastPage() {
       const monthDate = addMonths(startDate, i);
       const monthKey = format(monthDate, 'yyyy-MM');
       
-      accumulated += (monthlyFlows[monthKey] || 0);
+      const mData = monthlyData[monthKey] || { income: 0, expense: 0 };
+      accumulated += mData.income - mData.expense;
       
       if (isSameMonth(monthDate, currentDate)) {
         actualCurrentBalance = accumulated;
@@ -102,7 +111,8 @@ export function ForecastPage() {
       data.push({
         name: format(monthDate, 'MMM/yy', { locale: ptBR }).toUpperCase(),
         saldo: accumulated,
-        flow: monthlyFlows[monthKey] || 0
+        income: mData.income,
+        expense: mData.expense
       });
     }
 

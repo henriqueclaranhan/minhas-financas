@@ -3,6 +3,8 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 interface ChartDataPoint {
   name: string;
   saldo: number;
+  income?: number;
+  expense?: number;
 }
 
 interface DashboardChartProps {
@@ -51,13 +53,28 @@ export function DashboardChart({ data, formatCurrency, title = 'Evolução e Pre
           <thead>
             <tr style={{ borderBottom: '2px solid var(--clr-border)', color: 'var(--clr-text-secondary)' }}>
               <th style={{ padding: 'var(--spacing-md)' }}>Mês</th>
+              <th className="hide-on-mobile" style={{ padding: 'var(--spacing-md)', textAlign: 'right' }}>Entradas</th>
+              <th className="hide-on-mobile" style={{ padding: 'var(--spacing-md)', textAlign: 'right' }}>Saídas</th>
               <th style={{ padding: 'var(--spacing-md)', textAlign: 'right' }}>Saldo Final</th>
             </tr>
           </thead>
           <tbody>
             {data.map((item, index) => (
               <tr key={index} style={{ borderBottom: index < data.length - 1 ? '1px solid var(--clr-border)' : 'none' }}>
-                <td style={{ padding: 'var(--spacing-md)', fontWeight: 500 }}>{item.name}</td>
+                <td style={{ padding: 'var(--spacing-md)', fontWeight: 500 }}>
+                  {item.name}
+                  {/* Show summary on mobile */}
+                  <div className="hide-on-desktop" style={{ fontSize: '0.75rem', marginTop: '4px', display: 'flex', gap: '8px' }}>
+                     {item.income !== undefined && <span style={{ color: 'var(--clr-success)' }}>+{formatCurrency(item.income)}</span>}
+                     {item.expense !== undefined && <span style={{ color: 'var(--clr-danger)' }}>-{formatCurrency(item.expense)}</span>}
+                  </div>
+                </td>
+                <td className="hide-on-mobile" style={{ padding: 'var(--spacing-md)', textAlign: 'right', color: 'var(--clr-success)', fontWeight: 600 }}>
+                  {item.income !== undefined && item.income > 0 ? `+ ${formatCurrency(item.income)}` : '-'}
+                </td>
+                <td className="hide-on-mobile" style={{ padding: 'var(--spacing-md)', textAlign: 'right', color: 'var(--clr-danger)', fontWeight: 600 }}>
+                  {item.expense !== undefined && item.expense > 0 ? `- ${formatCurrency(item.expense)}` : '-'}
+                </td>
                 <td style={{ padding: 'var(--spacing-md)', textAlign: 'right', fontWeight: 600, color: item.saldo >= 0 ? 'var(--clr-text-primary)' : 'var(--clr-danger)' }}>
                   {formatCurrency(item.saldo)}
                 </td>

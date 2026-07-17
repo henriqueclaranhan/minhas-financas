@@ -27,7 +27,11 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
     
     // We need to calculate the balance for each of the last 6 months.
     // For simplicity, we calculate the net flow for EVERY month since the beginning of time.
-    const monthlyFlows: Record<string, number> = {};
+    const monthlyData: Record<string, { income: number, expense: number }> = {};
+    const getMonthData = (m: string) => {
+      if (!monthlyData[m]) monthlyData[m] = { income: 0, expense: 0 };
+      return monthlyData[m];
+    };
     
     transactions.forEach(t => {
       const txDate = parseISO(t.date);
@@ -40,19 +44,22 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
         for (let i = 1; i <= numInstallments; i++) {
           const instDate = addMonths(txDate, i);
           const monthKey = format(instDate, 'yyyy-MM');
-          monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) - instAmount;
+          getMonthData(monthKey).expense += instAmount;
         }
       } else {
         const monthKey = format(txDate, 'yyyy-MM');
-        const value = isExpense ? -t.amount : t.amount;
-        monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+        if (isExpense) {
+          getMonthData(monthKey).expense += t.amount;
+        } else {
+          getMonthData(monthKey).income += t.amount;
+        }
       }
     });
 
     // Project pending planned expenses
     plannedExpenses.forEach(pe => {
       if (pe.status === 'pending') {
-        const value = pe.type === 'income' ? pe.amount : -pe.amount;
+        const isIncome = pe.type === 'income';
         let currentDateIter = parseISO(pe.dueDate);
         const limitDate = addMonths(currentDate, endOffset);
         
@@ -60,13 +67,15 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
           const monthKey = format(currentDateIter, 'yyyy-MM');
           // Only project if it's strictly in a future month
           if (monthKey > format(currentDate, 'yyyy-MM')) {
-            monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+            if (isIncome) getMonthData(monthKey).income += pe.amount;
+            else getMonthData(monthKey).expense += pe.amount;
           }
         } else {
           while (!isBefore(limitDate, currentDateIter)) {
             const monthKey = format(currentDateIter, 'yyyy-MM');
             if (monthKey > format(currentDate, 'yyyy-MM')) {
-              monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+              if (isIncome) getMonthData(monthKey).income += pe.amount;
+              else getMonthData(monthKey).expense += pe.amount;
             }
             currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
           }
@@ -78,13 +87,13 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
     
     // Let's do a chronological sum for chart:
     // First, find all unique months before and during our 6 month window.
-    const allMonths = Object.keys(monthlyFlows).sort();
+    const allMonths = Object.keys(monthlyData).sort();
     let accumulated = initialBalance;
     
     // Apply all history up to startOffset - 1
     for (const m of allMonths) {
       if (m < format(startMonthDate, 'yyyy-MM')) {
-        accumulated += monthlyFlows[m];
+        accumulated += monthlyData[m].income - monthlyData[m].expense;
       }
     }
 
@@ -92,7 +101,8 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
     for (let i = startOffset; i <= endOffset; i++) {
       const monthDate = addMonths(currentDate, i);
       const monthKey = format(monthDate, 'yyyy-MM');
-      accumulated += (monthlyFlows[monthKey] || 0);
+      const mData = monthlyData[monthKey] || { income: 0, expense: 0 };
+      accumulated += mData.income - mData.expense;
       
       if (i === 0) {
         actualCurrentBalance = accumulated;
@@ -100,7 +110,9 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
       
       data.push({
         name: format(monthDate, 'MMM/yy', { locale: ptBR }).toUpperCase(),
-        saldo: accumulated
+        saldo: accumulated,
+        income: mData.income,
+        expense: mData.expense
       });
     }
 
