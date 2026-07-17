@@ -14,12 +14,20 @@ export function TransactionsPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
-  
   const [searchQuery, setSearchQuery] = useState('');
-  const [methodFilter, setMethodFilter] = useState('all');
   
-  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const defaultMonth = new Date().getMonth();
+  const defaultYear = new Date().getFullYear();
+
+  // Active filters
+  const [methodFilter, setMethodFilter] = useState('all');
+  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(defaultMonth);
+  const [selectedYear, setSelectedYear] = useState(defaultYear);
+
+  // Temporary filters for modal
+  const [tempMethodFilter, setTempMethodFilter] = useState('all');
+  const [tempSelectedMonth, setTempSelectedMonth] = useState<number | 'all'>(defaultMonth);
+  const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
@@ -59,6 +67,36 @@ export function TransactionsPage() {
     setIsModalOpen(true);
   };
 
+  const handleOpenFilters = () => {
+    setTempMethodFilter(methodFilter);
+    setTempSelectedMonth(selectedMonth);
+    setTempSelectedYear(selectedYear);
+    setIsFilterModalOpen(true);
+  };
+
+  const handleApplyFilters = () => {
+    setMethodFilter(tempMethodFilter);
+    setSelectedMonth(tempSelectedMonth);
+    setSelectedYear(tempSelectedYear);
+    setIsFilterModalOpen(false);
+  };
+
+  const handleResetFilters = () => {
+    setMethodFilter('all');
+    setSelectedMonth(defaultMonth);
+    setSelectedYear(defaultYear);
+
+    setTempMethodFilter('all');
+    setTempSelectedMonth(defaultMonth);
+    setTempSelectedYear(defaultYear);
+    
+    setIsFilterModalOpen(false);
+  };
+
+  const filterLabel = selectedMonth === 'all' 
+    ? `Ano todo, ${selectedYear}`
+    : `${new Date(2000, selectedMonth as number, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())} de ${selectedYear}`;
+
   return (
     <div className="animate-fade-in">
       <header style={{ marginBottom: 'var(--spacing-lg)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -80,7 +118,9 @@ export function TransactionsPage() {
         setFilter={setFilter}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onOpenFilters={() => setIsFilterModalOpen(true)}
+        onOpenFilters={handleOpenFilters}
+        activeDateLabel={filterLabel}
+        activeMethodLabel={methodFilter !== 'all' ? methodFilter : undefined}
       />
       
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
@@ -129,7 +169,7 @@ export function TransactionsPage() {
       <Modal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} title="Filtros">
         <div className="form-group">
           <label className="form-label">Método de Pagamento</label>
-          <select className="form-select" value={methodFilter} onChange={e => setMethodFilter(e.target.value)}>
+          <select className="form-select" value={tempMethodFilter} onChange={e => setTempMethodFilter(e.target.value)}>
             <option value="all">Todos os Métodos</option>
             <option value="Crédito">Crédito</option>
             <option value="Débito">Débito</option>
@@ -142,7 +182,7 @@ export function TransactionsPage() {
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Mês</label>
-            <select className="form-select" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
+            <select className="form-select" value={tempSelectedMonth} onChange={(e) => setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
               <option value="all">Ano Todo</option>
               {Array.from({ length: 12 }).map((_, i) => (
                 <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
@@ -151,17 +191,22 @@ export function TransactionsPage() {
           </div>
           <div className="form-group">
             <label className="form-label">Ano</label>
-            <select className="form-select" value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
-              {[selectedYear - 1, selectedYear, selectedYear + 1].map(y => (
+            <select className="form-select" value={tempSelectedYear} onChange={(e) => setTempSelectedYear(Number(e.target.value))}>
+              {[defaultYear - 1, defaultYear, defaultYear + 1].map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
           </div>
         </div>
 
-        <button className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '16px' }} onClick={() => setIsFilterModalOpen(false)}>
-          Aplicar Filtros
-        </button>
+        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+          <button className="btn" style={{ flex: 1, background: 'var(--clr-surface-alt)' }} onClick={handleResetFilters}>
+            Resetar
+          </button>
+          <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleApplyFilters}>
+            Aplicar Filtros
+          </button>
+        </div>
       </Modal>
     </div>
   );

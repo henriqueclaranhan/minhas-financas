@@ -1,5 +1,5 @@
 import { FilterType } from '../../enums/FinanceEnums';
-import { List, ArrowUpCircle, ArrowDownCircle, Filter } from 'lucide-react';
+import { List, ArrowUpCircle, ArrowDownCircle, Filter, CalendarDays, CreditCard } from 'lucide-react';
 
 interface FilterTabsProps {
   filter: FilterType;
@@ -7,9 +7,11 @@ interface FilterTabsProps {
   searchQuery: string;
   setSearchQuery: (s: string) => void;
   onOpenFilters: () => void;
+  activeDateLabel?: string;
+  activeMethodLabel?: string;
 }
 
-export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onOpenFilters }: FilterTabsProps) {
+export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onOpenFilters, activeDateLabel, activeMethodLabel }: FilterTabsProps) {
   return (
     <div className="glass-panel" style={{ padding: 'var(--spacing-lg)', marginBottom: 'var(--spacing-lg)' }}>
       <div className="filter-tabs-container">
@@ -35,6 +37,22 @@ export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onO
           <ArrowDownCircle size={16} /> Despesas
         </button>
       </div>
+
+      {(activeDateLabel || activeMethodLabel) && (
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginBottom: 'var(--spacing-md)' }}>
+          {activeDateLabel && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 500, color: 'var(--clr-text-secondary)', background: 'var(--clr-surface-alt)', padding: '4px 12px', borderRadius: '16px', whiteSpace: 'nowrap' }}>
+              <CalendarDays size={14} /> {activeDateLabel}
+            </div>
+          )}
+          {activeMethodLabel && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.8rem', fontWeight: 500, color: 'var(--clr-text-secondary)', background: 'var(--clr-surface-alt)', padding: '4px 12px', borderRadius: '16px', whiteSpace: 'nowrap' }}>
+              <CreditCard size={14} /> {activeMethodLabel}
+            </div>
+          )}
+        </div>
+      )}
+
       <div style={{ display: 'flex', gap: '8px' }}>
         <input 
           type="search" 
