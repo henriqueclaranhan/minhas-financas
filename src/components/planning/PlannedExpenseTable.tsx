@@ -59,11 +59,18 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
           <tbody>
             {expenses.map(p => {
               const pDate = parseISO(p.dueDate);
-              const isCurrent = pDate.getUTCMonth() === new Date().getMonth() && pDate.getUTCFullYear() === new Date().getFullYear();
+              const currentDate = new Date();
+              const isCurrent = pDate.getUTCMonth() === currentDate.getMonth() && pDate.getUTCFullYear() === currentDate.getFullYear();
+              const isDueOrPast = pDate.getUTCFullYear() < currentDate.getFullYear() || 
+                (pDate.getUTCFullYear() === currentDate.getFullYear() && pDate.getUTCMonth() <= currentDate.getMonth());
+              
+              const dateColor = isDueOrPast 
+                ? (p.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)') 
+                : 'var(--clr-text-secondary)';
 
               return (
                 <tr key={p.id} style={{ borderBottom: '1px solid var(--clr-border)' }}>
-                  <td style={{ padding: 'var(--spacing-md)', color: p.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)', fontWeight: 500, whiteSpace: 'nowrap' }}>
+                  <td style={{ padding: 'var(--spacing-md)', color: dateColor, fontWeight: isDueOrPast ? 500 : 400, whiteSpace: 'nowrap' }}>
                     {format(pDate, 'dd/MM/yyyy', { locale: ptBR })}
                   </td>
                   <td style={{ padding: 'var(--spacing-md)', fontWeight: 500 }}>

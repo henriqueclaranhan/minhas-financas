@@ -18,8 +18,14 @@ export function PlannedExpensesPage() {
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(new Date().getMonth());
-  const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
+  const defaultMonth = 'all';
+  const defaultYear = new Date().getFullYear();
+
+  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(defaultMonth);
+  const [selectedYear, setSelectedYear] = useState(defaultYear);
+
+  const [tempSelectedMonth, setTempSelectedMonth] = useState<number | 'all'>(defaultMonth);
+  const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
 
   const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
@@ -44,6 +50,32 @@ export function PlannedExpensesPage() {
     setEditingExpense(p);
     setIsModalOpen(true);
   };
+
+  const handleOpenFilters = () => {
+    setTempSelectedMonth(selectedMonth);
+    setTempSelectedYear(selectedYear);
+    setIsFilterModalOpen(true);
+  };
+
+  const handleApplyFilters = () => {
+    setSelectedMonth(tempSelectedMonth);
+    setSelectedYear(tempSelectedYear);
+    setIsFilterModalOpen(false);
+  };
+
+  const handleResetFilters = () => {
+    setSelectedMonth(defaultMonth);
+    setSelectedYear(defaultYear);
+    
+    setTempSelectedMonth(defaultMonth);
+    setTempSelectedYear(defaultYear);
+    
+    setIsFilterModalOpen(false);
+  };
+
+  const filterLabel = selectedMonth === 'all' 
+    ? `Ano todo, ${selectedYear}`
+    : `${new Date(2000, selectedMonth as number, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())} de ${selectedYear}`;
 
   const pendingExpenses = plannedExpenses
     .filter(p => {
@@ -80,7 +112,8 @@ export function PlannedExpensesPage() {
         setFilter={setFilter}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
-        onOpenFilters={() => setIsFilterModalOpen(true)}
+        onOpenFilters={handleOpenFilters}
+        activeDateLabel={filterLabel}
       />
 
       <div className="glass-panel" style={{ padding: '0', overflow: 'hidden' }}>
@@ -151,7 +184,7 @@ export function PlannedExpensesPage() {
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Mês</label>
-            <select className="form-select" value={selectedMonth} onChange={(e) => setSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
+            <select className="form-select" value={tempSelectedMonth} onChange={(e) => setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
               <option value="all">Ano Todo</option>
               {Array.from({ length: 12 }).map((_, i) => (
                 <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
@@ -160,17 +193,22 @@ export function PlannedExpensesPage() {
           </div>
           <div className="form-group">
             <label className="form-label">Ano</label>
-            <select className="form-select" value={selectedYear} onChange={(e) => setSelectedYear(Number(e.target.value))}>
-              {[selectedYear - 1, selectedYear, selectedYear + 1].map(y => (
+            <select className="form-select" value={tempSelectedYear} onChange={(e) => setTempSelectedYear(Number(e.target.value))}>
+              {[defaultYear - 1, defaultYear, defaultYear + 1].map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
           </div>
         </div>
 
-        <button className="btn btn-primary btn-lg" style={{ width: '100%', marginTop: '16px' }} onClick={() => setIsFilterModalOpen(false)}>
-          Aplicar Filtros
-        </button>
+        <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+          <button className="btn" style={{ flex: 1, background: 'var(--clr-surface-alt)' }} onClick={handleResetFilters}>
+            Resetar
+          </button>
+          <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleApplyFilters}>
+            Aplicar Filtros
+          </button>
+        </div>
       </Modal>
     </div>
   );

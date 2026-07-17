@@ -14,6 +14,14 @@ interface Props {
 
 export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleTouchStart, handleTouchEnd }: Props) {
   const pDate = parseISO(p.dueDate);
+  const currentDate = new Date();
+  const isDueOrPast = pDate.getUTCFullYear() < currentDate.getFullYear() || 
+    (pDate.getUTCFullYear() === currentDate.getFullYear() && pDate.getUTCMonth() <= currentDate.getMonth());
+    
+  const dateColor = isDueOrPast 
+    ? (p.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)') 
+    : 'var(--clr-text-secondary)';
+
   return (
     <div 
       className="glass-panel" 
@@ -38,7 +46,7 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
               </span>
             )}
           </h4>
-          <p style={{ margin: 0, fontSize: '0.875rem', color: p.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)' }}>
+          <p style={{ margin: 0, fontSize: '0.875rem', color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
             {format(pDate, "dd/MM/yy", { locale: ptBR })}
           </p>
         </div>
