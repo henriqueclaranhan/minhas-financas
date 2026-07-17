@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { useFinance } from '../store/FinanceContext';
-import { Dashboard } from '../components/Dashboard';
+import { useFinance } from '../../store/FinanceContext';
+import { Dashboard } from '../../components/Dashboard';
 import { Plus, Wallet, CalendarClock } from 'lucide-react';
-import { Modal } from '../components/Modal';
-import { TransactionForm } from '../components/TransactionForm';
-import { PlannedExpenseForm } from '../components/PlannedExpenseForm';
-import { useAuth } from '../store/AuthContext';
+import { Modal } from '../../components/Modal';
+import { TransactionForm } from '../../components/TransactionForm';
+import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
+import { useAuth } from '../../store/AuthContext';
 import './DashboardPage.css';
 
 export function DashboardPage() {

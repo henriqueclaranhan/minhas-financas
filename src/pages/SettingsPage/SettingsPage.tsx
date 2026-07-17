@@ -1,8 +1,8 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFinance } from '../store/FinanceContext';
-import { useAuth } from '../store/AuthContext';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { useFinance } from '../../store/FinanceContext';
+import { useAuth } from '../../store/AuthContext';
+import { ThemeToggle } from '../../components/ThemeToggle';
 import { ChevronLeft, Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
 import './SettingsPage.css';
 

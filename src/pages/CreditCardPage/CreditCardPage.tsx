@@ -1,10 +1,10 @@
 import { useMemo, useState, useEffect, useRef } from 'react';
-import { useFinance } from '../store/FinanceContext';
+import { useFinance } from '../../store/FinanceContext';
 import { parseISO, addMonths, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CreditCard, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
-import type { Transaction } from '../types';
+import type { Transaction } from '../../types';
 import './CreditCardPage.css';
 
 export function CreditCardPage() {

@@ -1,9 +1,9 @@
 import { useState, useMemo } from 'react';
 import { parseISO, addMonths, format, isBefore, startOfMonth, endOfMonth, isSameMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { useFinance } from '../store/FinanceContext';
-import { DashboardChart } from '../components/dashboard/DashboardChart';
-import { TransactionType } from '../enums/FinanceEnums';
+import { useFinance } from '../../store/FinanceContext';
+import { DashboardChart } from '../../components/dashboard/DashboardChart';
+import { TransactionType } from '../../enums/FinanceEnums';
 import { ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import './ForecastPage.css';
