@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart } from 'lucide-react';
+import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp } from 'lucide-react';
 import { useAuth } from '../store/AuthContext';
 import './Layout.css';
 
@@ -11,13 +11,15 @@ export function Layout() {
   const location = useLocation();
   
   const navItems = [
-    { to: '/', icon: <LayoutDashboard size={22} />, label: 'Dashboard' },
-    { to: '/transactions', icon: <Wallet size={22} />, label: 'Transações' },
-    { to: '/planned', icon: <CalendarClock size={22} />, label: 'Planejamento' },
-    { to: '/credit', icon: <CreditCard size={22} />, label: 'Faturas' },
+    { to: '/', icon: <LayoutDashboard size={22} />, label: 'Dashboard', isMain: true },
+    { to: '/transactions', icon: <Wallet size={22} />, label: 'Transações', isMain: true },
+    { to: '/planned', icon: <CalendarClock size={22} />, label: 'Planejamento', isMain: true },
+    { to: '/credit', icon: <CreditCard size={22} />, label: 'Faturas', isMain: true },
+    { to: '/forecast', icon: <TrendingUp size={22} />, label: 'Previsões', isMain: false },
   ];
 
-  const isMainTab = navItems.some(item => item.to === location.pathname) || location.pathname === '/';
+  const mainNavItems = navItems.filter(i => i.isMain);
+  const isMainTab = mainNavItems.some(item => item.to === location.pathname) || location.pathname === '/';
 
   return (
     <div className="layout-container">
@@ -52,7 +54,21 @@ export function Layout() {
             </button>
           </div>
           
-          <div style={{ flex: 1 }}></div>
+          <div style={{ flex: 1 }}>
+            {/* Mobile-only secondary nav links in drawer */}
+            <div className="hide-on-desktop" style={{ marginTop: 'var(--spacing-xl)', display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              {navItems.filter(i => !i.isMain).map(item => (
+                <NavLink 
+                  key={item.to} 
+                  to={item.to} 
+                  className="nav-item" 
+                  onClick={() => setIsMobileDrawerOpen(false)}
+                >
+                  {item.icon} {item.label}
+                </NavLink>
+              ))}
+            </div>
+          </div>
 
           <div style={{ borderTop: '1px solid var(--clr-border)', paddingTop: 'var(--spacing-md)' }}>
             <NavLink to="/settings" className="nav-item" onClick={() => setIsMobileDrawerOpen(false)}>
@@ -111,7 +127,7 @@ export function Layout() {
       {isMainTab && (
         <nav className="bottom-nav">
           <div className="bottom-nav-inner">
-            {navItems.map((item) => (
+            {mainNavItems.map((item) => (
               <NavLink 
                 key={item.to} 
                 to={item.to} 

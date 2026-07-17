@@ -8,12 +8,17 @@ interface ChartDataPoint {
 interface DashboardChartProps {
   data: ChartDataPoint[];
   formatCurrency: (val: number) => string;
+  title?: string;
+  headerAction?: React.ReactNode;
 }
 
-export function DashboardChart({ data, formatCurrency }: DashboardChartProps) {
+export function DashboardChart({ data, formatCurrency, title = 'Evolução e Previsão do Saldo', headerAction }: DashboardChartProps) {
   return (
     <div className="glass-panel" style={{ padding: 'var(--spacing-xl)' }}>
-      <h3 style={{ marginBottom: 'var(--spacing-xl)', color: 'var(--clr-text-primary)' }}>Evolução e Previsão do Saldo (12 Meses)</h3>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--spacing-xl)' }}>
+        <h3 style={{ margin: 0, color: 'var(--clr-text-primary)' }}>{title}</h3>
+        {headerAction && <div>{headerAction}</div>}
+      </div>
       <div style={{ width: '100%', height: '300px' }}>
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>

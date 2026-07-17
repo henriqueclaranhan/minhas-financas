@@ -1,6 +1,8 @@
 import { useMemo } from 'react';
 import { parseISO, addMonths, isSameMonth, format, isBefore, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Link } from 'react-router-dom';
+import { ChevronRight } from 'lucide-react';
 import { SummaryCards } from './dashboard/SummaryCards';
 import { DashboardChart } from './dashboard/DashboardChart';
 import type { Transaction, PlannedExpense } from '../types';
@@ -18,8 +20,10 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
   const chartData = useMemo(() => {
     const data = [];
     
-    // Calculate total historical balance up to 5 months ago
-    const sixMonthsAgo = startOfMonth(addMonths(currentDate, -5));
+    // Calculate total historical balance up to 1 month ago (startOffset - 1)
+    const startOffset = -1;
+    const endOffset = 4;
+    const startMonthDate = startOfMonth(addMonths(currentDate, startOffset));
     
     // We need to calculate the balance for each of the last 6 months.
     // For simplicity, we calculate the net flow for EVERY month since the beginning of time.
@@ -50,15 +54,20 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
       if (pe.status === 'pending') {
         const value = pe.type === 'income' ? pe.amount : -pe.amount;
         let currentDateIter = parseISO(pe.dueDate);
-        const limitDate = addMonths(currentDate, 6);
+        const limitDate = addMonths(currentDate, endOffset);
         
         if (!pe.isRecurring) {
           const monthKey = format(currentDateIter, 'yyyy-MM');
-          monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+          // Only project if it's strictly in a future month
+          if (monthKey > format(currentDate, 'yyyy-MM')) {
+            monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+          }
         } else {
           while (!isBefore(limitDate, currentDateIter)) {
             const monthKey = format(currentDateIter, 'yyyy-MM');
-            monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+            if (monthKey > format(currentDate, 'yyyy-MM')) {
+              monthlyFlows[monthKey] = (monthlyFlows[monthKey] || 0) + value;
+            }
             currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
           }
         }
@@ -72,15 +81,15 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
     const allMonths = Object.keys(monthlyFlows).sort();
     let accumulated = initialBalance;
     
-    // Apply all history up to 6 months ago to get the starting balance of the chart
+    // Apply all history up to startOffset - 1
     for (const m of allMonths) {
-      if (m < format(sixMonthsAgo, 'yyyy-MM')) {
+      if (m < format(startMonthDate, 'yyyy-MM')) {
         accumulated += monthlyFlows[m];
       }
     }
 
     let actualCurrentBalance = accumulated;
-    for (let i = -5; i <= 6; i++) {
+    for (let i = startOffset; i <= endOffset; i++) {
       const monthDate = addMonths(currentDate, i);
       const monthKey = format(monthDate, 'yyyy-MM');
       accumulated += (monthlyFlows[monthKey] || 0);
@@ -139,6 +148,22 @@ export function Dashboard({ transactions, plannedExpenses, initialBalance }: Das
       <DashboardChart 
         data={chartData.data} 
         formatCurrency={formatCurrency} 
+        headerAction={
+          <Link 
+            to="/forecast" 
+            style={{ 
+              color: 'var(--clr-primary)', 
+              textDecoration: 'none', 
+              display: 'flex', 
+              alignItems: 'center', 
+              fontSize: '1rem', 
+              fontWeight: 500,
+              opacity: 0.9
+            }}
+          >
+            <span className="hide-on-mobile">Ver todas</span> <ChevronRight size={20} />
+          </Link>
+        }
       />
     </div>
   );

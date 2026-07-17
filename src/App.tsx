@@ -8,6 +8,7 @@ import { PlannedExpensesPage } from './pages/PlannedExpensesPage';
 import { CreditCardPage } from './pages/CreditCardPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuthPage } from './pages/AuthPage';
+import { ForecastPage } from './pages/ForecastPage';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import './App.css';
 
@@ -20,6 +21,7 @@ const router = createBrowserRouter([
       { path: "/transactions", element: <TransactionsPage /> },
       { path: "/planned", element: <PlannedExpensesPage /> },
       { path: "/credit", element: <CreditCardPage /> },
+      { path: "/forecast", element: <ForecastPage /> },
       { path: "/settings", element: <SettingsPage /> },
     ]
   }

@@ -37,10 +37,10 @@ export function SettingsPage() {
 
   return (
     <div className="animate-fade-in" style={{ paddingBottom: 'var(--spacing-xl)' }}>
-      <header style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', alignItems: 'center' }}>
+      <header className="hide-on-desktop" style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', alignItems: 'center' }}>
         <button 
           onClick={() => navigate(-1)} 
-          className="btn hide-on-desktop" 
+          className="btn" 
           style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
         >
           <ChevronLeft size={24} /> Voltar
