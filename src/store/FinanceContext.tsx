@@ -202,8 +202,12 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       const batch = writeBatch(db);
       
       batch.set(doc(db, 'users', uid), { initialBalance: 0 }, { merge: true });
-      transactions.forEach(t => batch.delete(doc(db, 'users', uid, 'transactions', t.id)));
-      plannedExpenses.forEach(p => batch.delete(doc(db, 'users', uid, 'plannedExpenses', p.id)));
+      transactions.forEach(t => {
+        if (t.id) batch.delete(doc(db, 'users', uid, 'transactions', t.id));
+      });
+      plannedExpenses.forEach(p => {
+        if (p.id) batch.delete(doc(db, 'users', uid, 'plannedExpenses', p.id));
+      });
       
       await batch.commit();
     }
