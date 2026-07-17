@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Calendar, DollarSign, CreditCard, AlignLeft, Layers } from 'lucide-react';
-import type { Transaction } from '../types';
-import { CurrencyInput } from './CurrencyInput';
-import { handleDatePaste } from '../utils/dateUtils';
-import './FormStyles.css';
+import type { Transaction } from '../../types';
+import { CurrencyInput } from '../CurrencyInput';
+import { handleDatePaste } from '../../utils/dateUtils';
+import '../FormStyles.css';
 
 interface TransactionFormProps {
   onSubmit: (transaction: Omit<Transaction, 'id'>) => void;

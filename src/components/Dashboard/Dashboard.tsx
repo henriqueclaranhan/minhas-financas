@@ -3,9 +3,9 @@ import { parseISO, addMonths, isSameMonth, format, isBefore, startOfMonth } from
 import { ptBR } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import { SummaryCards } from './dashboard/SummaryCards';
-import { DashboardChart } from './dashboard/DashboardChart';
-import type { Transaction, PlannedExpense } from '../types';
+import { SummaryCards } from '../dashboard/SummaryCards';
+import { DashboardChart } from '../dashboard/DashboardChart';
+import type { Transaction, PlannedExpense } from '../../types';
 import './Dashboard.css';
 
 interface DashboardProps {

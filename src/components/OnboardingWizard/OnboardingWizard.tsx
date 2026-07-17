@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useFinance } from '../store/FinanceContext';
+import { useFinance } from '../../store/FinanceContext';
 import { Rocket, BarChart3, ShieldCheck, ChevronRight, Check } from 'lucide-react';
-import { CurrencyInput } from './CurrencyInput';
+import { CurrencyInput } from '../CurrencyInput';
 import './OnboardingWizard.css';
 
 const steps = [

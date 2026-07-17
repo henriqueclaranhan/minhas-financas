@@ -1,9 +1,9 @@
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { MoreHorizontal } from 'lucide-react';
-import type { Transaction } from '../../types';
-import { TransactionType } from '../../enums/FinanceEnums';
-import './Transaction.css';
+import type { Transaction } from '../../../types';
+import { TransactionType } from '../../../enums/FinanceEnums';
+import '../Transaction.css';
 
 interface Props {
   t: Transaction;

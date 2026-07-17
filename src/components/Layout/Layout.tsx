@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp } from 'lucide-react';
-import { useAuth } from '../store/AuthContext';
+import { useAuth } from '../../store/AuthContext';
 import './Layout.css';
 
 export function Layout() {

@@ -1,4 +1,4 @@
-import { FilterType } from '../../enums/FinanceEnums';
+import { FilterType } from '../../../enums/FinanceEnums';
 import { List, ArrowUpCircle, ArrowDownCircle, Filter, CalendarDays, CreditCard } from 'lucide-react';
 import './FilterTabs.css';
 
