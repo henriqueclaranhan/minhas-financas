@@ -153,6 +153,7 @@ export function ProfileSettingsPage() {
                   onChange={e => setNewPassword(e.target.value)}
                   placeholder={t('profile.passwordPlaceholder')}
                   className="form-input"
+                  autoComplete="new-password"
                 />
               </div>
             </div>
