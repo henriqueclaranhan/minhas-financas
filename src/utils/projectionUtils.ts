@@ -1,7 +1,7 @@
 import { parseISO, addMonths, isSameMonth, format, isBefore, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
 import type { Transaction, PlannedExpense } from '../types';
-import { TransactionType, ExpenseStatus } from '../enums/FinanceEnums';
+import { TransactionType, ExpenseStatus, PaymentMethod } from '../enums/FinanceEnums';
 
 export interface ProjectionOptions {
   transactions: Transaction[];
@@ -44,14 +44,16 @@ export function calculateProjections(options: ProjectionOptions) {
   // Process confirmed transactions
   transactions.forEach(t => {
     const txDate = parseISO(t.date);
-    const isCredit = t.paymentMethod.toLowerCase().includes('crédito');
+    const isCredit = t.paymentMethod === PaymentMethod.CREDIT;
+    const isBoleto = t.paymentMethod === PaymentMethod.BOLETO;
     const isExpense = t.type !== TransactionType.INCOME;
     
-    if (isExpense && isCredit) {
+    if (isExpense && (isCredit || isBoleto)) {
       const numInstallments = t.installments || 1;
       const instAmount = t.amount / numInstallments;
       for (let i = 1; i <= numInstallments; i++) {
-        const instDate = addMonths(txDate, i);
+        const offset = isCredit ? i : (i - 1);
+        const instDate = addMonths(txDate, offset);
         const monthKey = format(instDate, 'yyyy-MM');
         getMonthData(monthKey).expense += instAmount;
       }
@@ -72,16 +74,18 @@ export function calculateProjections(options: ProjectionOptions) {
       if (isIncome && !includePlannedIncome) return;
       if (!isIncome && !includePlannedExpense) return;
 
-      const isCredit = pe.paymentMethod?.toLowerCase().includes('crédito');
+      const isCredit = pe.paymentMethod === PaymentMethod.CREDIT;
+      const isBoleto = pe.paymentMethod === PaymentMethod.BOLETO;
       const numInstallments = pe.installments || 1;
       const instAmount = pe.amount / numInstallments;
 
       let currentDateIter = parseISO(pe.dueDate);
       
       const addAmountToMonths = (dateIter: Date) => {
-        if (isCredit && !isIncome) {
+        if (!isIncome && (isCredit || isBoleto)) {
           for (let i = 1; i <= numInstallments; i++) {
-            const instDate = addMonths(dateIter, i);
+            const offset = isCredit ? i : (i - 1);
+            const instDate = addMonths(dateIter, offset);
             const monthKey = format(instDate, 'yyyy-MM');
             if (monthKey > format(currentDate, 'yyyy-MM')) {
               getMonthData(monthKey).expense += instAmount;
@@ -141,17 +145,20 @@ export function calculateProjections(options: ProjectionOptions) {
   // Calculate monthly stats for the current month specifically
   let monthlyInc = 0;
   let monthlyExp = 0;
+  const targetMonthKey = format(currentDate, 'yyyy-MM');
   
   transactions.forEach(t => {
     const txDate = parseISO(t.date);
-    const isCredit = t.paymentMethod.toLowerCase().includes('crédito');
+    const isCredit = t.paymentMethod === PaymentMethod.CREDIT;
+    const isBoleto = t.paymentMethod === PaymentMethod.BOLETO;
     const isExpense = t.type !== TransactionType.INCOME;
     
-    if (isExpense && isCredit) {
+    if (isExpense && (isCredit || isBoleto)) {
       const numInstallments = t.installments || 1;
       const instAmount = t.amount / numInstallments;
       for (let i = 1; i <= numInstallments; i++) {
-        if (isSameMonth(addMonths(txDate, i), currentDate)) {
+        const offset = isCredit ? i : (i - 1);
+        if (format(addMonths(txDate, offset), 'yyyy-MM') === targetMonthKey) {
            monthlyExp += instAmount;
         }
       }

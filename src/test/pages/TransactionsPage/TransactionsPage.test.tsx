@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { TransactionsPage } from '../../../pages/TransactionsPage/TransactionsPage';
 import { useTransactionsViewModel } from '../../../pages/TransactionsPage/hooks/useTransactionsViewModel';
+import { PaymentMethod } from '../../../enums/FinanceEnums';
 
 vi.mock('../../../pages/TransactionsPage/hooks/useTransactionsViewModel');
 
@@ -28,7 +29,7 @@ describe('TransactionsPage UI', () => {
 
   const mockState = {
     transactions: [
-      { id: '1', description: 'Mercado', amount: 150, type: 'expense', date: '2026-05-10', paymentMethod: 'Crédito' }
+      { id: '1', description: 'Mercado', amount: 150, type: 'expense', date: '2026-05-10', paymentMethod: PaymentMethod.CREDIT }
     ],
     totalIncome: 1000,
     totalExpense: 150,

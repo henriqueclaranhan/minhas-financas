@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search } from 'lucide-react';
+import { useLocale } from '../../../store/LocaleContext';
 import './CustomSelect.css';
 
 export interface SelectOption {
@@ -23,10 +24,11 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   value,
   onChange,
   options,
-  placeholder = 'Selecione...',
+  placeholder,
   searchable = false,
   className = '',
 }) => {
+  const { t } = useLocale();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const containerRef = useRef<HTMLDivElement>(null);
@@ -122,16 +124,16 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         onClick={() => setIsOpen(!isOpen)}
         tabIndex={0}
       >
-        <div className="custom-select-selected">
+        <span className="custom-select-value" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           {selectedOption ? (
             <>
               {selectedOption.icon && <span className="custom-select-icon">{selectedOption.icon}</span>}
-              <span className="custom-select-label">{selectedOption.label}</span>
+              {selectedOption.label}
             </>
           ) : (
-            <span className="custom-select-placeholder">{placeholder}</span>
+            <span className="custom-select-placeholder">{placeholder || t('common.select')}</span>
           )}
-        </div>
+        </span>
         <ChevronDown className={`custom-select-arrow ${isOpen ? 'open' : ''}`} size={16} />
       </div>
 
@@ -139,14 +141,14 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         <div className="custom-select-dropdown" ref={dropdownRef} style={dropdownStyle} onClick={(e) => e.stopPropagation()}>
           {searchable && (
             <div className="custom-select-search-wrapper">
-              <Search className="custom-select-search-icon" size={14} />
+              <Search size={16} className="custom-select-search-icon" />
               <input
                 ref={searchInputRef}
-                type="text"
                 className="custom-select-search-input"
-                placeholder="Buscar..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder={t('common.search')}
+                onClick={(e) => e.stopPropagation()}
               />
             </div>
           )}

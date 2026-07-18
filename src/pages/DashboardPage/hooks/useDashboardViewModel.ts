@@ -3,7 +3,7 @@ import { useFinance } from '../../../store/FinanceContext';
 import { useAuth } from '../../../store/AuthContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
-import { TransactionType } from '../../../enums/FinanceEnums';
+import { TransactionType, PaymentMethod } from '../../../enums/FinanceEnums';
 import { parseISO, isSameMonth, addMonths } from 'date-fns';
 
 export function useDashboardViewModel() {
@@ -51,14 +51,16 @@ export function useDashboardViewModel() {
       const type = t.type || TransactionType.EXPENSE;
       if (type === TransactionType.EXPENSE) {
         const txDate = parseISO(t.date);
-        const isCredit = t.paymentMethod?.toLowerCase().includes('crédito');
+        const isCredit = t.paymentMethod === PaymentMethod.CREDIT;
+        const isBoleto = t.paymentMethod === PaymentMethod.BOLETO;
         const cat = t.category || 'others';
         
-        if (isCredit) {
+        if (isCredit || isBoleto) {
           const numInstallments = t.installments || 1;
           const instAmount = t.amount / numInstallments;
           for (let i = 1; i <= numInstallments; i++) {
-            if (isSameMonth(addMonths(txDate, i), currentDate)) {
+            const offset = isCredit ? i : (i - 1);
+            if (isSameMonth(addMonths(txDate, offset), currentDate)) {
               categoryTotals[cat] = (categoryTotals[cat] || 0) + instAmount;
               totalExpense += instAmount;
             }

@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
+import { useLocale } from '../../store/LocaleContext';
 import './Modal.css';
 
 interface ModalProps {
@@ -11,6 +12,8 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+  const { t } = useLocale();
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -35,7 +38,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
       >
         <div className="modal-header">
           <h3 id="modal-title">{title}</h3>
-          <button className="modal-close" onClick={onClose} aria-label="Fechar modal">
+          <button className="modal-close" onClick={onClose} aria-label={t('common.closeModal')}>
             <X size={24} aria-hidden="true" />
           </button>
         </div>

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { calculateProjections } from '../../utils/projectionUtils';
-import { TransactionType, ExpenseStatus } from '../../enums/FinanceEnums';
+import { TransactionType, ExpenseStatus, PaymentMethod } from '../../enums/FinanceEnums';
 import type { Transaction, PlannedExpense } from '../../types';
 
 describe('projectionUtils', () => {
@@ -42,5 +42,37 @@ describe('projectionUtils', () => {
     expect(result.data[1].saldo).toBe(5000); // May
     expect(result.data[2].saldo).toBe(4850); // Jun
     expect(result.data[5].saldo).toBe(4400); // Sep
+  });
+
+  it('should project correctly for Boleto and Credit installments', () => {
+    const transactions: Transaction[] = [
+      { id: '1', description: 'Credit', amount: 300, date: '2026-05-01', paymentMethod: PaymentMethod.CREDIT, type: TransactionType.EXPENSE, installments: 3 }, // May 1st -> Jun, Jul, Aug
+      { id: '2', description: 'Boleto', amount: 300, date: '2026-05-05', paymentMethod: PaymentMethod.BOLETO, type: TransactionType.EXPENSE, installments: 3 }  // May 5th -> May, Jun, Jul
+    ];
+    
+    const mockDate = new Date('2026-05-20T12:00:00Z');
+
+    const result = calculateProjections({
+      transactions,
+      plannedExpenses: [],
+      initialBalance: 2000,
+      startMonthOffset: 0, // May
+      monthsToProject: 4, // May, Jun, Jul, Aug
+      currentDate: mockDate
+    });
+
+    expect(result.data.length).toBe(4);
+    
+    // May: Boleto (100) -> 1900
+    expect(result.data[0].saldo).toBe(1900);
+    
+    // Jun: Boleto (100) + Credit (100) -> 1700
+    expect(result.data[1].saldo).toBe(1700);
+
+    // Jul: Boleto (100) + Credit (100) -> 1500
+    expect(result.data[2].saldo).toBe(1500);
+
+    // Aug: Credit (100) -> 1400
+    expect(result.data[3].saldo).toBe(1400);
   });
 });

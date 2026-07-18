@@ -1,5 +1,6 @@
 import { addMonths, parseISO, format } from 'date-fns';
 import type { Transaction, PlannedExpense } from '../types';
+import { PaymentMethod } from '../enums/FinanceEnums';
 
 export type ExpandedTransaction = Transaction & {
   isInstallment?: boolean;
@@ -24,9 +25,11 @@ export function expandTransactions(transactions: Transaction[]): ExpandedTransac
     if (t.installments && t.installments > 1) {
       const parsedDate = parseISO(t.date);
       const installmentAmount = t.amount / t.installments;
+      const isCredit = t.paymentMethod === PaymentMethod.CREDIT;
       
       for (let i = 1; i <= t.installments; i++) {
-        const nextDate = addMonths(parsedDate, i - 1);
+        const offset = isCredit ? i : (i - 1);
+        const nextDate = addMonths(parsedDate, offset);
         expanded.push({
           ...t,
           date: format(nextDate, 'yyyy-MM-dd'),
@@ -54,9 +57,11 @@ export function expandPlannedExpenses(expenses: PlannedExpense[]): ExpandedPlann
     if (p.installments && p.installments > 1) {
       const parsedDate = parseISO(p.dueDate);
       const installmentAmount = p.amount / p.installments;
+      const isCredit = p.paymentMethod === PaymentMethod.CREDIT;
       
       for (let i = 1; i <= p.installments; i++) {
-        const nextDate = addMonths(parsedDate, i - 1);
+        const offset = isCredit ? i : (i - 1);
+        const nextDate = addMonths(parsedDate, offset);
         expanded.push({
           ...p,
           dueDate: format(nextDate, 'yyyy-MM-dd'),

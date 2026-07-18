@@ -1,6 +1,6 @@
 import { parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
-import { TransactionType } from '../../../../enums/FinanceEnums';
+import { ExpenseStatus, PaymentMethod, TransactionType } from '../../../../enums/FinanceEnums';
 import type { PlannedExpense } from '../../../../types';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
@@ -66,7 +66,7 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
           color: (!p.type || p.type === TransactionType.EXPENSE) ? 'var(--clr-danger)' : 'var(--clr-success)',
           background: (!p.type || p.type === TransactionType.EXPENSE) ? 'var(--clr-danger-glow)' : 'var(--clr-success-glow)'
         }}>
-          {p.paymentMethod || 'Crédito'}
+          {p.paymentMethod || PaymentMethod.CREDIT}
         </span>
         <div style={{ textAlign: 'right' }}>
           <span className="mobile-amount" style={{ 

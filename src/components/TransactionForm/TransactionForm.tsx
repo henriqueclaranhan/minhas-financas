@@ -22,7 +22,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
   const { t, formatCurrency, locale } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
   const [amount, setAmount] = useState<number | ''>(initialData?.amount ?? '');
-  const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
+  const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || PaymentMethod.CREDIT);
   const [installments, setInstallments] = useState(initialData?.installments || 1);
   const [date, setDate] = useState(initialData?.date || getLocalDateString());
   const [category, setCategory] = useState(initialData?.category || '');
@@ -34,15 +34,16 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
   const paymentOptions = type === 'expense' 
     ? [
-        { value: PaymentMethod.CREDIT, label: 'Crédito', icon: getPaymentMethodIcon(PaymentMethod.CREDIT) },
-        { value: PaymentMethod.DEBIT, label: 'Débito', icon: getPaymentMethodIcon(PaymentMethod.DEBIT) },
-        { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
-        { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.CREDIT, label: t('form.credit'), icon: getPaymentMethodIcon(PaymentMethod.CREDIT) },
+        { value: PaymentMethod.DEBIT, label: t('form.debit'), icon: getPaymentMethodIcon(PaymentMethod.DEBIT) },
+        { value: PaymentMethod.PIX, label: t('form.pix'), icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+        { value: PaymentMethod.CASH, label: t('form.cash'), icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.BOLETO, label: t('form.boleto'), icon: getPaymentMethodIcon(PaymentMethod.BOLETO) },
       ]
     : [
-        { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
-        { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
-        { value: PaymentMethod.TRANSFER, label: 'Transferência', icon: getPaymentMethodIcon(PaymentMethod.TRANSFER) },
+        { value: PaymentMethod.PIX, label: t('form.pix'), icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+        { value: PaymentMethod.CASH, label: t('form.cash'), icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.TRANSFER, label: t('form.transfer'), icon: getPaymentMethodIcon(PaymentMethod.TRANSFER) },
       ];
 
   const categoryOptions = categories.map(cat => ({
@@ -65,7 +66,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
       description: trimmedDesc,
       amount: Number(amount),
       paymentMethod,
-      installments: paymentMethod.toLowerCase().includes('crédito') ? installments : 1,
+      installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
       date,
       type,
       category: category || undefined
@@ -73,7 +74,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
     
     setDescription('');
     setAmount('');
-    setPaymentMethod('Crédito');
+    setPaymentMethod(PaymentMethod.CREDIT);
     setInstallments(1);
     setDate(getLocalDateString());
     setCategory('');
@@ -83,7 +84,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
   const handleTypeChange = (newType: 'income' | 'expense') => {
     setType(newType);
     setCategory(''); // reset category on type change
-    if (newType === 'income' && (paymentMethod === 'Crédito' || paymentMethod === 'Débito')) {
+    if (newType === 'income' && (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.DEBIT)) {
       setPaymentMethod('Pix');
     }
   };
@@ -135,7 +136,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
                   type="text" 
                   value={description} 
                   onChange={e => setDescription(e.target.value)} 
-                  placeholder="Ex: Supermercado"
+                  placeholder={t('form.placeholderSupermarket')}
                   required
                   className="form-input"
                 />
@@ -179,9 +180,9 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
                   />
                 </div>
 
-                {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
-                  <div className="form-group">
-                    <label htmlFor="installments-input" className="form-label"><Layers size={16} aria-hidden="true" /> Parcelas</label>
+                {type === 'expense' && (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) && (
+                  <div className="form-group" style={{ flex: 1 }}>
+                    <label htmlFor="installments-input" className="form-label"><Layers size={16} aria-hidden="true" /> {t('form.installments')}</label>
                     <input 
                       id="installments-input"
                       type="number" 
@@ -200,7 +201,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
                   value={category}
                   onChange={setCategory}
                   options={categoryOptions}
-                  placeholder="Selecione uma categoria"
+                  placeholder={t('form.selectCategory')}
                   searchable={true}
                 />
               </div>

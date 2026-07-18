@@ -5,11 +5,12 @@ export const TransactionType = {
 export type TransactionType = (typeof TransactionType)[keyof typeof TransactionType];
 
 export const PaymentMethod = {
-  CREDIT: 'Crédito',
-  DEBIT: 'Débito',
-  PIX: 'Pix',
-  CASH: 'Dinheiro',
-  TRANSFER: 'Transferência'
+  CREDIT: 'credit',
+  DEBIT: 'debit',
+  PIX: 'pix',
+  CASH: 'cash',
+  TRANSFER: 'transfer',
+  BOLETO: 'boleto'
 } as const;
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod];
 

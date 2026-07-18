@@ -2,7 +2,7 @@ import {
   Utensils, Car, Home, HeartPulse, GraduationCap, 
   Gamepad2, ShoppingBag, Dog, Shirt, TrendingUp, 
   HelpCircle, DollarSign, Gift, Wallet, CreditCard,
-  Landmark, Banknote, QrCode
+  Landmark, Banknote, QrCode, Barcode
 } from 'lucide-react';
 import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../enums/FinanceEnums';
 
@@ -34,6 +34,7 @@ export const getPaymentMethodIcon = (method: string) => {
     case PaymentMethod.PIX: return <QrCode size={18} />;
     case PaymentMethod.CASH: return <Banknote size={18} />;
     case PaymentMethod.TRANSFER: return <Landmark size={18} />;
+    case PaymentMethod.BOLETO: return <Barcode size={18} />;
     default: return <CreditCard size={18} />;
   }
 };

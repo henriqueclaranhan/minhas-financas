@@ -25,7 +25,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
   const [isRecurring, setIsRecurring] = useState(initialData?.isRecurring || false);
   const [recurrenceInterval, setRecurrenceInterval] = useState(initialData?.recurrenceInterval?.toString() || '1');
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
-  const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
+  const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || PaymentMethod.CREDIT);
   const [installments, setInstallments] = useState(initialData?.installments || 1);
   const [category, setCategory] = useState(initialData?.category || '');
   const [currentStep, setCurrentStep] = useState(1);
@@ -34,15 +34,16 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
 
   const paymentOptions = type === 'expense' 
     ? [
-        { value: PaymentMethod.CREDIT, label: 'Crédito', icon: getPaymentMethodIcon(PaymentMethod.CREDIT) },
-        { value: PaymentMethod.DEBIT, label: 'Débito', icon: getPaymentMethodIcon(PaymentMethod.DEBIT) },
-        { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
-        { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.CREDIT, label: t('form.credit'), icon: getPaymentMethodIcon(PaymentMethod.CREDIT) },
+        { value: PaymentMethod.DEBIT, label: t('form.debit'), icon: getPaymentMethodIcon(PaymentMethod.DEBIT) },
+        { value: PaymentMethod.PIX, label: t('form.pix'), icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+        { value: PaymentMethod.CASH, label: t('form.cash'), icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.BOLETO, label: t('form.boleto'), icon: getPaymentMethodIcon(PaymentMethod.BOLETO) },
       ]
     : [
-        { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
-        { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
-        { value: PaymentMethod.TRANSFER, label: 'Transferência', icon: getPaymentMethodIcon(PaymentMethod.TRANSFER) },
+        { value: PaymentMethod.PIX, label: t('form.pix'), icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+        { value: PaymentMethod.CASH, label: t('form.cash'), icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.TRANSFER, label: t('form.transfer'), icon: getPaymentMethodIcon(PaymentMethod.TRANSFER) },
       ];
 
   const categoryOptions = categories.map(cat => ({
@@ -70,7 +71,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
       status: 'pending',
       type,
       paymentMethod,
-      installments: paymentMethod.toLowerCase().includes('crédito') ? installments : 1,
+      installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
       category: category || undefined
     });
     
@@ -79,7 +80,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
     setAmount('');
     setDueDate('');
     setIsRecurring(false);
-    setPaymentMethod('Crédito');
+    setPaymentMethod(PaymentMethod.CREDIT);
     setInstallments(1);
     setCategory('');
     setCurrentStep(1);
@@ -88,7 +89,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
   const handleTypeChange = (newType: 'income' | 'expense') => {
     setType(newType);
     setCategory('');
-    if (newType === 'income' && (paymentMethod === 'Crédito' || paymentMethod === 'Débito')) {
+    if (newType === 'income' && (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.DEBIT)) {
       setPaymentMethod('Pix');
     }
   };
@@ -137,7 +138,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
               <label className="form-label"><AlignLeft size={16} aria-hidden="true" /> {t('common.description')} *</label>
               <input 
                 type="text" 
-                placeholder="Ex: Aluguel" 
+                placeholder={t('form.placeholderRent')}
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 required
@@ -181,9 +182,9 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
                 />
               </div>
 
-              {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
-                <div className="form-group">
-                  <label className="form-label"><Layers size={16} aria-hidden="true" /> Parcelas</label>
+              {type === 'expense' && (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) && (
+                <div className="form-group" style={{ flex: 1 }}>
+                  <label className="form-label"><Layers size={16} aria-hidden="true" /> {t('form.installments')}</label>
                   <input 
                     type="number" 
                     min="1" 
@@ -224,7 +225,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
                 value={category}
                 onChange={setCategory}
                 options={categoryOptions}
-                placeholder="Selecione uma categoria"
+                placeholder={t('form.selectCategory')}
                 searchable={true}
               />
             </div>
