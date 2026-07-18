@@ -1,6 +1,6 @@
 
 
-import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote } from 'lucide-react';
+import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote, Shield } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
@@ -164,6 +164,25 @@ export function SettingsPage() {
                 <div className="font-medium settings-item-title text-danger">{t('settings.clear')}</div>
                 <div className="settings-item-desc text-secondary">{t('settings.clearDescription')}</div>
               </div>
+            </div>
+          </div>
+
+          <div 
+            className="settings-item"
+            onClick={() => navigate('/privacidade')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="flex items-center justify-between" style={{ width: '100%' }}>
+              <div className="flex items-center gap-md">
+                <div className="settings-icon-wrapper primary">
+                  <Shield size={20} color="var(--clr-primary)" />
+                </div>
+                <div>
+                  <div className="font-medium settings-item-title">Política de Privacidade</div>
+                  <div className="settings-item-desc text-secondary">Termos de uso e proteção de dados</div>
+                </div>
+              </div>
+              <ChevronRight size={20} color="var(--clr-text-secondary)" />
             </div>
           </div>
 

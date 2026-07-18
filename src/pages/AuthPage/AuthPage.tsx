@@ -1,4 +1,5 @@
 import { PieChart, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { useAuthViewModel } from './hooks/useAuthViewModel';
 import { useLocale } from '../../store/LocaleContext';
 import './AuthPage.css';
@@ -135,6 +136,12 @@ export function AuthPage() {
                 </button>
               </>
             )}
+          </div>
+          
+          <div style={{ marginTop: '24px', textAlign: 'center' }}>
+            <Link to="/privacidade" className="auth-link" style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+              {t('app.name')} • Política de Privacidade
+            </Link>
           </div>
         </div>
       </div>

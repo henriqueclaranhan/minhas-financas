@@ -12,6 +12,7 @@ import { AuthPage } from './pages/AuthPage';
 import { ForecastPage } from './pages/ForecastPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage/ProfileSettingsPage';
 import { OnboardingWizard } from './components/OnboardingWizard';
+import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage/PrivacyPolicyPage';
 import './App.css';
 
 const router = createBrowserRouter([
@@ -26,8 +27,14 @@ const router = createBrowserRouter([
       { path: "/forecast", element: <ForecastPage /> },
       { path: "/settings", element: <SettingsPage /> },
       { path: "/settings/profile", element: <ProfileSettingsPage /> },
+      { path: "/privacidade", element: <PrivacyPolicyPage /> },
     ]
   }
+]);
+
+const unauthRouter = createBrowserRouter([
+  { path: "/privacidade", element: <PrivacyPolicyPage /> },
+  { path: "*", element: <AuthPage /> }
 ]);
 
 import { ThemeProvider } from './store/ThemeContext';
@@ -36,7 +43,13 @@ function AppContent() {
   const { user } = useAuth();
 
   if (!user) {
-    return <AuthPage />;
+    return (
+      <ThemeProvider>
+        <LocaleProvider>
+          <RouterProvider router={unauthRouter} />
+        </LocaleProvider>
+      </ThemeProvider>
+    );
   }
 
   return (
