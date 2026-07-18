@@ -1,10 +1,12 @@
 import { Rocket, BarChart3, ShieldCheck, ChevronRight, Check } from 'lucide-react';
 import { CurrencyInput } from '../CurrencyInput';
 import { useOnboardingViewModel } from './hooks/useOnboardingViewModel';
+import { useLocale } from '../../store/LocaleContext';
 import './OnboardingWizard.css';
 
 export function OnboardingWizard() {
   const { state, actions } = useOnboardingViewModel();
+  const { t } = useLocale();
 
   if (!state.shouldShow) return null;
 
@@ -34,12 +36,12 @@ export function OnboardingWizard() {
               <div className="wizard-icon-wrapper">
                 <span className="wizard-emoji">💰</span>
               </div>
-              <h2>Qual o seu saldo hoje?</h2>
-              <p>Defina o seu ponto de partida.</p>
+              <h2>{t('onboarding.finalTitle')}</h2>
+              <p>{t('onboarding.finalDesc')}</p>
               
               <form onSubmit={actions.handleFinish} className="wizard-form">
                 <div className="form-group wizard-form-group">
-                  <label className="form-label">Saldo Atual</label>
+                  <label className="form-label">{t('onboarding.currentBalance')}</label>
                   <CurrencyInput 
                     value={state.balanceInput}
                     onChangeValue={actions.setBalanceInput}
@@ -48,14 +50,14 @@ export function OnboardingWizard() {
                   />
                 </div>
                 <button type="submit" className="btn btn-primary hover-glow wizard-btn-primary-form">
-                  Começar Jornada <Check size={20} className="wizard-btn-primary-icon" />
+                  {t('onboarding.startJourney')} <Check size={20} className="wizard-btn-primary-icon" />
                 </button>
                 <button 
                   type="button" 
                   onClick={actions.skip} 
                   className="btn wizard-btn-secondary" 
                 >
-                  Pular por enquanto
+                  {t('onboarding.skip')}
                 </button>
               </form>
             </div>
@@ -71,7 +73,7 @@ export function OnboardingWizard() {
               ))}
             </div>
             <button onClick={actions.nextStep} className="btn btn-primary hover-glow wizard-btn-primary">
-              Continuar <ChevronRight size={20} />
+              {t('onboarding.continue')} <ChevronRight size={20} />
             </button>
           </div>
         )}

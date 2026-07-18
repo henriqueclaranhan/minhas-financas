@@ -8,18 +8,20 @@ import { FilterTabs } from '../../components/shared/FilterTabs';
 import { PlannedExpenseTable } from './components/PlannedExpenseTable';
 import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { useLocale } from '../../store/LocaleContext';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
   const { state, actions } = usePlannedExpensesViewModel();
+  const { formatCurrency, locale, t } = useLocale();
 
   return (
     <div className="animate-fade-in">
       <PageHeader 
-        title="Planejamento"
-        description="Programe suas receitas e despesas futuras."
+        title={t('planning.title')}
+        description={t('planning.description')}
         primaryButton={{
-          label: 'Planejar',
+          label: t('planning.new'),
           icon: <Plus size={18} className="mr-sm" />,
           onClick: actions.openNewModal
         }}
@@ -27,15 +29,15 @@ export function PlannedExpensesPage() {
 
       <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>
-          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Entradas no Período</p>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>{t('transactions.incomePeriod')}</p>
           <h3 style={{ margin: 0, color: 'var(--clr-success)' }}>
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.totalIncome)}
+            {formatCurrency(state.totalIncome)}
           </h3>
         </div>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-danger)' }}>
-          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Saídas no Período</p>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>{t('transactions.expensePeriod')}</p>
           <h3 style={{ margin: 0, color: 'var(--clr-danger)' }}>
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.totalExpense)}
+            {formatCurrency(state.totalExpense)}
           </h3>
         </div>
       </div>
@@ -63,7 +65,7 @@ export function PlannedExpensesPage() {
         <Plus size={28} />
       </button>
 
-      <Modal isOpen={state.isModalOpen} onClose={() => { actions.setIsModalOpen(false); actions.setEditingExpense(null); }} title={state.editingExpense ? "Editar Planejamento" : "Planejar"}>
+      <Modal isOpen={state.isModalOpen} onClose={() => { actions.setIsModalOpen(false); actions.setEditingExpense(null); }} title={state.editingExpense ? t('common.edit') : t('planning.new')}>
         <PlannedExpenseForm 
           onSubmit={actions.handleAddOrUpdate} 
           initialData={state.editingExpense || undefined} 
@@ -71,7 +73,7 @@ export function PlannedExpensesPage() {
         />
       </Modal>
 
-      <Modal isOpen={!!state.expenseToConfirm} onClose={() => actions.setExpenseToConfirm(null)} title={state.expenseToConfirm?.type === 'income' ? "Confirmar Recebimento" : "Confirmar Pagamento"}>
+      <Modal isOpen={!!state.expenseToConfirm} onClose={() => actions.setExpenseToConfirm(null)} title={state.expenseToConfirm?.type === 'income' ? t('planning.confirmReceipt') : t('planning.confirmPayment')}>
         {state.expenseToConfirm && (
           <TransactionForm 
             onSubmit={actions.confirmAction} 
@@ -88,35 +90,35 @@ export function PlannedExpensesPage() {
         )}
       </Modal>
 
-      <Modal isOpen={!!state.expenseToDelete} onClose={() => actions.setExpenseToDelete(null)} title="Confirmar Exclusão">
+      <Modal isOpen={!!state.expenseToDelete} onClose={() => actions.setExpenseToDelete(null)} title={t('transactions.deleteTitle')}>
         <div className="delete-modal-content">
-          <p className="delete-modal-text">Tem certeza que deseja apagar este planejamento?</p>
-          <p className="delete-modal-subtext">Esta ação não pode ser desfeita.</p>
+          <p className="delete-modal-text">{t('planning.deleteQuestion')}</p>
+          <p className="delete-modal-subtext">{t('common.irreversible')}</p>
         </div>
         <div className="modal-actions">
-          <button className="btn" onClick={() => actions.setExpenseToDelete(null)}>Cancelar</button>
+          <button className="btn" onClick={() => actions.setExpenseToDelete(null)}>{t('common.cancel')}</button>
           <button 
             className="btn btn-primary btn-danger-bg" 
             onClick={actions.confirmDelete}
           >
-            Apagar
+            {t('common.delete')}
           </button>
         </div>
       </Modal>
 
-      <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title="Filtros">
+      <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title={t('filters.title')}>
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Mês</label>
+            <label className="form-label">{t('filters.month')}</label>
             <select className="form-select" value={state.tempSelectedMonth} onChange={(e) => actions.setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
-              <option value="all">Ano Todo</option>
+              <option value="all">{t('filters.fullYear')}</option>
               {Array.from({ length: 12 }).map((_, i) => (
-                <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
+                <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
               ))}
             </select>
           </div>
           <div className="form-group">
-            <label className="form-label">Ano</label>
+            <label className="form-label">{t('filters.year')}</label>
             <select className="form-select" value={state.tempSelectedYear} onChange={(e) => actions.setTempSelectedYear(Number(e.target.value))}>
               {[state.defaultYear - 1, state.defaultYear, state.defaultYear + 1].map(y => (
                 <option key={y} value={y}>{y}</option>
@@ -127,10 +129,10 @@ export function PlannedExpensesPage() {
 
         <div className="modal-actions-filters">
           <button className="btn flex-1 btn-alt-bg" onClick={actions.handleResetFilters}>
-            Resetar
+            {t('filters.reset')}
           </button>
           <button className="btn btn-primary" style={{ flex: 2 }} onClick={actions.handleApplyFilters}>
-            Aplicar Filtros
+            {t('filters.apply')}
           </button>
         </div>
       </Modal>

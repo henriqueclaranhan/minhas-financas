@@ -22,6 +22,19 @@
   transition: background 0.2s;
   padding: var(--spacing-md) var(--spacing-sm);
 }
+.settings-preferences-item {
+  align-items: center;
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: space-between;
+}
+.settings-preference-copy {
+  min-width: 0;
+}
+.settings-select {
+  flex: 0 0 auto;
+  max-width: 148px;
+}
 @media (min-width: 769px) {
   .settings-item-header, .settings-item {
     padding: var(--spacing-md) var(--spacing-lg);
@@ -49,4 +62,14 @@
 }
 .settings-item-desc {
   font-size: 0.85rem;
+}
+@media (max-width: 480px) {
+  .settings-preferences-item {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .settings-select {
+    max-width: none;
+    width: 100%;
+  }
 }

@@ -58,7 +58,7 @@ describe('CreditCardPage UI', () => {
   it('renders page header and current invoice', () => {
     renderWithRouter(<CreditCardPage />);
     
-    expect(screen.getByText('Faturas e Previsões')).toBeInTheDocument();
+    expect(screen.getByText('Faturas e previsões')).toBeInTheDocument();
     expect(screen.getByText('Setembro 2026')).toBeInTheDocument();
     
     // Total

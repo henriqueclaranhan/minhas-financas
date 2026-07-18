@@ -1,9 +1,9 @@
-import { parseISO, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
 import { TransactionType } from '../../../../enums/FinanceEnums';
 import type { PlannedExpense } from '../../../../types';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
+import { useLocale } from '../../../../store/LocaleContext';
 import '../PlannedExpense.css';
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
 }
 
 export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleTouchStart, handleTouchEnd }: Props) {
+  const { formatCurrency, locale } = useLocale();
   const pDate = parseISO(p.dueDate);
   const currentDate = new Date();
   const isDueOrPast = pDate.getUTCFullYear() < currentDate.getFullYear() || 
@@ -46,7 +47,7 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
             ) : null}
           </h3>
           <p className="mobile-card-subtitle" style={{ color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
-            {format(pDate, "dd/MM/yy", { locale: ptBR })}
+            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(pDate)}
           </p>
         </div>
         <button 
@@ -70,11 +71,11 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
           <span className="mobile-amount" style={{ 
             color: (!p.type || p.type === TransactionType.EXPENSE) ? 'var(--clr-danger)' : 'var(--clr-success)'
           }}>
-            {(!p.type || p.type === TransactionType.EXPENSE) ? '-' : '+'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.amount)}
+            {(!p.type || p.type === TransactionType.EXPENSE) ? '-' : '+'} {formatCurrency(p.amount)}
           </span>
           {p.isInstallment && (
             <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '2px' }}>
-              Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.originalAmount || 0)}
+              Total: {formatCurrency(p.originalAmount || 0)}
             </div>
           )}
         </div>

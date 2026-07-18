@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { FinanceProvider } from './store/FinanceContext';
 import { AuthProvider, useAuth } from './store/AuthContext';
+import { LocaleProvider } from './store/LocaleContext';
 import { TransactionsPage } from './pages/TransactionsPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { PlannedExpensesPage } from './pages/PlannedExpensesPage';
@@ -37,10 +38,12 @@ function AppContent() {
   }
 
   return (
-    <FinanceProvider>
-      <OnboardingWizard />
-      <RouterProvider router={router} />
-    </FinanceProvider>
+    <LocaleProvider>
+      <FinanceProvider>
+        <OnboardingWizard />
+        <RouterProvider router={router} />
+      </FinanceProvider>
+    </LocaleProvider>
   );
 }
 

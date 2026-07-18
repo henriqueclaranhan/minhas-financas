@@ -5,10 +5,12 @@ import { TransactionForm } from '../../components/TransactionForm';
 import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { useDashboardViewModel } from './hooks/useDashboardViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { useLocale } from '../../store/LocaleContext';
 import './DashboardPage.css';
 
 export function DashboardPage() {
   const { state, actions } = useDashboardViewModel();
+  const { t } = useLocale();
 
   if (state.initialBalance === null && !state.hasData) {
     return null; // Wait for OnboardingWizard to set the balance
@@ -17,10 +19,10 @@ export function DashboardPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader 
-        title={`Olá, ${state.userName}!`}
-        description="Acompanhe o resumo das suas finanças e a evolução do seu saldo."
+        title={t('dashboard.greeting', { name: state.userName })}
+        description={t('dashboard.description')}
         primaryButton={{
-          label: 'Nova Ação',
+          label: t('dashboard.newAction'),
           icon: <Plus size={18} className="mr-sm" />,
           onClick: () => { actions.setIsModalOpen(true); actions.setActionType('none'); }
         }}
@@ -41,7 +43,7 @@ export function DashboardPage() {
       <Modal 
         isOpen={state.isModalOpen} 
         onClose={() => { actions.setIsModalOpen(false); setTimeout(() => actions.setActionType('none'), 300); }} 
-        title={state.actionType === 'none' ? 'O que deseja fazer?' : state.actionType === 'transaction' ? 'Nova Transação' : 'Planejar'}
+        title={state.actionType === 'none' ? t('dashboard.whatToDo') : state.actionType === 'transaction' ? t('dashboard.newTransaction') : t('planning.new')}
       >
         {state.actionType === 'none' && (
           <div className="dashboard-modal-grid">
@@ -53,8 +55,8 @@ export function DashboardPage() {
                 <Wallet size={24} color="#fff" />
               </div>
               <div>
-                <h3 className="dashboard-modal-title">Nova Transação</h3>
-                <p className="dashboard-modal-desc">Registrar uma entrada ou saída de dinheiro.</p>
+                <h3 className="dashboard-modal-title">{t('dashboard.newTransaction')}</h3>
+                <p className="dashboard-modal-desc">{t('dashboard.transactionDescription')}</p>
               </div>
             </button>
 
@@ -66,8 +68,8 @@ export function DashboardPage() {
                 <CalendarClock size={24} color="#fff" />
               </div>
               <div>
-                <h3 className="dashboard-modal-title">Novo Planejamento</h3>
-                <p className="dashboard-modal-desc">Agendar uma conta futura ou recorrente.</p>
+                <h3 className="dashboard-modal-title">{t('dashboard.newPlanning')}</h3>
+                <p className="dashboard-modal-desc">{t('dashboard.planningDescription')}</p>
               </div>
             </button>
           </div>

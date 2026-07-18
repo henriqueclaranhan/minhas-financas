@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { AuthService } from '../../../services/AuthService';
+import { useLocale } from '../../../store/LocaleContext';
 
 export function useAuthViewModel() {
+  const { t } = useLocale();
   const [isLogin, setIsLogin] = useState(true);
   const [isReset, setIsReset] = useState(false);
   
@@ -21,31 +23,31 @@ export function useAuthViewModel() {
     try {
       if (isReset) {
         await AuthService.resetPassword(email);
-        setMessage('E-mail de redefinição enviado! Verifique sua caixa de entrada.');
+        setMessage(t('auth.successResetLinkSent'));
         setIsReset(false);
       } else if (isLogin) {
         await AuthService.login(email, password);
       } else {
         await AuthService.signup(email, password, name);
-        setMessage('Conta criada com sucesso! Enviamos um link de verificação para o seu e-mail.');
+        setMessage(t('auth.successAccountCreated'));
         setIsLogin(true); // Switch to login view
       }
     } catch (err: any) {
       console.error(err);
       switch (err.code) {
         case 'auth/email-already-in-use':
-          setError('Este e-mail já está em uso por outra conta.');
+          setError(t('auth.errorEmailInUse'));
           break;
         case 'auth/invalid-credential':
         case 'auth/user-not-found':
         case 'auth/wrong-password':
-          setError('E-mail ou senha incorretos.');
+          setError(t('auth.errorInvalidCredentials'));
           break;
         case 'auth/weak-password':
-          setError('Sua senha deve ter pelo menos 6 caracteres.');
+          setError(t('auth.errorWeakPassword'));
           break;
         default:
-          setError('Ocorreu um erro inesperado. Tente novamente.');
+          setError(t('auth.errorUnexpected'));
       }
     } finally {
       setLoading(false);

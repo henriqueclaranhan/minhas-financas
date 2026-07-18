@@ -1,6 +1,7 @@
 import { FilterType } from '../../../enums/FinanceEnums';
 import { List, ArrowUpCircle, ArrowDownCircle, Filter, CalendarDays, CreditCard } from 'lucide-react';
 import './FilterTabs.css';
+import { useLocale } from '../../../store/LocaleContext';
 
 interface FilterTabsProps {
   filter: FilterType;
@@ -13,6 +14,7 @@ interface FilterTabsProps {
 }
 
 export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onOpenFilters, activeDateLabel, activeMethodLabel }: FilterTabsProps) {
+  const { t } = useLocale();
   return (
     <div className="glass-panel filter-tabs-panel">
       <div className="filter-tabs-container">
@@ -20,19 +22,19 @@ export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onO
           onClick={() => setFilter(FilterType.ALL)} 
           className={`btn filter-tab-btn ${filter === FilterType.ALL ? 'filter-tab-btn-active' : 'filter-tab-btn-inactive'}`}
         >
-          <List size={16} /> Todas
+          <List size={16} /> {t('filters.all')}
         </button>
         <button 
           onClick={() => setFilter(FilterType.INCOME)} 
           className={`btn filter-tab-btn ${filter === FilterType.INCOME ? 'filter-tab-btn-active-success' : 'filter-tab-btn-inactive'}`}
         >
-          <ArrowUpCircle size={16} /> Receitas
+          <ArrowUpCircle size={16} /> {t('chart.income')}
         </button>
         <button 
           onClick={() => setFilter(FilterType.EXPENSE)} 
           className={`btn filter-tab-btn ${filter === FilterType.EXPENSE ? 'filter-tab-btn-active-danger' : 'filter-tab-btn-inactive'}`}
         >
-          <ArrowDownCircle size={16} /> Despesas
+          <ArrowDownCircle size={16} /> {t('chart.expense')}
         </button>
       </div>
 
@@ -54,7 +56,7 @@ export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onO
       <div className="flex gap-sm">
         <input 
           type="search" 
-          placeholder="Buscar por nome..." 
+          placeholder={t('filters.search')}
           className="form-input filter-search-input"
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
@@ -62,7 +64,7 @@ export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onO
         <button 
           className="btn filter-action-btn" 
           onClick={onOpenFilters}
-          title="Filtros"
+          title={t('filters.title')}
         >
           <Filter size={20} />
         </button>

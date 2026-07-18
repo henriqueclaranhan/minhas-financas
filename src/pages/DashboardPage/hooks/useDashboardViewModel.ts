@@ -2,10 +2,12 @@ import { useState, useMemo } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { useAuth } from '../../../store/AuthContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
+import { useLocale } from '../../../store/LocaleContext';
 
 export function useDashboardViewModel() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
   const { user } = useAuth();
+  const { locale } = useLocale();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [actionType, setActionType] = useState<'none' | 'transaction' | 'planning'>('none');
@@ -19,9 +21,10 @@ export function useDashboardViewModel() {
       plannedExpenses,
       initialBalance: resolvedInitialBalance,
       startMonthOffset: -1, // Dashboard rule: 1 past month
-      monthsToProject: 6    // 1 past + current + 4 future
+      monthsToProject: 6,    // 1 past + current + 4 future
+      locale
     });
-  }, [transactions, plannedExpenses, resolvedInitialBalance]);
+  }, [transactions, plannedExpenses, resolvedInitialBalance, locale]);
 
   const handleTransactionAdd = (data: any) => {
     addTransaction(data);

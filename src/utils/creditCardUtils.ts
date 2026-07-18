@@ -1,5 +1,5 @@
 import { parseISO, addMonths, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import type { SupportedLocale } from '../i18n/translations';
 import type { Transaction } from '../types';
 
 export interface BillItem extends Transaction {
@@ -20,7 +20,7 @@ export interface MonthData {
   index: number;
 }
 
-export function calculateCreditCardBills(transactions: Transaction[], currentDate = new Date()): MonthData[] {
+export function calculateCreditCardBills(transactions: Transaction[], currentDate = new Date(), locale: SupportedLocale = 'pt-BR'): MonthData[] {
   const monthlyBills: Record<string, MonthlyBill> = {};
 
   transactions.forEach(t => {
@@ -50,8 +50,8 @@ export function calculateCreditCardBills(transactions: Transaction[], currentDat
   return Array.from({ length: 12 }).map((_, i) => {
     const date = addMonths(currentDate, i - 3);
     const key = format(date, 'yyyy-MM');
-    const labelFull = format(date, 'MMMM yyyy', { locale: ptBR });
-    const labelShort = format(date, 'MMM', { locale: ptBR }).toUpperCase();
+    const labelFull = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(date);
+    const labelShort = new Intl.DateTimeFormat(locale, { month: 'short' }).format(date).replace('.', '').toUpperCase();
     return {
       key,
       labelFull: labelFull.charAt(0).toUpperCase() + labelFull.slice(1),

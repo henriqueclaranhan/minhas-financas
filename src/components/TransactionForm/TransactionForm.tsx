@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import { Calendar, DollarSign, CreditCard, AlignLeft, Layers } from 'lucide-react';
 import type { Transaction } from '../../types';
 import { CurrencyInput } from '../CurrencyInput';
-import { handleDatePaste } from '../../utils/dateUtils';
+import { DateInput } from '../DateInput';
+import { getLocalDateString } from '../../utils/dateUtils';
+import { useLocale } from '../../store/LocaleContext';
 import '../../styles/FormStyles.css';
 
 interface TransactionFormProps {
@@ -12,11 +14,12 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ onSubmit, initialData, defaultType = 'expense' }: TransactionFormProps) {
+  const { t, locale } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
   const [amount, setAmount] = useState<number | ''>(initialData?.amount ?? '');
   const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
   const [installments, setInstallments] = useState(initialData?.installments || 1);
-  const [date, setDate] = useState(initialData?.date || new Date().toISOString().split('T')[0]);
+  const [date, setDate] = useState(initialData?.date || getLocalDateString());
 
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
 
@@ -38,7 +41,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
     setAmount('');
     setPaymentMethod('Crédito');
     setInstallments(1);
-    setDate(new Date().toISOString().split('T')[0]);
+    setDate(getLocalDateString());
   };
 
   const handleTypeChange = (newType: 'income' | 'expense') => {
@@ -51,15 +54,15 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
   return (
       <form onSubmit={handleSubmit}>
         <div className="form-group">
-          <label className="form-label">Tipo de Transação</label>
+          <label className="form-label">{t('form.type')}</label>
           <div className="flex gap-sm">
-            <button type="button" onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>Despesa</button>
-            <button type="button" onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>Receita</button>
+            <button type="button" onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>{t('form.expense')}</button>
+            <button type="button" onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>{t('form.income')}</button>
           </div>
         </div>
 
         <div className="form-group">
-          <label className="form-label"><AlignLeft size={16} /> Descrição</label>
+          <label className="form-label"><AlignLeft size={16} /> {t('common.description')}</label>
           <input 
             type="text" 
             value={description} 
@@ -72,7 +75,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label"><DollarSign size={16} /> Valor Total</label>
+            <label className="form-label"><DollarSign size={16} /> {t('form.totalAmount')}</label>
             <CurrencyInput 
               value={amount} 
               onChangeValue={setAmount} 
@@ -82,12 +85,10 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
           </div>
 
           <div className="form-group">
-            <label className="form-label"><Calendar size={16} /> Data</label>
-            <input 
-              type="date" 
+            <label className="form-label"><Calendar size={16} /> {t('common.date')}</label>
+            <DateInput 
               value={date} 
-              onChange={e => setDate(e.target.value)}
-              onPaste={e => handleDatePaste(e, setDate)}
+              onChangeValue={setDate}
               required
               className="form-input"
             />
@@ -125,7 +126,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
         </div>
 
         <button type="submit" className="btn btn-primary hover-glow form-submit-btn">
-          {initialData ? 'Salvar Alterações' : 'Adicionar Transação'}
+          {initialData ? t('common.saveChanges') : t('form.addTransaction')}
         </button>
       </form>
   );

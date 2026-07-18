@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
-import { parseISO, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import { Pencil, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { TransactionType } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { PlannedExpenseMobileCard } from '../PlannedExpenseMobileCard';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
+import { useLocale } from '../../../../store/LocaleContext';
 import '../PlannedExpense.css';
 
 interface PlannedExpenseTableProps {
@@ -17,6 +17,7 @@ interface PlannedExpenseTableProps {
 }
 
 export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onDelete }: PlannedExpenseTableProps) {
+  const { formatCurrency, locale, t } = useLocale();
   const [mobileActionItem, setMobileActionItem] = useState<ExpandedPlannedExpense | null>(null);
   const [pressingId, setPressingId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -51,11 +52,11 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
         <table className="data-table">
           <thead>
             <tr>
-              <th className="col-date">Vencimento</th>
-              <th className="col-desc">Descrição</th>
-              <th className="col-method">Método</th>
-              <th className="col-amount">Valor</th>
-              <th className="col-actions">Ações</th>
+              <th className="col-date">{t('common.dueDate')}</th>
+              <th className="col-desc">{t('common.description')}</th>
+              <th className="col-method">{t('common.paymentMethod')}</th>
+              <th className="col-amount">{t('common.amount')}</th>
+              <th className="col-actions">{t('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -73,7 +74,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
               return (
                 <tr key={p.id}>
                   <td className="td-nowrap" style={{ color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
-                    {format(pDate, 'dd/MM/yyyy', { locale: ptBR })}
+                    {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(pDate)}
                   </td>
                   <td className="td-bold">
                     {p.description}
@@ -96,7 +97,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                     {p.paymentMethod || '-'}
                   </td>
                   <td className={p.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
-                    {p.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(p.amount)}
+                    {p.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(p.amount)}
                   </td>
                   <td className="td-actions">
                     {isCurrent && (

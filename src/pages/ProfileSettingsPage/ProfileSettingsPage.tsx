@@ -1,10 +1,13 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Save, User as UserIcon, Mail, Shield, Loader, MailCheck } from 'lucide-react';
 import { useProfileSettingsViewModel } from './hooks/useProfileSettingsViewModel';
+import { useLocale } from '../../store/LocaleContext';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './ProfileSettingsPage.css';
 
 export function ProfileSettingsPage() {
   const navigate = useNavigate();
+  const { t } = useLocale();
   const { state, actions } = useProfileSettingsViewModel();
   const {
     user,
@@ -30,17 +33,14 @@ export function ProfileSettingsPage() {
       <div className="profile-page-container animate-fade-in">
         <div className="profile-email-sent-card glass-panel">
           <MailCheck size={48} className="profile-email-sent-icon" />
-          <h2>Confirme seu novo e-mail</h2>
-          <p>
-            Enviamos um link de confirmação para <strong>{email}</strong>.
-            Clique nele para concluir a troca de e-mail.
-          </p>
+          <h2>{t('profile.emailSentTitle')}</h2>
+          <p dangerouslySetInnerHTML={{ __html: t('profile.emailSentDesc', { email }) }} />
           <p className="profile-email-sent-hint">
-            Não encontrou? Verifique a pasta de spam. O link expira em 1 hora.
+            {t('profile.emailSentHint')}
           </p>
           <div className="profile-email-sent-actions">
             <button type="button" className="btn btn-primary" onClick={dismissEmailVerification}>
-              OK, entendi
+              {t('profile.emailSentOk')}
             </button>
           </div>
         </div>
@@ -50,23 +50,12 @@ export function ProfileSettingsPage() {
 
   return (
     <div className="profile-page-container animate-fade-in">
-      <header className="mb-xl flex items-center">
-        <button
-          className="btn"
-          onClick={() => navigate(-1)}
-          type="button"
-          style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
-        >
-          <ChevronLeft size={24} /> Voltar
-        </button>
-      </header>
-
-      <header className="page-header" style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1>Meu Perfil</h1>
-          <p className="text-secondary" style={{ marginTop: 'var(--spacing-xs)' }}>Gerencie suas informações pessoais e a segurança da sua conta.</p>
-        </div>
-      </header>
+      <PageHeader
+        title={t('settings.profile')}
+        description={t('settings.profileDescription')}
+        showBackButton={true}
+        forceShowBackButtonOnDesktop={true}
+      />
 
       {status && (
         <div className={`settings-status mb-lg ${status.type}`}>
@@ -83,14 +72,14 @@ export function ProfileSettingsPage() {
               <UserIcon size={20} />
             </div>
             <div>
-              <h2 className="profile-section-title">Informações Pessoais</h2>
-              <p className="profile-section-desc">Como você será identificado no aplicativo.</p>
+              <h2 className="profile-section-title">{t('profile.personalInfo')}</h2>
+              <p className="profile-section-desc">{t('profile.personalInfoDesc')}</p>
             </div>
           </div>
 
           <div className="profile-form-grid">
             <div className="form-group">
-              <label htmlFor="name">Nome de Exibição</label>
+              <label htmlFor="name">{t('profile.displayName')}</label>
               <div className="input-with-icon">
                 <UserIcon size={18} className="input-icon" />
                 <input
@@ -98,14 +87,14 @@ export function ProfileSettingsPage() {
                   id="name"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  placeholder="Seu nome"
+                  placeholder={t('profile.namePlaceholder')}
                   className="form-input"
                 />
               </div>
             </div>
 
             <div className="form-group">
-              <label htmlFor="email">Endereço de E-mail</label>
+              <label htmlFor="email">{t('profile.emailAddress')}</label>
               <div className="input-with-icon">
                 <Mail size={18} className="input-icon" />
                 <input
@@ -113,30 +102,28 @@ export function ProfileSettingsPage() {
                   id="email"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="seu@email.com"
+                  placeholder={t('profile.emailPlaceholder')}
                   className="form-input"
                 />
               </div>
               {user?.email === email && !user?.emailVerified && (
                 <div className="profile-email-status">
-                  <span className="text-danger">E-mail não verificado.</span>
+                  <span className="text-danger">{t('profile.emailNotVerified')}</span>
                   <button
                     type="button"
                     className="profile-inline-link"
                     onClick={handleResendVerification}
                     disabled={verificationSent}
                   >
-                    {verificationSent ? 'E-mail enviado' : 'Enviar verificação'}
+                    {verificationSent ? t('profile.emailSent') : t('profile.sendVerification')}
                   </button>
                 </div>
               )}
               {user?.email === email && user?.emailVerified && (
-                <span className="profile-email-verified">✓ E-mail verificado</span>
+                <span className="profile-email-verified">{t('profile.emailVerified')}</span>
               )}
               {email !== user?.email && (
-                <span className="profile-email-hint">
-                  Um link de confirmação será enviado para <strong>{email}</strong> para concluir a troca.
-                </span>
+                <span className="profile-email-hint" dangerouslySetInnerHTML={{ __html: t('profile.emailChangeHint', { email }) }} />
               )}
             </div>
           </div>
@@ -149,14 +136,14 @@ export function ProfileSettingsPage() {
               <Shield size={20} />
             </div>
             <div>
-              <h2 className="profile-section-title">Segurança da Conta</h2>
-              <p className="profile-section-desc">Defina uma nova senha para sua conta.</p>
+              <h2 className="profile-section-title">{t('profile.security')}</h2>
+              <p className="profile-section-desc">{t('profile.securityDesc')}</p>
             </div>
           </div>
 
           <div className="profile-form-grid">
             <div className="form-group">
-              <label htmlFor="newPassword">Nova Senha</label>
+              <label htmlFor="newPassword">{t('profile.newPassword')}</label>
               <div className="input-with-icon">
                 <Shield size={18} className="input-icon" />
                 <input
@@ -164,7 +151,7 @@ export function ProfileSettingsPage() {
                   id="newPassword"
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
-                  placeholder="Deixe em branco para não alterar"
+                  placeholder={t('profile.passwordPlaceholder')}
                   className="form-input"
                 />
               </div>
@@ -179,7 +166,7 @@ export function ProfileSettingsPage() {
             onClick={() => navigate(-1)}
             disabled={loading}
           >
-            Cancelar
+            {t('common.cancel')}
           </button>
           <button
             type="submit"
@@ -187,10 +174,10 @@ export function ProfileSettingsPage() {
             disabled={loading}
           >
             {loading ? (
-              <span className="flex items-center gap-sm"><Loader size={16} className="spin" /> Salvando...</span>
+              <span className="flex items-center gap-sm"><Loader size={16} className="spin" /> {t('profile.saving')}</span>
             ) : (
               <span className="flex items-center gap-sm">
-                <Save size={18} /> Salvar Alterações
+                <Save size={18} /> {t('common.saveChanges')}
               </span>
             )}
           </button>

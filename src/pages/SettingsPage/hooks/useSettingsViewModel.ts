@@ -1,10 +1,12 @@
 import { useState, useRef } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { useAuth } from '../../../store/AuthContext';
+import { useLocale } from '../../../store/LocaleContext';
 
 export function useSettingsViewModel() {
   const { exportData, importData, clearData } = useFinance();
   const { logout } = useAuth();
+  const { t } = useLocale();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string>('');
 
@@ -19,12 +21,14 @@ export function useSettingsViewModel() {
     const reader = new FileReader();
     reader.onload = async (event) => {
       const content = event.target?.result as string;
-      const success = await importData(content);
-      if (success) {
-        setImportStatus('Dados importados com sucesso!');
+      try {
+        await importData(content);
+        setImportStatus(t('settings.importSuccess'));
         setTimeout(() => setImportStatus(''), 3000);
-      } else {
-        setImportStatus('Erro ao importar arquivo. Verifique o formato.');
+      } catch (err) {
+        console.error(err);
+        setImportStatus(t('settings.importError'));
+        setTimeout(() => setImportStatus(''), 3000);
       }
     };
     reader.readAsText(file);

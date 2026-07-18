@@ -1,9 +1,9 @@
-import { parseISO, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
 import { TransactionType } from '../../../../enums/FinanceEnums';
 import type { Transaction } from '../../../../types';
 import type { ExpandedTransaction } from '../../../../utils/financeUtils';
+import { useLocale } from '../../../../store/LocaleContext';
 import '../Transaction.css';
 
 interface Props {
@@ -15,6 +15,7 @@ interface Props {
 }
 
 export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouchStart, handleTouchEnd }: Props) {
+  const { formatCurrency, locale, t: translate } = useLocale();
   return (
     <div 
       className="glass-panel mobile-card-container" 
@@ -37,7 +38,7 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
             ) : null}
           </h3>
           <p className="mobile-card-subtitle" style={{ color: 'var(--clr-text-secondary)' }}>
-            {format(parseISO(t.date), "dd/MM/yy", { locale: ptBR })} • {t.paymentMethod}
+            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(parseISO(t.date))} • {t.paymentMethod}
           </p>
         </div>
         <button 
@@ -55,17 +56,17 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
           color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)',
           background: t.type === TransactionType.INCOME ? 'var(--clr-success-glow)' : 'var(--clr-danger-glow)'
         }}>
-          {t.type === TransactionType.INCOME ? 'Receita' : 'Despesa'}
+          {t.type === TransactionType.INCOME ? translate('form.income') : translate('form.expense')}
         </span>
         <div style={{ textAlign: 'right' }}>
           <span className="mobile-amount" style={{ 
             color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)'
           }}>
-            {t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
+            {t.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(t.amount)}
           </span>
           {t.isInstallment && (
             <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '2px' }}>
-              Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.originalAmount || 0)}
+              Total: {formatCurrency(t.originalAmount || 0)}
             </div>
           )}
         </div>

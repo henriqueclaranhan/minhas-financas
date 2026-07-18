@@ -2,20 +2,22 @@ import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp } from 'lucide-react';
 import { useAuth } from '../../store/AuthContext';
+import { useLocale } from '../../store/LocaleContext';
 import './Layout.css';
 
 export function Layout() {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
   const { user } = useAuth();
-  const userName = user?.displayName || user?.email?.split('@')[0] || 'Usuário';
+  const { t } = useLocale();
+  const userName = user?.displayName || user?.email?.split('@')[0] || t('app.name');
   const location = useLocation();
   
   const navItems = [
-    { to: '/', icon: <LayoutDashboard size={22} />, label: 'Dashboard', isMain: true },
-    { to: '/transactions', icon: <Wallet size={22} />, label: 'Transações', isMain: true },
-    { to: '/planned', icon: <CalendarClock size={22} />, label: 'Planejamento', isMain: true },
-    { to: '/credit', icon: <CreditCard size={22} />, label: 'Faturas', isMain: true },
-    { to: '/forecast', icon: <TrendingUp size={22} />, label: 'Previsões', isMain: false },
+    { to: '/', icon: <LayoutDashboard size={22} />, label: t('nav.dashboard'), isMain: true },
+    { to: '/transactions', icon: <Wallet size={22} />, label: t('nav.transactions'), isMain: true },
+    { to: '/planned', icon: <CalendarClock size={22} />, label: t('nav.planning'), isMain: true },
+    { to: '/credit', icon: <CreditCard size={22} />, label: t('nav.invoices'), isMain: true },
+    { to: '/forecast', icon: <TrendingUp size={22} />, label: t('nav.forecast'), isMain: false },
   ];
 
   const mainNavItems = navItems.filter(i => i.isMain);
@@ -32,7 +34,7 @@ export function Layout() {
             </div>
           </button>
           <div className="mobile-header-title">
-            Minhas Finanças
+            {t('app.name')}
           </div>
           <div className="mobile-header-placeholder" /> {/* Placeholder to center title */}
         </div>
@@ -72,7 +74,7 @@ export function Layout() {
 
           <div className="drawer-footer">
             <NavLink to="/settings" className="nav-item" onClick={() => setIsMobileDrawerOpen(false)}>
-              <Settings size={22} /> Ajustes
+              <Settings size={22} /> {t('nav.settings')}
             </NavLink>
           </div>
         </div>
@@ -84,7 +86,7 @@ export function Layout() {
           
           {/* App Logo */}
           <div className="sidebar-logo">
-            <PieChart size={28} /> Minhas Finanças
+            <PieChart size={28} /> {t('app.name')}
           </div>
         </div>
 
@@ -114,7 +116,7 @@ export function Layout() {
         
         <div className="sidebar-footer">
           <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <Settings size={22} /> Ajustes
+            <Settings size={22} /> {t('nav.settings')}
           </NavLink>
         </div>
       </aside>

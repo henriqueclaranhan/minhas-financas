@@ -7,10 +7,12 @@ import type { ExpandedTransaction } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
 import { TransactionService } from '../../../services/TransactionService';
 import { useAuth } from '../../../store/AuthContext';
+import { useLocale } from '../../../store/LocaleContext';
 
 export function useTransactionsViewModel() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
   const { user } = useAuth();
+  const { locale, t } = useLocale();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
@@ -126,8 +128,8 @@ export function useTransactionsViewModel() {
   };
 
   const filterLabel = selectedMonth === 'all' 
-    ? `Ano todo, ${selectedYear}`
-    : `${new Date(2000, selectedMonth as number, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())} de ${selectedYear}`;
+    ? t('filters.fullYearOf', { year: selectedYear })
+    : t('filters.monthOfYear', { month: new Date(2000, selectedMonth as number, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase()), year: selectedYear });
 
   return {
     state: {

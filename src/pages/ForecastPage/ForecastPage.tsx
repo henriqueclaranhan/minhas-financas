@@ -2,9 +2,11 @@ import { useForecastViewModel } from './hooks/useForecastViewModel';
 import { DashboardChart } from '../../components/dashboard/DashboardChart';
 import { PageHeader } from '../../components/shared/PageHeader';
 import './ForecastPage.css';
+import { useLocale } from '../../store/LocaleContext';
 
 export function ForecastPage() {
   const { state, actions } = useForecastViewModel();
+  const { t } = useLocale();
   const {
     chartData,
     includePlannedIncome,
@@ -23,8 +25,8 @@ export function ForecastPage() {
   return (
     <div className="animate-fade-in forecast-page">
       <PageHeader
-        title="Previsões e Cenários"
-        description="Simule o futuro do seu saldo baseando-se nos seus planejamentos."
+        title={t('forecast.title')}
+        description={t('forecast.description')}
         showBackButton={true}
       />
 
@@ -32,36 +34,32 @@ export function ForecastPage() {
         <div className="glass-panel p-lg">
           <div className="form-row mb-lg">
             <div className="form-group forecast-form-group">
-              <label className="form-label">Início da Projeção</label>
+              <label className="form-label">{t('forecast.start')}</label>
               <select
                 className="form-select"
                 value={startMonthOffset}
                 onChange={(e) => setStartMonthOffset(Number(e.target.value))}
               >
-                <option value={-3}>3 meses atrás</option>
-                <option value={-1}>1 mês atrás</option>
-                <option value={0}>Mês Atual</option>
-                <option value={1}>Próximo Mês</option>
+                <option value={-3}>{t('forecast.threeMonthsAgo')}</option><option value={-1}>{t('forecast.oneMonthAgo')}</option><option value={0}>{t('forecast.currentMonth')}</option><option value={1}>{t('forecast.nextMonth')}</option>
               </select>
             </div>
 
             <div className="form-group forecast-form-group">
-              <label className="form-label">Período Visível (Meses)</label>
+              <label className="form-label">{t('forecast.visiblePeriod')}</label>
               <select
                 className="form-select"
                 value={monthsToProject}
                 onChange={(e) => setMonthsToProject(Number(e.target.value))}
               >
-                <option value={3}>3 meses</option>
-                <option value={6}>6 meses</option>
-                <option value={12}>12 meses</option>
-                <option value={24}>24 meses</option>
+                {[3, 6, 12, 24].map((count) => (
+                  <option key={count} value={count}>{t('forecast.monthCount', { count })}</option>
+                ))}
               </select>
             </div>
           </div>
 
           <div className="forecast-options-section">
-            <h3 className="forecast-options-title">O que incluir no futuro?</h3>
+            <h3 className="forecast-options-title">{t('forecast.include')}</h3>
 
             <div className="forecast-options-container">
               <label className="forecast-checkbox-label">
@@ -71,7 +69,7 @@ export function ForecastPage() {
                   onChange={(e) => setIncludePlannedIncome(e.target.checked)}
                   className="forecast-checkbox"
                 />
-                <span>Entradas Planejadas</span>
+                <span>{t('forecast.plannedIncome')}</span>
               </label>
 
               <label className="forecast-checkbox-label">
@@ -81,7 +79,7 @@ export function ForecastPage() {
                   onChange={(e) => setIncludePlannedExpense(e.target.checked)}
                   className="forecast-checkbox"
                 />
-                <span>Gastos Planejados</span>
+                <span>{t('forecast.plannedExpense')}</span>
               </label>
             </div>
           </div>
@@ -91,7 +89,7 @@ export function ForecastPage() {
           <DashboardChart
             data={chartData.data}
             formatCurrency={formatCurrency}
-            title="Projeção do Saldo"
+            title={t('forecast.balanceProjection')}
           />
         </div>
       </div>

@@ -1,5 +1,6 @@
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import './DashboardChart.css';
+import { useLocale } from '../../../store/LocaleContext';
 
 interface ChartDataPoint {
   name: string;
@@ -15,11 +16,12 @@ interface DashboardChartProps {
   headerAction?: React.ReactNode;
 }
 
-export function DashboardChart({ data, formatCurrency, title = 'Evolução e Previsão do Saldo', headerAction }: DashboardChartProps) {
+export function DashboardChart({ data, formatCurrency, title, headerAction }: DashboardChartProps) {
+  const { t } = useLocale();
   return (
     <div className="glass-panel chart-panel">
       <div className="flex justify-between items-center mb-xl">
-        <h3 className="chart-header-title">{title}</h3>
+        <h3 className="chart-header-title">{title ?? t('dashboard.balanceProjection')}</h3>
         {headerAction && <div>{headerAction}</div>}
       </div>
       <div className="chart-container">
@@ -37,12 +39,12 @@ export function DashboardChart({ data, formatCurrency, title = 'Evolução e Pre
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: 'var(--clr-text-secondary)', fontSize: 12 }}
-              tickFormatter={(val) => `R$ ${val}`}
+              tickFormatter={(val) => formatCurrency(val)}
               dx={-10}
             />
             <Tooltip 
               contentStyle={{ backgroundColor: 'var(--clr-surface)', borderColor: 'var(--clr-border)', borderRadius: '8px', color: 'var(--clr-text-primary)' }}
-              formatter={(value: any) => [formatCurrency(Number(value)), 'Saldo']}
+              formatter={(value: any) => [formatCurrency(Number(value)), t('chart.balance')]}
               wrapperClassName="hide-on-mobile"
             />
             <Area type="monotone" dataKey="saldo" stroke="var(--clr-primary)" strokeWidth={3} fillOpacity={1} fill="url(#colorSaldo)" />
@@ -54,10 +56,10 @@ export function DashboardChart({ data, formatCurrency, title = 'Evolução e Pre
         <table className="data-table chart-table">
           <thead>
             <tr>
-              <th>Mês</th>
-              <th className="hide-on-mobile text-right">Entradas</th>
-              <th className="hide-on-mobile text-right">Saídas</th>
-              <th className="text-right">Saldo Final</th>
+              <th>{t('chart.month')}</th>
+              <th className="hide-on-mobile text-right">{t('chart.income')}</th>
+              <th className="hide-on-mobile text-right">{t('chart.expense')}</th>
+              <th className="text-right">{t('chart.balance')}</th>
             </tr>
           </thead>
           <tbody>

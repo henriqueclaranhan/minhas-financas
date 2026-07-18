@@ -1,9 +1,11 @@
 import { PieChart, Mail, Lock, User, ArrowRight, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { useAuthViewModel } from './hooks/useAuthViewModel';
+import { useLocale } from '../../store/LocaleContext';
 import './AuthPage.css';
 
 export function AuthPage() {
   const { state, actions } = useAuthViewModel();
+  const { t } = useLocale();
 
   return (
     <div className="auth-container animate-fade-in">
@@ -16,10 +18,10 @@ export function AuthPage() {
         <div className="auth-hero-content">
           <div className="auth-logo">
             <PieChart size={32} />
-            <span>Minhas Finanças</span>
+            <span>{t('app.name')}</span>
           </div>
-          <h1 className="auth-headline">O controle do seu dinheiro, simples e claro.</h1>
-          <p className="auth-subheadline">Gerencie, planeje e alcance seus objetivos financeiros em uma plataforma desenhada para sua tranquilidade.</p>
+          <h1 className="auth-headline">{t('auth.headline')}</h1>
+          <p className="auth-subheadline">{t('auth.subheadline')}</p>
         </div>
       </div>
 
@@ -30,14 +32,14 @@ export function AuthPage() {
           {/* Logo for mobile only */}
           <div className="mobile-only-logo">
             <PieChart size={32} />
-            <span>Minhas Finanças</span>
+            <span>{t('app.name')}</span>
           </div>
 
           <h2 className="auth-form-title">
-            {state.isReset ? 'Redefinir senha' : state.isLogin ? 'Bem-vindo de volta' : 'Crie sua conta'}
+            {state.isReset ? t('auth.resetPassword') : state.isLogin ? t('auth.welcomeBack') : t('auth.createAccountTitle')}
           </h2>
           <p className="auth-form-subtitle">
-            {state.isReset ? 'Enviaremos um link seguro para o seu e-mail' : state.isLogin ? 'Insira seus dados para acessar seu painel' : 'Comece a organizar suas finanças hoje mesmo'}
+            {state.isReset ? t('auth.resetSubtitle') : state.isLogin ? t('auth.loginSubtitle') : t('auth.signupSubtitle')}
           </p>
 
           {state.error && (
@@ -60,7 +62,7 @@ export function AuthPage() {
                 <input 
                   type="text" 
                   className="auth-input" 
-                  placeholder="Seu nome" 
+                  placeholder={t('auth.namePlaceholder')}
                   value={state.name} 
                   onChange={e => actions.setName(e.target.value)}
                   required 
@@ -73,7 +75,7 @@ export function AuthPage() {
               <input 
                 type="email" 
                 className="auth-input" 
-                placeholder="Seu e-mail" 
+                placeholder={t('auth.emailPlaceholder')}
                 value={state.email} 
                 onChange={e => actions.setEmail(e.target.value)}
                 required 
@@ -86,7 +88,7 @@ export function AuthPage() {
                 <input 
                   type="password" 
                   className="auth-input" 
-                  placeholder="Sua senha" 
+                  placeholder={t('auth.passwordPlaceholder')}
                   value={state.password} 
                   onChange={e => actions.setPassword(e.target.value)}
                   required 
@@ -99,13 +101,13 @@ export function AuthPage() {
             {state.isLogin && !state.isReset && (
               <div className="auth-forgot-password-wrapper">
                 <button type="button" className="auth-link auth-forgot-password-link" onClick={() => actions.setIsReset(true)}>
-                  Esqueci minha senha
+                  {t('auth.forgotPassword')}
                 </button>
               </div>
             )}
 
             <button type="submit" className="auth-submit-btn" disabled={state.loading}>
-              {state.loading ? 'Processando...' : state.isReset ? 'Enviar Link' : state.isLogin ? 'Acessar Plataforma' : 'Criar Conta Agora'} 
+              {state.loading ? t('auth.processing') : state.isReset ? t('auth.sendLink') : state.isLogin ? t('auth.login') : t('auth.createAccount')} 
               {!state.loading && <ArrowRight size={20} />}
             </button>
           </form>
@@ -113,23 +115,23 @@ export function AuthPage() {
           <div className="auth-switch-text">
             {state.isReset ? (
               <>
-                Lembrou a senha?{' '}
+                {t('auth.rememberedPassword')} {' '}
                 <button type="button" className="auth-link" onClick={() => actions.setIsReset(false)}>
-                  Voltar para o login
+                  {t('auth.backToLogin')}
                 </button>
               </>
             ) : state.isLogin ? (
               <>
-                Ainda não tem uma conta?{' '}
+                {t('auth.noAccount')} {' '}
                 <button type="button" className="auth-link" onClick={() => { actions.setIsLogin(false); actions.setError(''); actions.setMessage(''); }}>
-                  Cadastre-se grátis
+                  {t('auth.signUp')}
                 </button>
               </>
             ) : (
               <>
-                Já possui uma conta?{' '}
+                {t('auth.hasAccount')} {' '}
                 <button type="button" className="auth-link" onClick={() => { actions.setIsLogin(true); actions.setError(''); actions.setMessage(''); }}>
-                  Faça login
+                  {t('auth.signIn')}
                 </button>
               </>
             )}

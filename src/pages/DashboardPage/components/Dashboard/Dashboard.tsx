@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { SummaryCards } from '../SummaryCards';
 import { DashboardChart } from '../../../../components/dashboard/DashboardChart';
+import { useLocale } from '../../../../store/LocaleContext';
 import './Dashboard.css';
 
 interface DashboardProps {
@@ -14,7 +15,7 @@ interface DashboardProps {
 }
 
 export function Dashboard({ chartData }: DashboardProps) {
-  const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+  const { formatCurrency, t } = useLocale();
 
   return (
     <div className="flex flex-col gap-xl">
@@ -33,7 +34,7 @@ export function Dashboard({ chartData }: DashboardProps) {
             to="/forecast" 
             className="dashboard-link"
           >
-            <span className="hide-on-mobile">Ver todas</span> <ChevronRight size={20} />
+            <span className="hide-on-mobile">{t('dashboard.viewAll')}</span> <ChevronRight size={20} />
           </Link>
         }
       />

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocale } from '../../store/LocaleContext';
 
 interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   value: number | '';
@@ -6,15 +7,16 @@ interface CurrencyInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
 }
 
 export function CurrencyInput({ value, onChangeValue, ...props }: CurrencyInputProps) {
+  const { formatCurrency, currency } = useLocale();
   const [displayValue, setDisplayValue] = useState('');
 
   useEffect(() => {
     if (value === '') {
       setDisplayValue('');
     } else {
-      setDisplayValue(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(Number(value)));
+      setDisplayValue(formatCurrency(Number(value)));
     }
-  }, [value]);
+  }, [value, formatCurrency]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     let raw = e.target.value.replace(/\D/g, '');
@@ -25,7 +27,7 @@ export function CurrencyInput({ value, onChangeValue, ...props }: CurrencyInputP
     }
     const num = parseInt(raw, 10) / 100;
     onChangeValue(num);
-    setDisplayValue(new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(num));
+    setDisplayValue(formatCurrency(num));
   };
 
   return (
@@ -34,7 +36,7 @@ export function CurrencyInput({ value, onChangeValue, ...props }: CurrencyInputP
       inputMode="numeric"
       value={displayValue}
       onChange={handleChange}
-      placeholder="R$ 0,00"
+      placeholder={currency === 'BRL' ? 'R$ 0,00' : 'US$ 0.00'}
       {...props}
     />
   );

@@ -1,5 +1,6 @@
 import { DollarSign, TrendingUp, TrendingDown } from 'lucide-react';
 import './SummaryCards.css';
+import { useLocale } from '../../../../store/LocaleContext';
 
 interface SummaryCardsProps {
   currentBalance: number;
@@ -9,12 +10,13 @@ interface SummaryCardsProps {
 }
 
 export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, formatCurrency }: SummaryCardsProps) {
+  const { t } = useLocale();
   return (
     <div className="summary-cards-container">
       <div className="glass-panel summary-card">
         <div className="summary-card-header">
           <DollarSign size={20} color="var(--clr-primary)" />
-          <span>Saldo Atual Estimado</span>
+          <span>{t('dashboard.currentBalance')}</span>
         </div>
         <div className="summary-card-value summary-card-value-primary">
           {formatCurrency(currentBalance)}
@@ -24,7 +26,7 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, fo
       <div className="glass-panel summary-card">
         <div className="summary-card-header">
           <TrendingUp size={20} color="var(--clr-success)" />
-          <span>Receitas do Mês</span>
+          <span>{t('dashboard.monthlyIncome')}</span>
         </div>
         <div className="summary-card-value summary-card-value-success">
           {formatCurrency(monthlyIncome)}
@@ -34,7 +36,7 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, fo
       <div className="glass-panel summary-card">
         <div className="summary-card-header">
           <TrendingDown size={20} color="var(--clr-danger)" />
-          <span>Despesas do Mês</span>
+          <span>{t('dashboard.monthlyExpense')}</span>
         </div>
         <div className="summary-card-value summary-card-value-danger">
           {formatCurrency(Math.abs(monthlyExpense))}

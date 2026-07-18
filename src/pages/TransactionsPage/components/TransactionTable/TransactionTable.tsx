@@ -1,11 +1,11 @@
 import { useState, useRef } from 'react';
-import { parseISO, format } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { parseISO } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
 import { TransactionType } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { TransactionMobileCard } from '../TransactionMobileCard';
 import type { ExpandedTransaction } from '../../../../utils/financeUtils';
+import { useLocale } from '../../../../store/LocaleContext';
 import '../Transaction.css';
 
 interface TransactionTableProps {
@@ -15,6 +15,7 @@ interface TransactionTableProps {
 }
 
 export function TransactionTable({ transactions, onEdit, onDelete }: TransactionTableProps) {
+  const { formatCurrency, locale, t: translate } = useLocale();
   const [mobileActionItem, setMobileActionItem] = useState<ExpandedTransaction | null>(null);
   const [pressingId, setPressingId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -22,7 +23,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
   if (transactions.length === 0) {
     return (
       <div className="empty-state-text">
-        Nenhuma transação registrada ainda.
+        {translate('transactions.empty')}
       </div>
     );
   }
@@ -49,18 +50,14 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
         <table className="data-table">
           <thead>
             <tr>
-              <th className="col-date">Data</th>
-              <th className="col-desc">Descrição</th>
-              <th className="col-method">Método</th>
-              <th className="col-amount">Valor</th>
-              <th className="col-actions">Ações</th>
+              <th className="col-date">{translate('common.date')}</th><th className="col-desc">{translate('common.description')}</th><th className="col-method">{translate('common.paymentMethod')}</th><th className="col-amount">{translate('common.amount')}</th><th className="col-actions">{translate('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
             {transactions.map(t => (
               <tr key={t.id}>
                 <td className="td-secondary td-nowrap">
-                  {format(parseISO(t.date), 'dd/MM/yyyy', { locale: ptBR })}
+                  {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' }).format(parseISO(t.date))}
                 </td>
                 <td className="td-bold">
                   {t.description}
@@ -76,18 +73,18 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
                 </td>
                 <td className="td-secondary">{t.paymentMethod}</td>
                 <td className={t.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
-                  <div>{t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}</div>
+                  <div>{t.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(t.amount)}</div>
                   {t.isInstallment && (
                     <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '4px' }}>
-                      Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.originalAmount || 0)}
+                      Total: {formatCurrency(t.originalAmount || 0)}
                     </div>
                   )}
                 </td>
                 <td className="td-actions">
-                  <button onClick={() => onEdit(t)} className="btn btn-action primary" title="Editar">
+                  <button onClick={() => onEdit(t)} className="btn btn-action primary" title={translate('common.edit')}>
                     <Pencil size={18} />
                   </button>
-                  <button onClick={() => onDelete(t.id!)} className="btn btn-action danger" title="Apagar">
+                  <button onClick={() => onDelete(t.id!)} className="btn btn-action danger" title={translate('common.delete')}>
                     <Trash2 size={18} />
                   </button>
                 </td>
@@ -110,7 +107,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
         ))}
       </div>
 
-      <Modal isOpen={!!mobileActionItem} onClose={() => setMobileActionItem(null)} title="Opções da Transação">
+      <Modal isOpen={!!mobileActionItem} onClose={() => setMobileActionItem(null)} title={translate('transactions.options')}>
         <div className="modal-grid">
           <button 
             className="glass-panel hover-lift modal-action-btn"
@@ -123,8 +120,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
               <Pencil size={24} color="#fff" />
             </div>
             <div>
-              <h3 className="modal-action-title">Editar</h3>
-              <p className="modal-action-desc">Modificar os dados desta transação.</p>
+              <h3 className="modal-action-title">{translate('common.edit')}</h3><p className="modal-action-desc">{translate('transactions.editDescription')}</p>
             </div>
           </button>
           
@@ -139,8 +135,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
               <Trash2 size={24} color="#fff" />
             </div>
             <div>
-              <h3 className="modal-action-title">Apagar</h3>
-              <p className="modal-action-desc">Remover transação permanentemente.</p>
+              <h3 className="modal-action-title">{translate('common.delete')}</h3><p className="modal-action-desc">{translate('transactions.deleteDescription')}</p>
             </div>
           </button>
         </div>

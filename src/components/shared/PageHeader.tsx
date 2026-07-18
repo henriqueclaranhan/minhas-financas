@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
+import { useLocale } from '../../store/LocaleContext';
 
 interface PageHeaderProps {
   title: string;
@@ -10,21 +11,23 @@ interface PageHeaderProps {
     onClick: () => void;
   };
   showBackButton?: boolean;
+  forceShowBackButtonOnDesktop?: boolean;
 }
 
-export function PageHeader({ title, description, primaryButton, showBackButton }: PageHeaderProps) {
+export function PageHeader({ title, description, primaryButton, showBackButton, forceShowBackButtonOnDesktop }: PageHeaderProps) {
   const navigate = useNavigate();
+  const { t } = useLocale();
 
   return (
     <>
       {showBackButton && (
-        <header className="hide-on-desktop mb-xl flex items-center">
+        <header className={`${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'} mb-xl flex items-center`}>
           <button 
             onClick={() => navigate(-1)} 
-            className="btn hide-on-desktop"
+            className={`btn ${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'}`}
             style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
           >
-            <ChevronLeft size={24} /> Voltar
+            <ChevronLeft size={24} /> {t('common.back')}
           </button>
         </header>
       )}

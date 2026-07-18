@@ -57,7 +57,7 @@ describe('TransactionsPage UI', () => {
   it('renders page header and summary cards correctly', () => {
     renderWithRouter(<TransactionsPage />);
     
-    expect(screen.getByText('Histórico de Transações')).toBeInTheDocument();
+    expect(screen.getByText('Histórico de transações')).toBeInTheDocument();
     
     const allText = document.body.textContent;
     expect(allText).toMatch(/1\.000,00/);
@@ -70,10 +70,10 @@ describe('TransactionsPage UI', () => {
     expect(screen.getAllByText('Crédito').length).toBeGreaterThan(0);
   });
 
-  it('calls openNewModal when clicking Nova Transação', () => {
+  it('calls openNewModal when clicking Nova transação', () => {
     renderWithRouter(<TransactionsPage />);
     const buttons = screen.getAllByRole('button');
-    const newTxButton = buttons.find(b => b.textContent?.includes('Nova Transação'));
+    const newTxButton = buttons.find(b => b.textContent?.includes('Nova transação'));
     
     if (newTxButton) {
       fireEvent.click(newTxButton);

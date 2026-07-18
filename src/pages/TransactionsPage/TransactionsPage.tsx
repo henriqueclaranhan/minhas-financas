@@ -7,19 +7,21 @@ import { Plus } from 'lucide-react';
 import type { Transaction } from '../../types';
 import { useTransactionsViewModel } from './hooks/useTransactionsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { useLocale } from '../../store/LocaleContext';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
   // Force HMR update
   const { state, actions } = useTransactionsViewModel();
+  const { formatCurrency, locale, t } = useLocale();
 
   return (
     <div className="animate-fade-in">
       <PageHeader 
-        title="Histórico de Transações"
-        description="Todas as suas entradas e saídas."
+        title={t('transactions.title')}
+        description={t('transactions.description')}
         primaryButton={{
-          label: 'Nova Transação',
+          label: t('transactions.new'),
           icon: <Plus size={18} className="mr-sm" />,
           onClick: actions.openNewModal
         }}
@@ -27,15 +29,15 @@ export function TransactionsPage() {
 
       <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>
-          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Entradas no Período</p>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>{t('transactions.incomePeriod')}</p>
           <h3 style={{ margin: 0, color: 'var(--clr-success)' }}>
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.totalIncome)}
+            {formatCurrency(state.totalIncome)}
           </h3>
         </div>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-danger)' }}>
-          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Saídas no Período</p>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>{t('transactions.expensePeriod')}</p>
           <h3 style={{ margin: 0, color: 'var(--clr-danger)' }}>
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.totalExpense)}
+            {formatCurrency(state.totalExpense)}
           </h3>
         </div>
       </div>
@@ -66,7 +68,7 @@ export function TransactionsPage() {
         <Plus size={28} />
       </button>
 
-      <Modal isOpen={state.isModalOpen} onClose={() => { actions.setIsModalOpen(false); actions.setEditingTransaction(null); }} title={state.editingTransaction ? "Editar Transação" : "Nova Transação"}>
+      <Modal isOpen={state.isModalOpen} onClose={() => { actions.setIsModalOpen(false); actions.setEditingTransaction(null); }} title={state.editingTransaction ? `${t('common.edit')} ${t('nav.transactions')}` : t('transactions.new')}>
         <TransactionForm 
           onSubmit={actions.handleAddOrUpdate} 
           initialData={state.editingTransaction || undefined} 
@@ -74,27 +76,27 @@ export function TransactionsPage() {
         />
       </Modal>
 
-      <Modal isOpen={!!state.transactionToDelete} onClose={() => actions.setTransactionToDelete(null)} title="Confirmar Exclusão">
+      <Modal isOpen={!!state.transactionToDelete} onClose={() => actions.setTransactionToDelete(null)} title={t('transactions.deleteTitle')}>
         <div className="delete-modal-content">
-          <p className="delete-modal-text">Tem certeza que deseja apagar esta transação?</p>
-          <p className="delete-modal-subtext">Esta ação não pode ser desfeita.</p>
+          <p className="delete-modal-text">{t('transactions.deleteQuestion')}</p>
+          <p className="delete-modal-subtext">{t('common.irreversible')}</p>
         </div>
         <div className="modal-actions">
-          <button className="btn" onClick={() => actions.setTransactionToDelete(null)}>Cancelar</button>
+          <button className="btn" onClick={() => actions.setTransactionToDelete(null)}>{t('common.cancel')}</button>
           <button 
             className="btn btn-primary btn-danger-bg" 
             onClick={actions.confirmDelete}
           >
-            Apagar
+            {t('common.delete')}
           </button>
         </div>
       </Modal>
 
-      <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title="Filtros">
+      <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title={t('filters.title')}>
         <div className="form-group">
-          <label className="form-label">Método de Pagamento</label>
+            <label className="form-label">{t('common.paymentMethod')}</label>
           <select className="form-select" value={state.tempMethodFilter} onChange={e => actions.setTempMethodFilter(e.target.value)}>
-            <option value="all">Todos os Métodos</option>
+            <option value="all">{t('filters.allMethods')}</option>
             <option value="Crédito">Crédito</option>
             <option value="Débito">Débito</option>
             <option value="Pix">Pix</option>
@@ -105,16 +107,16 @@ export function TransactionsPage() {
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label">Mês</label>
+            <label className="form-label">{t('filters.month')}</label>
             <select className="form-select" value={state.tempSelectedMonth} onChange={(e) => actions.setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
-              <option value="all">Ano Todo</option>
+              <option value="all">{t('filters.fullYear')}</option>
               {Array.from({ length: 12 }).map((_, i) => (
-                <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
+                <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
               ))}
             </select>
           </div>
           <div className="form-group">
-            <label className="form-label">Ano</label>
+            <label className="form-label">{t('filters.year')}</label>
             <select className="form-select" value={state.tempSelectedYear} onChange={(e) => actions.setTempSelectedYear(Number(e.target.value))}>
               {[state.defaultYear - 1, state.defaultYear, state.defaultYear + 1].map(y => (
                 <option key={y} value={y}>{y}</option>
@@ -125,10 +127,10 @@ export function TransactionsPage() {
 
         <div className="modal-actions-filters">
           <button className="btn flex-1 btn-alt-bg" onClick={actions.handleResetFilters}>
-            Resetar
+            {t('filters.reset')}
           </button>
           <button className="btn btn-primary" style={{ flex: 2 }} onClick={actions.handleApplyFilters}>
-            Aplicar Filtros
+            {t('filters.apply')}
           </button>
         </div>
       </Modal>

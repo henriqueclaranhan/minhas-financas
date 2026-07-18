@@ -1,25 +1,27 @@
 
 import { ThemeToggle } from './components/ThemeToggle';
-import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight } from 'lucide-react';
+import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useNavigate } from 'react-router-dom';
+import { CURRENCY_LABELS, LOCALE_LABELS, useLocale } from '../../store/LocaleContext';
 import './SettingsPage.css';
 
 export function SettingsPage() {
 
   const { state, actions } = useSettingsViewModel();
   const navigate = useNavigate();
+  const { currency, locale, setCurrency, setLocale, t } = useLocale();
 
   return (
     <div className="animate-fade-in">
       <PageHeader 
-        title="Ajustes"
+        title={t('settings.title')}
         showBackButton={true}
       />
         
         {state.importStatus && (
-          <div className={`p-md mb-lg settings-status ${state.importStatus.includes('Erro') ? 'error' : 'success'}`}>
+          <div className={`p-md mb-lg settings-status ${state.importStatus === t('settings.importError') ? 'error' : 'success'}`}>
             {state.importStatus}
           </div>
         )}
@@ -31,9 +33,57 @@ export function SettingsPage() {
               <div className="settings-icon-wrapper alt">
                 <Moon size={20} color="var(--clr-text-primary)" />
               </div>
-              <span className="font-medium settings-item-title">Aparência</span>
+              <span className="font-medium settings-item-title">{t('settings.appearance')}</span>
             </div>
             <ThemeToggle />
+          </div>
+
+          <div className="settings-item settings-preferences-item">
+            <div className="settings-preference-copy">
+              <div className="flex items-center gap-md">
+                <div className="settings-icon-wrapper primary">
+                  <Languages size={20} color="var(--clr-primary)" />
+                </div>
+                <div>
+                  <div className="font-medium settings-item-title">{t('settings.language')}</div>
+                  <div className="settings-item-desc text-secondary">{t('settings.languageDescription')}</div>
+                </div>
+              </div>
+            </div>
+            <select
+              aria-label={t('settings.language')}
+              className="form-select settings-select"
+              value={locale}
+              onChange={(event) => setLocale(event.target.value as keyof typeof LOCALE_LABELS)}
+            >
+              {Object.entries(LOCALE_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div className="settings-item settings-preferences-item">
+            <div className="settings-preference-copy">
+              <div className="flex items-center gap-md">
+                <div className="settings-icon-wrapper success">
+                  <Banknote size={20} color="#fff" />
+                </div>
+                <div>
+                  <div className="font-medium settings-item-title">{t('settings.currency')}</div>
+                  <div className="settings-item-desc text-secondary">{t('settings.currencyDescription')}</div>
+                </div>
+              </div>
+            </div>
+            <select
+              aria-label={t('settings.currency')}
+              className="form-select settings-select"
+              value={currency}
+              onChange={(event) => setCurrency(event.target.value as keyof typeof CURRENCY_LABELS)}
+            >
+              {Object.entries(CURRENCY_LABELS).map(([value, label]) => (
+                <option key={value} value={value}>{label}</option>
+              ))}
+            </select>
           </div>
 
           <div 
@@ -47,8 +97,8 @@ export function SettingsPage() {
                   <UserIcon size={20} color="var(--clr-primary)" />
                 </div>
                 <div>
-                  <div className="font-medium settings-item-title">Meu Perfil</div>
-                  <div className="settings-item-desc text-secondary">Atualizar nome, email e senha</div>
+                  <div className="font-medium settings-item-title">{t('settings.profile')}</div>
+                  <div className="settings-item-desc text-secondary">{t('settings.profileDescription')}</div>
                 </div>
               </div>
               <ChevronRight size={20} color="var(--clr-text-secondary)" />
@@ -64,8 +114,8 @@ export function SettingsPage() {
                 <Download size={20} color="var(--clr-primary)" />
               </div>
               <div>
-                <div className="font-medium settings-item-title text-primary">Exportar Dados</div>
-                <div className="settings-item-desc text-secondary">Salvar backup no dispositivo</div>
+                <div className="font-medium settings-item-title text-primary">{t('settings.export')}</div>
+                <div className="settings-item-desc text-secondary">{t('settings.exportDescription')}</div>
               </div>
             </div>
           </div>
@@ -79,8 +129,8 @@ export function SettingsPage() {
                 <Upload size={20} color="#fff" />
               </div>
               <div>
-                <div className="font-medium settings-item-title">Importar Dados</div>
-                <div className="settings-item-desc text-secondary">Restaurar de um backup</div>
+                <div className="font-medium settings-item-title">{t('settings.import')}</div>
+                <div className="settings-item-desc text-secondary">{t('settings.importDescription')}</div>
               </div>
             </div>
           </div>
@@ -101,8 +151,8 @@ export function SettingsPage() {
                 <Trash2 size={20} color="#fff" />
               </div>
               <div>
-                <div className="font-medium settings-item-title text-danger">Apagar Todos os Dados</div>
-                <div className="settings-item-desc text-secondary">Limpar histórico e saldo</div>
+                <div className="font-medium settings-item-title text-danger">{t('settings.clear')}</div>
+                <div className="settings-item-desc text-secondary">{t('settings.clearDescription')}</div>
               </div>
             </div>
           </div>
@@ -116,8 +166,8 @@ export function SettingsPage() {
                 <LogOut size={20} color="var(--clr-text-primary)" />
               </div>
               <div>
-                <div className="font-medium settings-item-title">Sair da Conta</div>
-                <div className="settings-item-desc text-secondary">Fazer logout do aplicativo</div>
+                <div className="font-medium settings-item-title">{t('settings.logout')}</div>
+                <div className="settings-item-desc text-secondary">{t('settings.logoutDescription')}</div>
               </div>
             </div>
           </div>

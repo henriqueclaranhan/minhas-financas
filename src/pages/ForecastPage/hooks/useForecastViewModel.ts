@@ -1,12 +1,11 @@
 import { useState, useMemo } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
-
-const formatCurrency = (val: number) =>
-  new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
+import { useLocale } from '../../../store/LocaleContext';
 
 export function useForecastViewModel() {
   const { transactions, plannedExpenses, initialBalance } = useFinance();
+  const { formatCurrency, locale } = useLocale();
 
   const [includePlannedIncome, setIncludePlannedIncome] = useState(true);
   const [includePlannedExpense, setIncludePlannedExpense] = useState(true);
@@ -24,6 +23,7 @@ export function useForecastViewModel() {
       monthsToProject,
       includePlannedIncome,
       includePlannedExpense,
+      locale,
     });
   }, [
     transactions,
@@ -33,6 +33,7 @@ export function useForecastViewModel() {
     monthsToProject,
     includePlannedIncome,
     includePlannedExpense,
+    locale,
   ]);
 
   return {

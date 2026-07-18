@@ -1,5 +1,5 @@
 import { parseISO, addMonths, isSameMonth, format, isBefore, startOfMonth, endOfMonth } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
+import { ptBR, enUS } from 'date-fns/locale';
 import type { Transaction, PlannedExpense } from '../types';
 import { TransactionType, ExpenseStatus } from '../enums/FinanceEnums';
 
@@ -12,6 +12,7 @@ export interface ProjectionOptions {
   includePlannedIncome?: boolean;
   includePlannedExpense?: boolean;
   currentDate?: Date;
+  locale?: string;
 }
 
 export function calculateProjections(options: ProjectionOptions) {
@@ -23,8 +24,11 @@ export function calculateProjections(options: ProjectionOptions) {
     monthsToProject,
     includePlannedIncome = true,
     includePlannedExpense = true,
-    currentDate = new Date()
+    currentDate = new Date(),
+    locale = 'pt-BR'
   } = options;
+
+  const dateFnsLocale = locale === 'en-US' ? enUS : ptBR;
 
   const data = [];
   
@@ -125,8 +129,9 @@ export function calculateProjections(options: ProjectionOptions) {
       actualCurrentBalance = accumulated;
     }
     
+    
     data.push({
-      name: format(monthDate, 'MMM/yy', { locale: ptBR }).toUpperCase(),
+      name: format(monthDate, 'MMM/yy', { locale: dateFnsLocale }).toUpperCase(),
       saldo: accumulated,
       income: mData.income,
       expense: mData.expense

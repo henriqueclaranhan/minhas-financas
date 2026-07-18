@@ -3,8 +3,10 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { SettingsPage } from '../../../pages/SettingsPage/SettingsPage';
 import { useSettingsViewModel } from '../../../pages/SettingsPage/hooks/useSettingsViewModel';
 import { BrowserRouter } from 'react-router-dom';
+import { useLocale } from '../../../store/LocaleContext';
 
 vi.mock('../../../pages/SettingsPage/hooks/useSettingsViewModel');
+vi.mock('../../../store/LocaleContext');
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -34,11 +36,30 @@ describe('SettingsPage UI', () => {
     fileInputRef: { current: null }
   };
 
+  const mockLocale = {
+    currency: 'BRL',
+    locale: 'pt-BR',
+    formatCurrency: vi.fn(),
+    setCurrency: vi.fn(),
+    setLocale: vi.fn(),
+    t: (key: string) => ({
+      'settings.title': 'Ajustes', 'settings.appearance': 'Aparência', 'settings.language': 'Idioma e região',
+      'settings.languageDescription': 'Define o idioma da interface e da formatação', 'settings.currency': 'Moeda',
+      'settings.currencyDescription': 'Todos os valores passam a usar esta moeda', 'settings.profile': 'Meu perfil',
+      'settings.profileDescription': 'Atualizar nome, e-mail e senha', 'settings.export': 'Exportar dados',
+      'settings.exportDescription': 'Salvar backup no dispositivo', 'settings.import': 'Importar dados',
+      'settings.importDescription': 'Restaurar de um backup', 'settings.clear': 'Apagar todos os dados',
+      'settings.clearDescription': 'Limpar histórico e saldo', 'settings.logout': 'Sair da conta',
+      'settings.logoutDescription': 'Encerrar sessão no aplicativo',
+    }[key] ?? key),
+  };
+
   beforeEach(() => {
     vi.mocked(useSettingsViewModel).mockReturnValue({
       state: mockState,
       actions: mockActions
     } as any);
+    vi.mocked(useLocale).mockReturnValue(mockLocale as any);
   });
 
   const renderWithRouter = (ui: React.ReactElement) => {
@@ -49,29 +70,41 @@ describe('SettingsPage UI', () => {
     renderWithRouter(<SettingsPage />);
     
     expect(screen.getByText('Ajustes')).toBeInTheDocument();
-    expect(screen.getByText('Exportar Dados')).toBeInTheDocument();
-    expect(screen.getByText('Importar Dados')).toBeInTheDocument();
-    expect(screen.getByText('Apagar Todos os Dados')).toBeInTheDocument();
-    expect(screen.getByText('Sair da Conta')).toBeInTheDocument();
+    expect(screen.getByText('Exportar dados')).toBeInTheDocument();
+    expect(screen.getByText('Importar dados')).toBeInTheDocument();
+    expect(screen.getByText('Apagar todos os dados')).toBeInTheDocument();
+    expect(screen.getByText('Sair da conta')).toBeInTheDocument();
+    expect(screen.getByLabelText('Idioma e região')).toHaveValue('pt-BR');
+    expect(screen.getByLabelText('Moeda')).toHaveValue('BRL');
+  });
+
+  it('updates locale and currency preferences', () => {
+    renderWithRouter(<SettingsPage />);
+
+    fireEvent.change(screen.getByLabelText('Idioma e região'), { target: { value: 'en-US' } });
+    fireEvent.change(screen.getByLabelText('Moeda'), { target: { value: 'USD' } });
+
+    expect(mockLocale.setLocale).toHaveBeenCalledWith('en-US');
+    expect(mockLocale.setCurrency).toHaveBeenCalledWith('USD');
   });
 
   it('calls exportData when clicking Exportar Dados', () => {
     renderWithRouter(<SettingsPage />);
-    const exportBtn = screen.getByText('Exportar Dados');
+    const exportBtn = screen.getByText('Exportar dados');
     fireEvent.click(exportBtn);
     expect(mockActions.exportData).toHaveBeenCalled();
   });
 
   it('calls clearData when clicking Apagar Todos os Dados', () => {
     renderWithRouter(<SettingsPage />);
-    const clearBtn = screen.getByText('Apagar Todos os Dados');
+    const clearBtn = screen.getByText('Apagar todos os dados');
     fireEvent.click(clearBtn);
     expect(mockActions.clearData).toHaveBeenCalled();
   });
 
   it('calls logout when clicking Sair da Conta', () => {
     renderWithRouter(<SettingsPage />);
-    const logoutBtn = screen.getByText('Sair da Conta');
+    const logoutBtn = screen.getByText('Sair da conta');
     fireEvent.click(logoutBtn);
     expect(mockActions.logout).toHaveBeenCalled();
   });

@@ -51,10 +51,10 @@ describe('DashboardPage UI', () => {
     expect(allText).toMatch(/1\.000,00/);
   });
 
-  it('calls openNewModal when clicking Nova Ação', () => {
+  it('calls openNewModal when clicking Nova ação', () => {
     renderWithRouter(<DashboardPage />);
     const buttons = screen.getAllByRole('button');
-    const newActionButton = buttons.find(b => b.textContent?.includes('Nova Ação'));
+    const newActionButton = buttons.find(b => b.textContent?.includes('Nova ação'));
     
     if (newActionButton) {
       fireEvent.click(newActionButton);

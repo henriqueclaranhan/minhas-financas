@@ -3,10 +3,12 @@ import { CreditCard, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useCreditCardViewModel } from './hooks/useCreditCardViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { useLocale } from '../../store/LocaleContext';
 import './CreditCardPage.css';
 
 export function CreditCardPage() {
   const { state, actions } = useCreditCardViewModel();
+  const { formatCurrency, t } = useLocale();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export function CreditCardPage() {
         <div className="glass-panel hide-on-mobile p-md">
           <p className="font-bold credit-card-tooltip-title">{payload[0].payload.labelFull}</p>
           <p className="text-danger credit-card-tooltip-value">
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(payload[0].value)}
+            {formatCurrency(payload[0].value)}
           </p>
         </div>
       );
@@ -33,13 +35,13 @@ export function CreditCardPage() {
   return (
     <div className="animate-fade-in">
       <PageHeader 
-        title="Faturas e Previsões"
-        description="Acompanhe os gastos no cartão de crédito nos próximos meses."
+        title={t('invoices.title')}
+        description={t('invoices.description')}
       />
 
       {/* Chart Section */}
       <div className="glass-panel p-lg mb-lg">
-        <h3 className="credit-card-chart-title mb-md">Evolução das Faturas</h3>
+        <h3 className="credit-card-chart-title mb-md">{t('invoices.chartTitle')}</h3>
         <div ref={scrollRef} className="w-full credit-card-scroll-wrapper">
           <div className="credit-card-chart-container">
             <ResponsiveContainer width="100%" height="100%">
@@ -127,26 +129,26 @@ export function CreditCardPage() {
             <Calendar className="invoice-icon" />
             <span>{state.selectedMonthData?.labelFull}</span>
             {state.isCurrentInvoice && (
-              <span className="badge-installments credit-card-badge-current">Atual</span>
+              <span className="badge-installments credit-card-badge-current">{t('invoices.current')}</span>
             )}
           </h3>
           <div className="invoice-header-total">
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.selectedMonthData?.data.total || 0)}
+            {formatCurrency(state.selectedMonthData?.data.total || 0)}
           </div>
         </div>
         
         <div className="invoice-table-wrapper">
           {!state.selectedMonthData || state.selectedMonthData.data.items.length === 0 ? (
             <div className="text-muted text-center credit-card-empty-state">
-              Nenhuma compra no crédito para este mês.
+              {t('invoices.empty')}
             </div>
           ) : (
             <div className="credit-card-table-wrapper">
               <table className="data-table credit-card-table">
                 <thead>
                   <tr>
-                    <th className="col-desc">Descrição</th>
-                    <th className="col-amount text-right">Valor</th>
+                    <th className="col-desc">{t('common.description')}</th>
+                    <th className="col-amount text-right">{t('common.amount')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -162,7 +164,7 @@ export function CreditCardPage() {
                         )}
                       </td>
                       <td className="td-amount-expense text-right">
-                        {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(item.installmentValue)}
+                        {formatCurrency(item.installmentValue)}
                       </td>
                     </tr>
                   ))}

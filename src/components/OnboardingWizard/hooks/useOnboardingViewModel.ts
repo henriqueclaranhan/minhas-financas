@@ -1,28 +1,30 @@
 import { useState } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
-
-export const onboardingSteps = [
-  {
-    title: 'Bem-vindo ao Minhas Finanças',
-    description: 'Muito mais que um caderninho de gastos. O seu novo centro de inteligência financeira.',
-    iconType: 'rocket'
-  },
-  {
-    title: 'Previsibilidade Real',
-    description: 'Planeje contas futuras, gerencie gastos recorrentes e veja como as parcelas do cartão impactarão os próximos meses.',
-    iconType: 'chart'
-  },
-  {
-    title: 'Rápido e Offline',
-    description: 'Acompanhe seu saldo e adicione transações de qualquer lugar, mesmo sem internet. Seus dados são seus.',
-    iconType: 'shield'
-  }
-];
+import { useLocale } from '../../../store/LocaleContext';
 
 export function useOnboardingViewModel() {
   const { initialBalance, setInitialBalance, addTransaction, transactions, plannedExpenses, isLoading } = useFinance();
+  const { t } = useLocale();
   const [currentStep, setCurrentStep] = useState(0);
   const [balanceInput, setBalanceInput] = useState<number | ''>('');
+
+  const onboardingSteps = [
+    {
+      title: t('onboarding.step1Title'),
+      description: t('onboarding.step1Desc'),
+      iconType: 'rocket'
+    },
+    {
+      title: t('onboarding.step2Title'),
+      description: t('onboarding.step2Desc'),
+      iconType: 'chart'
+    },
+    {
+      title: t('onboarding.step3Title'),
+      description: t('onboarding.step3Desc'),
+      iconType: 'shield'
+    }
+  ];
 
   const hasData = transactions.length > 0 || plannedExpenses.length > 0;
   const shouldShow = !isLoading && initialBalance === null && !hasData;
