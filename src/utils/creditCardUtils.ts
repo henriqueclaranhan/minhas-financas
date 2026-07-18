@@ -1,6 +1,7 @@
 import { parseISO, addMonths, format } from 'date-fns';
 import type { SupportedLocale } from '../i18n/translations';
 import type { Transaction } from '../types';
+import { TransactionType, PaymentMethod } from '../enums/FinanceEnums';
 
 export interface BillItem extends Transaction {
   installmentNumber: number;
@@ -24,7 +25,7 @@ export function calculateCreditCardBills(transactions: Transaction[], currentDat
   const monthlyBills: Record<string, MonthlyBill> = {};
 
   transactions.forEach(t => {
-    if (t.type === 'expense' && t.paymentMethod?.toLowerCase().includes('crédito')) {
+    if (t.type === TransactionType.EXPENSE && t.paymentMethod === PaymentMethod.CREDIT) {
       const installments = t.installments || 1;
       const installmentValue = t.amount / installments;
       const baseDate = parseISO(t.date);

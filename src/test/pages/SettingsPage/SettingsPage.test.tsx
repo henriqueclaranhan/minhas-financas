@@ -7,6 +7,17 @@ import { useLocale } from '../../../store/LocaleContext';
 
 vi.mock('../../../pages/SettingsPage/hooks/useSettingsViewModel');
 vi.mock('../../../store/LocaleContext');
+vi.mock('../../../components/shared/CustomSelect/CustomSelect', () => ({
+  CustomSelect: ({ value, onChange, options }: any) => {
+    const isLocale = options.some((o: any) => o.value === 'pt-BR');
+    const labelText = isLocale ? 'Idioma e região' : 'Moeda';
+    return (
+      <select aria-label={labelText} value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((opt: any) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
+      </select>
+    );
+  }
+}));
 
 Object.defineProperty(window, 'matchMedia', {
   writable: true,

@@ -28,7 +28,8 @@ describe('DashboardPage UI', () => {
       currentBalance: 1000,
       monthlyIncome: 1000,
       monthlyExpense: 0
-    }
+    },
+    expensesByCategory: []
   };
 
   beforeEach(() => {

@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { parseISO } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
-import { TransactionType } from '../../../../enums/FinanceEnums';
+import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { TransactionMobileCard } from '../TransactionMobileCard';
 import type { ExpandedTransaction } from '../../../../utils/financeUtils';
@@ -74,7 +74,9 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
                 <td className="td-secondary">
                   {t.category ? translate(`categories.${t.category}`) : '-'}
                 </td>
-                <td className="td-secondary">{t.paymentMethod}</td>
+                <td className="td-secondary">
+                  {Object.values(PaymentMethod).includes(t.paymentMethod as PaymentMethod) ? translate(`form.${t.paymentMethod}`) : t.paymentMethod}
+                </td>
                 <td className={t.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
                   <div>{t.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(t.amount)}</div>
                   {t.isInstallment && (

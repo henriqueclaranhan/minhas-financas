@@ -1,6 +1,6 @@
 import { parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
-import { TransactionType } from '../../../../enums/FinanceEnums';
+import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
 import type { Transaction } from '../../../../types';
 import type { ExpandedTransaction } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
@@ -38,7 +38,7 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
             ) : null}
           </h3>
           <p className="mobile-card-subtitle" style={{ color: 'var(--clr-text-secondary)' }}>
-            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(parseISO(t.date))} • {t.paymentMethod}{t.category && ` • ${translate(`categories.${t.category}`)}`}
+            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(parseISO(t.date))} • {Object.values(PaymentMethod).includes(t.paymentMethod as PaymentMethod) ? translate(`form.${t.paymentMethod}`) : t.paymentMethod}{t.category && ` • ${translate(`categories.${t.category}`)}`}
           </p>
         </div>
         <button 
