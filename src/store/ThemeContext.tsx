@@ -13,10 +13,18 @@ const ThemeContext = createContext<ThemeContextType>({
 });
 
 function applyTheme(theme: ThemeOption) {
-  if (theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  
+  if (isDark) {
     document.documentElement.setAttribute('data-theme', 'dark');
   } else {
     document.documentElement.setAttribute('data-theme', 'light');
+  }
+
+  // Update meta theme-color for mobile status bar
+  const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+  if (metaThemeColor) {
+    metaThemeColor.setAttribute('content', isDark ? '#000000' : '#F2F2F7');
   }
 }
 
