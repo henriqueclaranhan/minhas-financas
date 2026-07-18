@@ -32,9 +32,7 @@ export function ThemeToggle() {
       
       <div 
         className={`theme-toggle-thumb ${isDark ? 'theme-toggle-thumb-dark' : 'theme-toggle-thumb-light'}`}
-      >
-        {isDark ? <Moon size={14} color="var(--clr-primary)" /> : <Sun size={14} color="#f59e0b" />}
-      </div>
+      />
     </button>
   );
 }

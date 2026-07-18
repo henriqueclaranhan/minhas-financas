@@ -9,18 +9,19 @@ export function SettingsPage() {
   const { state, actions } = useSettingsViewModel();
 
   return (
-    <div className="animate-fade-in settings-page">
-      <header className="hide-on-desktop flex items-center settings-mobile-header">
+    <div className="animate-fade-in">
+      <header className="hide-on-desktop mb-xl flex items-center">
         <button 
           onClick={() => navigate(-1)} 
-          className="btn p-0 flex items-center settings-back-btn" 
+          className="btn hide-on-desktop"
+          style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
         >
           <ChevronLeft size={24} /> Voltar
         </button>
       </header>
       
-      <div className="settings-content">
-        <header className="mb-lg">
+      <div>
+        <header className="page-header">
           <h1>Ajustes</h1>
         </header>
         
@@ -32,7 +33,7 @@ export function SettingsPage() {
 
         <div className="glass-panel p-0 settings-panel">
           
-          <div className="flex items-center justify-between p-lg settings-item-header">
+          <div className="flex items-center justify-between settings-item-header">
             <div className="flex items-center gap-md">
               <div className="settings-icon-wrapper alt">
                 <Moon size={20} color="var(--clr-text-primary)" />
@@ -43,7 +44,7 @@ export function SettingsPage() {
           </div>
 
           <div 
-            className="settings-item p-lg"
+            className="settings-item"
             onClick={actions.exportData}
           >
             <div className="flex items-center gap-md">
@@ -58,7 +59,7 @@ export function SettingsPage() {
           </div>
 
           <div 
-            className="settings-item p-lg"
+            className="settings-item"
             onClick={actions.handleImportClick}
           >
             <div className="flex items-center gap-md">
@@ -80,7 +81,7 @@ export function SettingsPage() {
           />
 
           <div 
-            className="settings-item p-lg"
+            className="settings-item"
             onClick={actions.clearData}
           >
             <div className="flex items-center gap-md">
@@ -95,7 +96,7 @@ export function SettingsPage() {
           </div>
 
           <div 
-            className="settings-item no-border p-lg"
+            className="settings-item no-border"
             onClick={actions.logout}
           >
             <div className="flex items-center gap-md">
