@@ -1,40 +1,12 @@
-import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFinance } from '../../store/FinanceContext';
-import { useAuth } from '../../store/AuthContext';
 import { ThemeToggle } from './components/ThemeToggle';
 import { ChevronLeft, Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
+import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import './SettingsPage.css';
 
 export function SettingsPage() {
   const navigate = useNavigate();
-  const { exportData, importData, clearData } = useFinance();
-  const { logout } = useAuth();
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [importStatus, setImportStatus] = useState<string>('');
-
-  const handleImportClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = async (event) => {
-      const content = event.target?.result as string;
-      const success = await importData(content);
-      if (success) {
-        setImportStatus('Dados importados com sucesso!');
-        setTimeout(() => setImportStatus(''), 3000);
-      } else {
-        setImportStatus('Erro ao importar arquivo. Verifique o formato.');
-      }
-    };
-    reader.readAsText(file);
-    e.target.value = ''; // Reset input
-  };
+  const { state, actions } = useSettingsViewModel();
 
   return (
     <div className="animate-fade-in settings-page">
@@ -52,9 +24,9 @@ export function SettingsPage() {
           <h1>Ajustes</h1>
         </header>
         
-        {importStatus && (
-          <div className={`p-md mb-lg settings-status ${importStatus.includes('Erro') ? 'error' : 'success'}`}>
-            {importStatus}
+        {state.importStatus && (
+          <div className={`p-md mb-lg settings-status ${state.importStatus.includes('Erro') ? 'error' : 'success'}`}>
+            {state.importStatus}
           </div>
         )}
 
@@ -72,7 +44,7 @@ export function SettingsPage() {
 
           <div 
             className="settings-item p-lg"
-            onClick={exportData}
+            onClick={actions.exportData}
           >
             <div className="flex items-center gap-md">
               <div className="settings-icon-wrapper primary">
@@ -87,7 +59,7 @@ export function SettingsPage() {
 
           <div 
             className="settings-item p-lg"
-            onClick={handleImportClick}
+            onClick={actions.handleImportClick}
           >
             <div className="flex items-center gap-md">
               <div className="settings-icon-wrapper success">
@@ -102,14 +74,14 @@ export function SettingsPage() {
           <input 
             type="file" 
             accept=".json"
-            ref={fileInputRef}
+            ref={state.fileInputRef}
             style={{ display: 'none' }}
-            onChange={handleFileChange}
+            onChange={actions.handleFileChange}
           />
 
           <div 
             className="settings-item p-lg"
-            onClick={clearData}
+            onClick={actions.clearData}
           >
             <div className="flex items-center gap-md">
               <div className="settings-icon-wrapper danger">
@@ -124,7 +96,7 @@ export function SettingsPage() {
 
           <div 
             className="settings-item no-border p-lg"
-            onClick={logout}
+            onClick={actions.logout}
           >
             <div className="flex items-center gap-md">
               <div className="settings-icon-wrapper alt">
