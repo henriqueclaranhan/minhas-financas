@@ -28,8 +28,16 @@
 
 .desktop-wizard-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 32px;
+  align-items: stretch;
+}
+
+.step1-column, .step2-column {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
 
 .step2-column {

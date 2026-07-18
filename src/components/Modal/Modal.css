@@ -109,4 +109,8 @@
   .fab {
     display: none; /* Hide FAB on desktop, use inline buttons */
   }
+
+  .modal-content {
+    max-width: 900px; /* Increased width to accommodate side-by-side wizard columns */
+  }
 }
