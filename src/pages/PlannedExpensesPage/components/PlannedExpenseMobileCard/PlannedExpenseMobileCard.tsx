@@ -1,5 +1,5 @@
 import { parseISO } from 'date-fns';
-import { MoreHorizontal } from 'lucide-react';
+import { MoreHorizontal, RefreshCw } from 'lucide-react';
 import { PaymentMethod, TransactionType } from '../../../../enums/FinanceEnums';
 import type { PlannedExpense } from '../../../../types';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
@@ -45,10 +45,28 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
             ) : p.installments && p.installments > 1 ? (
               <span className="mobile-badge-secondary">{p.installments}x</span>
             ) : null}
+            {p.isRecurring && (
+              <span className="badge-recurring" title={`Repete a cada ${p.recurrenceInterval} mes(es)`}>
+                <RefreshCw size={10} />
+              </span>
+            )}
           </h3>
           <p className="mobile-card-subtitle" style={{ color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
-            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(pDate)}
-            {p.category && ` • ${translate(`categories.${p.category}`)}`}
+            <span style={{ display: 'inline-flex', alignItems: 'center', flexWrap: 'wrap' }}>
+              {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(pDate)}
+              {p.paymentMethod && (
+                <>
+                  <span style={{ margin: '0 4px' }}>&bull;</span>
+                  {Object.values(PaymentMethod).includes(p.paymentMethod as PaymentMethod) ? translate(`form.${p.paymentMethod}`) : p.paymentMethod}
+                </>
+              )}
+              {p.category && (
+                <>
+                  <span style={{ margin: '0 4px' }}>&bull;</span>
+                  {translate(`categories.${p.category}`)}
+                </>
+              )}
+            </span>
           </p>
         </div>
         <button 
@@ -66,7 +84,7 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
           color: (!p.type || p.type === TransactionType.EXPENSE) ? 'var(--clr-danger)' : 'var(--clr-success)',
           background: (!p.type || p.type === TransactionType.EXPENSE) ? 'var(--clr-danger-glow)' : 'var(--clr-success-glow)'
         }}>
-          {p.paymentMethod || PaymentMethod.CREDIT}
+          {(!p.type || p.type === TransactionType.EXPENSE) ? translate('form.expense') : translate('form.income')}
         </span>
         <div style={{ textAlign: 'right' }}>
           <span className="mobile-amount" style={{ 

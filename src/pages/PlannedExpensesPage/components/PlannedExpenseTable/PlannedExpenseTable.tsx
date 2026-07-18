@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { parseISO } from 'date-fns';
 import { Pencil, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
-import { TransactionType } from '../../../../enums/FinanceEnums';
+import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { PlannedExpenseMobileCard } from '../PlannedExpenseMobileCard';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
@@ -98,7 +98,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                     {p.category ? t(`categories.${p.category}`) : '-'}
                   </td>
                   <td className="td-secondary">
-                    {p.paymentMethod || '-'}
+                    {p.paymentMethod ? (Object.values(PaymentMethod).includes(p.paymentMethod as PaymentMethod) ? t(`form.${p.paymentMethod}`) : p.paymentMethod) : '-'}
                   </td>
                   <td className={p.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
                     {p.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(p.amount)}
