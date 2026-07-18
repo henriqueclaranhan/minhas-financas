@@ -1,32 +1,46 @@
-# React + TypeScript + Vite
+# Minhas Finanças (Personal Finance Manager)
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+![Project Status](https://img.shields.io/badge/status-active-success.svg)
+![React](https://img.shields.io/badge/React-19-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Vite](https://img.shields.io/badge/Vite-8-purple)
+![Firebase](https://img.shields.io/badge/Firebase-12-orange)
 
-Currently, two official plugins are available:
+A modern, high-performance web application for personal finance management. Built with React, TypeScript, and Vite, it follows best practices in software architecture to deliver a scalable, maintainable, and responsive user experience.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## 🌟 Features
+- **Dashboard & Analytics:** Visual insights into income, expenses, and forecasts.
+- **Transaction Management:** Add, edit, and organize financial transactions seamlessly.
+- **Planned Expenses:** Keep track of upcoming bills and fixed costs.
+- **Internationalization (i18n):** Multi-language support built-in.
 
-## React Compiler
+## 🛠️ Technology Stack
+- **Core Framework:** React 19, TypeScript, Vite 8
+- **Routing:** React Router v7
+- **Styling & UI:** Vanilla CSS + Lucide React (Icons)
+- **Data Visualization:** Recharts
+- **Date Manipulation:** date-fns
+- **Backend / Database / Auth:** Firebase
+- **Testing:** Vitest & React Testing Library
+- **Linting:** Oxlint
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🏗️ Architecture
+The application is built using the **MVVM (Model-View-ViewModel)** architectural pattern to ensure separation of concerns:
+- **View:** React functional components focused entirely on the UI.
+- **ViewModel:** Custom hooks managing state, presentation logic, and interactions.
+- **Model:** Data entities and service integrations (e.g., Firebase).
 
-## Expanding the Oxlint configuration
+For a detailed breakdown of the architecture, refer to the [Software Design Descriptions (SDD)](./docs/sdd/).
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## 📜 Documentation
+All technical documentation, including our structured Software Design Descriptions (SDD) aligned with the Kiro methodology, can be found in the `docs/sdd/` directory. 
+- [System Architecture](./docs/sdd/architecture.md)
+- [Project Structure](./docs/sdd/project-structure.md)
+- [Database Schema](./docs/sdd/database-schema.md)
+- [Testing Strategy](./docs/sdd/testing-strategy.md)
+- [Kiro Workflow & Templates](./docs/sdd/kiro-workflow.md)
+- Feature specifications can be found inside `docs/sdd/features/`.
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
-```
+## 🤝 Contributing
+Guidelines for AI agents and developers can be found in `AGENTS.md`.
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
