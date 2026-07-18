@@ -16,15 +16,36 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
 
   useEffect(() => {
     if (isOpen) {
-      document.body.style.overflow = 'hidden';
+      const scrollY = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
       document.documentElement.style.overflow = 'hidden';
+      document.body.setAttribute('data-scroll-y', scrollY.toString());
     } else {
-      document.body.style.overflow = 'unset';
-      document.documentElement.style.overflow = 'unset';
+      const scrollY = document.body.getAttribute('data-scroll-y');
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.documentElement.style.overflow = '';
+      if (scrollY) {
+        window.scrollTo(0, parseInt(scrollY, 10));
+        document.body.removeAttribute('data-scroll-y');
+      }
     }
     return () => {
-      document.body.style.overflow = 'unset';
-      document.documentElement.style.overflow = 'unset';
+      // In case the modal is unmounted without isOpen turning false first
+      if (document.body.style.position === 'fixed') {
+        const scrollY = document.body.getAttribute('data-scroll-y');
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.documentElement.style.overflow = '';
+        if (scrollY) {
+          window.scrollTo(0, parseInt(scrollY, 10));
+          document.body.removeAttribute('data-scroll-y');
+        }
+      }
     };
   }, [isOpen]);
 
