@@ -30,7 +30,7 @@ const fallbackPreferences = { locale: 'pt-BR' as Locale, currency: 'BRL' as Curr
 
 const LocaleContext = createContext<LocaleContextType>({
   ...fallbackPreferences,
-  formatCurrency: (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value).replace(/^(\D+)\s*/, '$1 '),
+  formatCurrency: (value) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value).replace(/^([^\d\s]+)\s*/, '$1 '),
   setCurrency: () => undefined,
   setLocale: () => undefined,
   t: (key, values) => translate('pt-BR', key, values),
@@ -100,7 +100,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     () => (val: number) =>
       new Intl.NumberFormat(locale, { style: 'currency', currency })
         .format(val)
-        .replace(/^(\D+)\s*/, '$1 '),
+        .replace(/^([^\d\s]+)\s*/, '$1 '),
     [locale, currency]
   );
   const t = useCallback((key: string, values?: Record<string, string | number>) => translate(locale, key, values), [locale]);
