@@ -2,20 +2,20 @@ import { useState, useRef } from 'react';
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Pencil, Trash2 } from 'lucide-react';
-import type { Transaction } from '../../../../types';
 import { TransactionType } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { TransactionMobileCard } from '../TransactionMobileCard';
+import type { ExpandedTransaction } from '../../../../utils/financeUtils';
 import '../Transaction.css';
 
 interface TransactionTableProps {
-  transactions: Transaction[];
-  onEdit: (t: Transaction) => void;
+  transactions: ExpandedTransaction[];
+  onEdit: (t: ExpandedTransaction) => void;
   onDelete: (id: string) => void;
 }
 
 export function TransactionTable({ transactions, onEdit, onDelete }: TransactionTableProps) {
-  const [mobileActionItem, setMobileActionItem] = useState<Transaction | null>(null);
+  const [mobileActionItem, setMobileActionItem] = useState<ExpandedTransaction | null>(null);
   const [pressingId, setPressingId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -27,7 +27,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
     );
   }
 
-  const handleTouchStart = (t: Transaction) => {
+  const handleTouchStart = (t: ExpandedTransaction) => {
     setPressingId(t.id!);
     timerRef.current = setTimeout(() => {
       navigator.vibrate?.(50);
@@ -64,15 +64,24 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
                 </td>
                 <td className="td-bold">
                   {t.description}
-                  {t.installments > 1 && (
+                  {t.isInstallment ? (
+                    <span className="badge-installments">
+                      ({t.installmentNumber}/{t.totalInstallments})
+                    </span>
+                  ) : t.installments > 1 ? (
                     <span className="badge-installments">
                       {t.installments}x
                     </span>
-                  )}
+                  ) : null}
                 </td>
                 <td className="td-secondary">{t.paymentMethod}</td>
                 <td className={t.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
-                  {t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
+                  <div>{t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}</div>
+                  {t.isInstallment && (
+                    <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '4px' }}>
+                      Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.originalAmount || 0)}
+                    </div>
+                  )}
                 </td>
                 <td className="td-actions">
                   <button onClick={() => onEdit(t)} className="btn btn-action primary" title="Editar">

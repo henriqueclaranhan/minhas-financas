@@ -8,6 +8,8 @@ import type { Transaction } from '../../types';
 import { FilterType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
 import { TransactionTable } from './components/TransactionTable';
+import { expandTransactions } from '../../utils/financeUtils';
+import type { ExpandedTransaction } from '../../utils/financeUtils';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
@@ -33,7 +35,9 @@ export function TransactionsPage() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
-  const filtered = transactions.filter(t => {
+  const expandedTransactions = expandTransactions(transactions);
+
+  const filtered = expandedTransactions.filter(t => {
     const tMonth = parseISO(t.date).getUTCMonth();
     const tYear = parseISO(t.date).getUTCFullYear();
     
@@ -47,6 +51,9 @@ export function TransactionsPage() {
     return matchesFilter && matchesMonth && matchesYear && matchesSearch && matchesMethod;
   });
   const sorted = [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  const totalIncome = filtered.filter(t => t.type === FilterType.INCOME).reduce((acc, t) => acc + t.amount, 0);
+  const totalExpense = filtered.filter(t => t.type === FilterType.EXPENSE).reduce((acc, t) => acc + t.amount, 0);
 
   const handleAddOrUpdate = (t: any) => {
     if (editingTransaction) {
@@ -63,8 +70,9 @@ export function TransactionsPage() {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (t: Transaction) => {
-    setEditingTransaction(t);
+  const openEditModal = (t: ExpandedTransaction) => {
+    const originalTx = t.originalId ? transactions.find(tx => tx.id === t.originalId) : t;
+    setEditingTransaction(originalTx as Transaction);
     setIsModalOpen(true);
   };
 
@@ -114,6 +122,21 @@ export function TransactionsPage() {
         </button>
       </header>
 
+      <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+        <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Entradas no Período</p>
+          <h3 style={{ margin: 0, color: 'var(--clr-success)' }}>
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalIncome)}
+          </h3>
+        </div>
+        <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-danger)' }}>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Saídas no Período</p>
+          <h3 style={{ margin: 0, color: 'var(--clr-danger)' }}>
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalExpense)}
+          </h3>
+        </div>
+      </div>
+
       <FilterTabs 
         filter={filter}
         setFilter={setFilter}
@@ -126,9 +149,12 @@ export function TransactionsPage() {
       
       <div className="glass-panel panel-no-padding">
         <TransactionTable 
-          transactions={sorted}
+          transactions={sorted as Transaction[]}
           onEdit={openEditModal}
-          onDelete={setTransactionToDelete}
+          onDelete={(id) => {
+            const t = sorted.find(tx => tx.id === id);
+            setTransactionToDelete(t?.originalId || id);
+          }}
         />
       </div>
 

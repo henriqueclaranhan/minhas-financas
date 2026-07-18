@@ -1,23 +1,23 @@
 import { useState, useRef } from 'react';
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Pencil, Trash2, CheckCircle, XCircle } from 'lucide-react';
-import type { PlannedExpense } from '../../../../types';
+import { Pencil, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { TransactionType } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { PlannedExpenseMobileCard } from '../PlannedExpenseMobileCard';
+import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
 import '../PlannedExpense.css';
 
 interface PlannedExpenseTableProps {
-  expenses: PlannedExpense[];
-  onConfirm: (p: PlannedExpense) => void;
+  expenses: ExpandedPlannedExpense[];
+  onConfirm: (id: string) => void;
   onReject: (id: string) => void;
-  onEdit: (p: PlannedExpense) => void;
+  onEdit: (p: ExpandedPlannedExpense) => void;
   onDelete: (id: string) => void;
 }
 
 export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onDelete }: PlannedExpenseTableProps) {
-  const [mobileActionItem, setMobileActionItem] = useState<PlannedExpense | null>(null);
+  const [mobileActionItem, setMobileActionItem] = useState<ExpandedPlannedExpense | null>(null);
   const [pressingId, setPressingId] = useState<string | null>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -29,7 +29,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
     );
   }
 
-  const handleTouchStart = (p: PlannedExpense) => {
+  const handleTouchStart = (p: ExpandedPlannedExpense) => {
     setPressingId(p.id!);
     timerRef.current = setTimeout(() => {
       navigator.vibrate?.(50);
@@ -77,16 +77,20 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                   </td>
                   <td className="td-bold">
                     {p.description}
-                    {p.isRecurring && (
-                      <span className="badge-recurring">
-                        Recorrente ({p.recurrenceInterval}m)
+                    {p.isInstallment ? (
+                      <span className="badge-installments">
+                        ({p.installmentNumber}/{p.totalInstallments})
                       </span>
-                    )}
-                    {String(p.paymentMethod).toLowerCase().includes('crédito') && p.installments && p.installments > 1 ? (
+                    ) : p.installments && p.installments > 1 ? (
                       <span className="badge-installments">
                         {p.installments}x
                       </span>
                     ) : null}
+                    {p.isRecurring && (
+                      <span className="badge-recurring" title={`Repete a cada ${p.recurrenceInterval} mes(es)`}>
+                        <RefreshCw size={12} />
+                      </span>
+                    )}
                   </td>
                   <td className="td-secondary">
                     {p.paymentMethod || '-'}
@@ -97,7 +101,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                   <td className="td-actions">
                     {isCurrent && (
                       <>
-                        <button onClick={() => onConfirm(p)} className="btn btn-action success" title="Confirmar">
+                        <button onClick={() => onConfirm(p.id!)} className="btn btn-action success" title="Confirmar">
                           <CheckCircle size={18} />
                         </button>
                         <button onClick={() => onReject(p.id!)} className="btn btn-action warning" title="Recusar/Pular">
@@ -148,7 +152,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                     <button 
                       className="glass-panel hover-lift modal-action-btn"
                       onClick={() => {
-                        onConfirm(currentItem);
+                        onConfirm(currentItem.id!);
                         setMobileActionItem(null);
                       }}
                     >

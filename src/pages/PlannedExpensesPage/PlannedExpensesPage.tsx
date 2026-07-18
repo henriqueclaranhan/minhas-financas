@@ -9,6 +9,8 @@ import type { PlannedExpense } from '../../types';
 import { FilterType, ExpenseStatus, TransactionType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
 import { PlannedExpenseTable } from './components/PlannedExpenseTable';
+import { expandPlannedExpenses } from '../../utils/financeUtils';
+import type { ExpandedPlannedExpense } from '../../utils/financeUtils';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
@@ -31,6 +33,8 @@ export function PlannedExpensesPage() {
   const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
   const [expenseToConfirm, setExpenseToConfirm] = useState<PlannedExpense | null>(null);
+
+  const expandedPlannedExpenses = expandPlannedExpenses(plannedExpenses);
   
   const handleAddOrUpdate = (data: any) => {
     if (editingExpense) {
@@ -47,8 +51,9 @@ export function PlannedExpensesPage() {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (p: PlannedExpense) => {
-    setEditingExpense(p);
+  const openEditModal = (p: ExpandedPlannedExpense) => {
+    const originalP = p.originalId ? plannedExpenses.find(px => px.id === p.originalId) : p;
+    setEditingExpense(originalP as PlannedExpense);
     setIsModalOpen(true);
   };
 
@@ -78,7 +83,7 @@ export function PlannedExpensesPage() {
     ? `Ano todo, ${selectedYear}`
     : `${new Date(2000, selectedMonth as number, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())} de ${selectedYear}`;
 
-  const pendingExpenses = plannedExpenses
+  const pendingExpenses = expandedPlannedExpenses
     .filter(p => {
       const pMonth = parseISO(p.dueDate).getUTCMonth();
       const pYear = parseISO(p.dueDate).getUTCFullYear();
@@ -92,6 +97,9 @@ export function PlannedExpensesPage() {
       return isPending && matchesFilter && matchesMonth && matchesYear && matchesSearch;
     })
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
+
+  const totalIncome = pendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0);
+  const totalExpense = pendingExpenses.filter(p => p.type === TransactionType.EXPENSE || !p.type).reduce((acc, p) => acc + p.amount, 0);
 
   return (
     <div className="animate-fade-in">
@@ -108,6 +116,21 @@ export function PlannedExpensesPage() {
         </button>
       </header>
 
+      <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
+        <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Entradas no Período</p>
+          <h3 style={{ margin: 0, color: 'var(--clr-success)' }}>
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalIncome)}
+          </h3>
+        </div>
+        <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-danger)' }}>
+          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Saídas no Período</p>
+          <h3 style={{ margin: 0, color: 'var(--clr-danger)' }}>
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalExpense)}
+          </h3>
+        </div>
+      </div>
+
       <FilterTabs 
         filter={filter}
         setFilter={setFilter}
@@ -119,11 +142,20 @@ export function PlannedExpensesPage() {
 
       <div className="glass-panel panel-no-padding">
         <PlannedExpenseTable 
-          expenses={pendingExpenses}
-          onConfirm={setExpenseToConfirm}
-          onReject={rejectPlannedExpense}
+          expenses={pendingExpenses as PlannedExpense[]}
+          onConfirm={(id) => {
+            const p = pendingExpenses.find(px => px.id === id);
+            setExpenseToConfirm(plannedExpenses.find(px => px.id === (p?.originalId || id)) || null);
+          }}
+          onReject={(id) => {
+            const p = pendingExpenses.find(px => px.id === id);
+            rejectPlannedExpense(p?.originalId || id);
+          }}
           onEdit={openEditModal}
-          onDelete={setExpenseToDelete}
+          onDelete={(id) => {
+            const p = pendingExpenses.find(px => px.id === id);
+            setExpenseToDelete(p?.originalId || id);
+          }}
         />
       </div>
 

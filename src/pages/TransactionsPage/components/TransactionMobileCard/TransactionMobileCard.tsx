@@ -1,12 +1,13 @@
 import { parseISO, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { MoreHorizontal } from 'lucide-react';
-import type { Transaction } from '../../../../types';
 import { TransactionType } from '../../../../enums/FinanceEnums';
+import type { Transaction } from '../../../../types';
+import type { ExpandedTransaction } from '../../../../utils/financeUtils';
 import '../Transaction.css';
 
 interface Props {
-  t: Transaction;
+  t: ExpandedTransaction;
   pressingId: string | null;
   onPointerDown: (t: Transaction) => void;
   handleTouchStart: (t: Transaction) => void;
@@ -27,14 +28,14 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
     >
       <div className="mobile-card-header">
         <div>
-          <h4 className="mobile-card-title">
+          <h3 className="mobile-card-title">
             {t.description}
-            {t.installments > 1 && (
-              <span className="mobile-badge-primary">
-                {t.installments}x
-              </span>
-            )}
-          </h4>
+            {t.isInstallment ? (
+              <span className="mobile-badge-secondary">({t.installmentNumber}/{t.totalInstallments})</span>
+            ) : t.installments > 1 ? (
+              <span className="mobile-badge-secondary">{t.installments}x</span>
+            ) : null}
+          </h3>
           <p className="mobile-card-subtitle" style={{ color: 'var(--clr-text-secondary)' }}>
             {format(parseISO(t.date), "dd/MM/yy", { locale: ptBR })} • {t.paymentMethod}
           </p>
@@ -49,16 +50,25 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
         </button>
       </div>
       
-      <div className="mobile-card-footer">
+      <div className="mobile-card-footer" style={{ marginTop: '12px' }}>
         <span className="mobile-type-badge" style={{ 
-          background: t.type === TransactionType.INCOME ? 'var(--clr-success-glow)' : 'var(--clr-danger-glow)', 
-          color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)'
+          color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)',
+          background: t.type === TransactionType.INCOME ? 'var(--clr-success-glow)' : 'var(--clr-danger-glow)'
         }}>
           {t.type === TransactionType.INCOME ? 'Receita' : 'Despesa'}
         </span>
-        <span className="mobile-amount" style={{ color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)' }}>
-          {t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
-        </span>
+        <div style={{ textAlign: 'right' }}>
+          <span className="mobile-amount" style={{ 
+            color: t.type === TransactionType.INCOME ? 'var(--clr-success)' : 'var(--clr-danger)'
+          }}>
+            {t.type === TransactionType.INCOME ? '+' : '-'} {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.amount)}
+          </span>
+          {t.isInstallment && (
+            <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '2px' }}>
+              Total: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(t.originalAmount || 0)}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
