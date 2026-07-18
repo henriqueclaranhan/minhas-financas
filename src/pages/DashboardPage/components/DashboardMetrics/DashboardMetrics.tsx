@@ -62,7 +62,7 @@ export function DashboardMetrics({ expensesByCategory, formatCurrency, monthlyIn
           </div>
           
         <div className="metric-footer text-secondary">
-          <p>Resumo do mês atual para ajudar no seu planejamento.</p>
+          <p>{t('dashboard.metrics.description')}</p>
         </div>
       </div>
     </div>
