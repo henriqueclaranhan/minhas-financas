@@ -1,9 +1,18 @@
-import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch, getDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { PlannedExpense, Transaction } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
 
 export class PlannedExpenseService {
+  static subscribeToPlannedExpenses(uid: string, onUpdate: (plans: PlannedExpense[]) => void): () => void {
+    if (!uid) throw new Error("User ID is required");
+    const unsub = onSnapshot(collection(db, 'users', uid, 'plannedExpenses'), (snapshot: any) => {
+      const plans: PlannedExpense[] = [];
+      snapshot.forEach((d: any) => plans.push({ ...d.data(), id: d.id } as PlannedExpense));
+      onUpdate(plans);
+    });
+    return unsub;
+  }
   static async addPlannedExpense(uid: string, pe: Omit<PlannedExpense, 'id'>): Promise<string> {
     if (!uid) throw new Error("User ID is required");
     const docRef = await addDoc(collection(db, 'users', uid, 'plannedExpenses'), pe);

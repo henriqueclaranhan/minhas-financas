@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PlannedExpenseService } from '../../services/PlannedExpenseService';
-import { addDoc, updateDoc, deleteDoc, writeBatch, getDoc } from 'firebase/firestore';
+import { addDoc, updateDoc, deleteDoc, writeBatch, getDoc, onSnapshot } from 'firebase/firestore';
 import { TransactionType, ExpenseStatus } from '../../enums/FinanceEnums';
 
 vi.mock('../../config/firebase', () => ({
@@ -21,7 +21,11 @@ vi.mock('firebase/firestore', () => {
     updateDoc: vi.fn(),
     deleteDoc: vi.fn(),
     getDoc: vi.fn(),
-    writeBatch: vi.fn(() => batchMock)
+    writeBatch: vi.fn(() => batchMock),
+    onSnapshot: vi.fn((_ref, callback) => {
+      callback({ forEach: vi.fn() });
+      return vi.fn();
+    })
   };
 });
 
@@ -60,6 +64,13 @@ describe('PlannedExpenseService', () => {
     (deleteDoc as any).mockResolvedValueOnce(undefined);
     await PlannedExpenseService.deletePlannedExpense(mockUid, 'pe123');
     expect(deleteDoc).toHaveBeenCalled();
+  });
+
+  it('subscribes to planned expenses', () => {
+    const onUpdate = vi.fn();
+    const unsub = PlannedExpenseService.subscribeToPlannedExpenses('user1', onUpdate);
+    expect(onSnapshot).toHaveBeenCalled();
+    expect(typeof unsub).toBe('function');
   });
 
   it('should confirm a planned expense and create recurrence if applicable', async () => {

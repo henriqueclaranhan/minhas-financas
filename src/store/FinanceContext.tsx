@@ -1,12 +1,10 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { Transaction, PlannedExpense } from '../types';
-import { addMonths, parseISO, format } from 'date-fns';
 import { useAuth } from './AuthContext';
-import { db } from '../config/firebase';
-import { 
-  collection, doc, setDoc, updateDoc, deleteDoc, 
-  onSnapshot, addDoc, writeBatch
-} from 'firebase/firestore';
+import { TransactionService } from '../services/TransactionService';
+import { PlannedExpenseService } from '../services/PlannedExpenseService';
+import { UserService } from '../services/UserService';
+import { DataSyncService } from '../services/DataSyncService';
 
 interface FinanceContextData {
   initialBalance: number | null;
@@ -49,25 +47,16 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
     setIsLoading(true);
 
-    const unsubUser = onSnapshot(doc(db, 'users', uid), (docSnap) => {
-      if (docSnap.exists()) {
-        const data = docSnap.data();
-        if (data.initialBalance !== undefined) {
-          setInitialBalanceState(data.initialBalance);
-        }
-      }
+    const unsubUser = UserService.subscribeToInitialBalance(uid, (val) => {
+      setInitialBalanceState(val);
       setIsLoading(false);
     });
 
-    const unsubTx = onSnapshot(collection(db, 'users', uid, 'transactions'), (snapshot) => {
-      const txs: Transaction[] = [];
-      snapshot.forEach(d => txs.push({ ...d.data(), id: d.id } as Transaction));
+    const unsubTx = TransactionService.subscribeToTransactions(uid, (txs) => {
       setTransactions(txs);
     });
 
-    const unsubPlan = onSnapshot(collection(db, 'users', uid, 'plannedExpenses'), (snapshot) => {
-      const plans: PlannedExpense[] = [];
-      snapshot.forEach(d => plans.push({ ...d.data(), id: d.id } as PlannedExpense));
+    const unsubPlan = PlannedExpenseService.subscribeToPlannedExpenses(uid, (plans) => {
       setPlannedExpenses(plans);
     });
 
@@ -80,137 +69,61 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   const setInitialBalance = async (val: number) => {
     if (!uid) return;
-    await setDoc(doc(db, 'users', uid), { initialBalance: val }, { merge: true });
+    await UserService.updateInitialBalance(uid, val);
   };
 
   const addTransaction = async (t: Omit<Transaction, 'id'>) => {
     if (!uid) return;
-    await addDoc(collection(db, 'users', uid, 'transactions'), t);
+    await TransactionService.addTransaction(uid, t);
   };
 
   const updateTransaction = async (id: string, updatedData: Partial<Transaction>) => {
     if (!uid) return;
-    await updateDoc(doc(db, 'users', uid, 'transactions', id), updatedData);
+    await TransactionService.updateTransaction(uid, id, updatedData);
   };
 
   const deleteTransaction = async (id: string) => {
     if (!uid) return;
-    await deleteDoc(doc(db, 'users', uid, 'transactions', id));
+    await TransactionService.deleteTransaction(uid, id);
   };
 
   const addPlannedExpense = async (pe: Omit<PlannedExpense, 'id'>) => {
     if (!uid) return;
-    await addDoc(collection(db, 'users', uid, 'plannedExpenses'), pe);
+    await PlannedExpenseService.addPlannedExpense(uid, pe);
   };
 
   const updatePlannedExpense = async (id: string, updatedData: Partial<PlannedExpense>) => {
     if (!uid) return;
-    await updateDoc(doc(db, 'users', uid, 'plannedExpenses', id), updatedData);
+    await PlannedExpenseService.updatePlannedExpense(uid, id, updatedData);
   };
 
   const confirmPlannedExpense = async (id: string, transactionData: Omit<Transaction, 'id'>) => {
     if (!uid) return;
-    const expense = plannedExpenses.find(p => p.id === id);
-    if (!expense) return;
-
-    const batch = writeBatch(db);
-    
-    batch.update(doc(db, 'users', uid, 'plannedExpenses', id), { status: 'confirmed' });
-    
-    const newTxRef = doc(collection(db, 'users', uid, 'transactions'));
-    batch.set(newTxRef, { ...transactionData, plannedExpenseId: expense.id });
-
-    if (expense.isRecurring) {
-      const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
-      const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
-      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: 'pending' });
-    }
-
-    await batch.commit();
+    await PlannedExpenseService.confirmPlannedExpense(uid, id, transactionData);
   };
 
   const rejectPlannedExpense = async (id: string) => {
     if (!uid) return;
-    const expense = plannedExpenses.find(p => p.id === id);
-    if (!expense) return;
-
-    const batch = writeBatch(db);
-    batch.update(doc(db, 'users', uid, 'plannedExpenses', id), { status: 'cancelled' });
-
-    if (expense.isRecurring) {
-      const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
-      const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
-      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: 'pending' });
-    }
-
-    await batch.commit();
+    await PlannedExpenseService.rejectPlannedExpense(uid, id);
   };
 
   const deletePlannedExpense = async (id: string) => {
     if (!uid) return;
-    await deleteDoc(doc(db, 'users', uid, 'plannedExpenses', id));
+    await PlannedExpenseService.deletePlannedExpense(uid, id);
   };
 
   const exportData = () => {
-    const data = { initialBalance, transactions, plannedExpenses };
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `minhas-financas-export-${new Date().toISOString().split('T')[0]}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+    DataSyncService.exportData(initialBalance, transactions, plannedExpenses);
   };
 
   const importData = async (jsonData: string) => {
     if (!uid) return false;
-    try {
-      const data = JSON.parse(jsonData);
-      const batch = writeBatch(db);
-
-      if (data.initialBalance !== undefined) {
-        batch.set(doc(db, 'users', uid), { initialBalance: data.initialBalance }, { merge: true });
-      }
-
-      if (data.transactions && Array.isArray(data.transactions)) {
-        for (const t of data.transactions) {
-          const { id, ...rest } = t;
-          const ref = id ? doc(db, 'users', uid, 'transactions', id) : doc(collection(db, 'users', uid, 'transactions'));
-          batch.set(ref, rest);
-        }
-      }
-
-      if (data.plannedExpenses && Array.isArray(data.plannedExpenses)) {
-        for (const p of data.plannedExpenses) {
-          const { id, ...rest } = p;
-          const ref = id ? doc(db, 'users', uid, 'plannedExpenses', id) : doc(collection(db, 'users', uid, 'plannedExpenses'));
-          batch.set(ref, rest);
-        }
-      }
-      
-      await batch.commit();
-      return true;
-    } catch (e) {
-      console.error("Failed to import data", e);
-      return false;
-    }
+    return DataSyncService.importData(uid, jsonData);
   };
 
   const clearData = async () => {
     if (!uid) return;
-    if (window.confirm('Tem certeza que deseja apagar todos os seus dados da nuvem? Esta ação não pode ser desfeita.')) {
-      const batch = writeBatch(db);
-      
-      batch.set(doc(db, 'users', uid), { initialBalance: 0 }, { merge: true });
-      transactions.forEach(t => {
-        if (t.id) batch.delete(doc(db, 'users', uid, 'transactions', t.id));
-      });
-      plannedExpenses.forEach(p => {
-        if (p.id) batch.delete(doc(db, 'users', uid, 'plannedExpenses', p.id));
-      });
-      
-      await batch.commit();
-    }
+    await DataSyncService.clearData(uid, transactions, plannedExpenses);
   };
 
   return (
