@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft, Save, User as UserIcon, Mail, Shield, Loader, MailCheck } from 'lucide-react';
+import { Save, User as UserIcon, Mail, Shield, Loader, MailCheck } from 'lucide-react';
 import { useProfileSettingsViewModel } from './hooks/useProfileSettingsViewModel';
 import { useLocale } from '../../store/LocaleContext';
 import { PageHeader } from '../../components/shared/PageHeader';

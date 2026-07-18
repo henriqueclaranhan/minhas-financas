@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Calendar, DollarSign, AlignLeft } from 'lucide-react';
 import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { useLocale } from '../../store/LocaleContext';
@@ -13,7 +12,7 @@ interface PlannedExpenseFormProps {
 }
 
 export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expense' }: PlannedExpenseFormProps) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
   const [amount, setAmount] = useState<number | ''>(initialData?.amount ?? '');
   const [dueDate, setDueDate] = useState(initialData?.dueDate || '');

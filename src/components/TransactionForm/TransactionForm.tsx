@@ -14,7 +14,7 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ onSubmit, initialData, defaultType = 'expense' }: TransactionFormProps) {
-  const { t, locale } = useLocale();
+  const { t } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
   const [amount, setAmount] = useState<number | ''>(initialData?.amount ?? '');
   const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
