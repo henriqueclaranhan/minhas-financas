@@ -22,7 +22,7 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
           </div>
           <span className="summary-card-title">{t('dashboard.currentBalance')}</span>
         </div>
-        <div className="summary-card-value">
+        <div className={`summary-card-value ${currentBalance < 0 ? 'text-danger' : currentBalance < 500 ? 'text-warning' : ''}`}>
           {formatCurrency(currentBalance)}
         </div>
       </div>

@@ -1,6 +1,6 @@
 import { ExpensesByCategoryChart } from '../../../../components/dashboard/ExpensesByCategoryChart';
 import { useLocale } from '../../../../store/LocaleContext';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import './DashboardMetrics.css';
 
 interface CategoryExpense {
@@ -21,8 +21,7 @@ export function DashboardMetrics({ expensesByCategory, formatCurrency, monthlyIn
   const { t } = useLocale();
   
   const balance = monthlyIncome - monthlyExpense;
-  const isPositive = balance > 0;
-  const isNegative = balance < 0;
+
 
   return (
     <div className="dashboard-metrics-grid animate-fade-in">
@@ -52,10 +51,10 @@ export function DashboardMetrics({ expensesByCategory, formatCurrency, monthlyIn
 
             <div className="metric-row metric-total">
               <div className="metric-label">
-                {isPositive ? <TrendingUp size={24} className="text-primary" /> : isNegative ? <TrendingDown size={24} className="text-danger" /> : <Minus size={24} className="text-secondary" />}
+                {balance < 0 ? <TrendingDown size={24} className="text-danger" /> : balance < 500 ? <TrendingUp size={24} className="text-warning" /> : <TrendingUp size={24} />}
                 <span>{t('chart.balance')}</span>
               </div>
-              <div className={`metric-value ${isPositive ? 'text-primary' : isNegative ? 'text-danger' : 'text-secondary'}`}>
+              <div className={`metric-value ${balance < 0 ? 'text-danger' : balance < 500 ? 'text-warning' : ''}`}>
                 {formatCurrency(balance)}
               </div>
             </div>

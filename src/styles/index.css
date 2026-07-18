@@ -187,6 +187,7 @@ p {
 .text-left { text-align: left; }
 
 .text-danger { color: var(--clr-danger); }
+.text-warning { color: var(--clr-warning); }
 .text-success { color: var(--clr-success); }
 .text-primary { color: var(--clr-primary); }
 .text-secondary { color: var(--clr-text-secondary); }
