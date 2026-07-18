@@ -144,7 +144,7 @@ const ptBR: Record<string, string> = {
 	"form.income": "Receita",
 	"form.totalAmount": "Valor total",
 	"form.dueDate": "Data prevista",
-	"form.addTransaction": "Adicionar transação",
+	"form.addTransaction": "Adicionar",
 	"form.savePlanning": "Salvar planejamento",
 	"form.recurring": "É uma despesa/receita recorrente?",
 	"form.credit": "Crédito",
@@ -202,6 +202,11 @@ const ptBR: Record<string, string> = {
 	"categories.salary": "Salário",
 	"categories.investment": "Investimento",
 	"categories.gift": "Presente",
+	"form.next": "Próximo",
+	"form.back": "Voltar",
+	"form.step": "Passo {{current}} de {{total}}",
+	"form.payment": "Pagamento",
+	"form.receipt": "Recebimento",
 };
 
 const enUS: Record<string, string> = {
@@ -347,7 +352,7 @@ const enUS: Record<string, string> = {
 	"form.income": "Income",
 	"form.totalAmount": "Total amount",
 	"form.dueDate": "Due date",
-	"form.addTransaction": "Add transaction",
+	"form.addTransaction": "Add",
 	"form.savePlanning": "Save plan",
 	"form.recurring": "Is this a recurring income or expense?",
 	"form.credit": "Credit",
@@ -405,6 +410,11 @@ const enUS: Record<string, string> = {
 	"categories.salary": "Salary",
 	"categories.investment": "Investment",
 	"categories.gift": "Gift",
+	"form.next": "Next",
+	"form.back": "Back",
+	"form.step": "Step {{current}} of {{total}}",
+	"form.payment": "Payment",
+	"form.receipt": "Receipt",
 };
 
 export const translations: Record<SupportedLocale, Record<string, string>> = { "pt-BR": ptBR, "en-US": enUS };

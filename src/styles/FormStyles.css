@@ -25,3 +25,23 @@
   margin-bottom: 16px;
   font-size: 0.875rem;
 }
+}
+
+.desktop-wizard-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+
+.step2-column {
+  background: rgba(0, 0, 0, 0.03);
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid var(--clr-border);
+}
+
+@media (prefers-color-scheme: dark) {
+  .step2-column {
+    background: rgba(255, 255, 255, 0.03);
+  }
+}

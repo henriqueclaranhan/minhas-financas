@@ -6,6 +6,7 @@ import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { getLocalDateString } from '../../utils/dateUtils';
 import { useLocale } from '../../store/LocaleContext';
+import { useIsMobile } from '../../hooks/useIsMobile';
 import '../../styles/FormStyles.css';
 
 interface TransactionFormProps {
@@ -15,14 +16,15 @@ interface TransactionFormProps {
 }
 
 export function TransactionForm({ onSubmit, initialData, defaultType = 'expense' }: TransactionFormProps) {
-  const { t } = useLocale();
+  const isMobile = useIsMobile();
+  const { t, formatCurrency, locale } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
   const [amount, setAmount] = useState<number | ''>(initialData?.amount ?? '');
   const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
   const [installments, setInstallments] = useState(initialData?.installments || 1);
   const [date, setDate] = useState(initialData?.date || getLocalDateString());
-
   const [category, setCategory] = useState(initialData?.category || '');
+  const [currentStep, setCurrentStep] = useState(1);
 
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
 
@@ -31,6 +33,11 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (isMobile && currentStep === 1) {
+      setCurrentStep(2);
+      return;
+    }
+
     const trimmedDesc = description.trim();
     if (!trimmedDesc || !amount || !date) return;
     
@@ -50,6 +57,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
     setInstallments(1);
     setDate(getLocalDateString());
     setCategory('');
+    setCurrentStep(1);
   };
 
   const handleTypeChange = (newType: 'income' | 'expense') => {
@@ -62,101 +70,145 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
   return (
       <form onSubmit={handleSubmit}>
-        <div className="form-group" role="group" aria-label={t('form.type')}>
-          <label className="form-label">{t('form.type')}</label>
-          <div className="flex gap-sm">
-            <button type="button" aria-pressed={type === 'expense'} onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>{t('form.expense')}</button>
-            <button type="button" aria-pressed={type === 'income'} onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>{t('form.income')}</button>
+        {isMobile && (
+          <div style={{ marginBottom: '16px', textAlign: 'center', fontSize: '0.9rem', color: 'var(--clr-text-secondary)', fontWeight: 500 }}>
+            {t('form.step', { current: currentStep, total: 2 })}
+            {currentStep === 2 && description && (
+              <div style={{ fontSize: '0.85rem', marginTop: '6px', opacity: 0.9 }}>
+                <strong>{description}</strong> 
+                <span style={{ 
+                  fontSize: '0.65rem', 
+                  padding: '2px 6px', 
+                  borderRadius: '4px', 
+                  backgroundColor: type === 'expense' ? 'var(--clr-danger-glow, rgba(239, 68, 68, 0.1))' : 'var(--clr-success-glow, rgba(34, 197, 94, 0.1))', 
+                  color: type === 'expense' ? 'var(--clr-danger, #ef4444)' : 'var(--clr-success, #22c55e)', 
+                  marginLeft: '6px',
+                  verticalAlign: 'middle',
+                  fontWeight: 600 
+                }}>
+                  {type === 'expense' ? t('form.expense') : t('form.income')}
+                </span>
+                <br/>
+                <span style={{ display: 'inline-block', marginTop: '4px', color: 'var(--clr-text-secondary)' }}>
+                  {amount ? formatCurrency(Number(amount)) : ''} • {date ? new Intl.DateTimeFormat(locale).format(new Date(date + 'T12:00:00')) : ''}
+                </span>
+              </div>
+            )}
           </div>
-        </div>
+        )}
 
-        <div className="form-group">
-          <label htmlFor="desc-input" className="form-label"><AlignLeft size={16} aria-hidden="true" /> {t('common.description')}</label>
-          <input 
-            id="desc-input"
-            type="text" 
-            value={description} 
-            onChange={e => setDescription(e.target.value)} 
-            placeholder="Ex: Supermercado"
-            required
-            className="form-input"
-          />
-        </div>
+        <div className={!isMobile ? "desktop-wizard-layout" : ""}>
+          {(!isMobile || currentStep === 1) && (
+            <div className={!isMobile ? "wizard-column step1-column" : ""}>
+              <div className="form-group" role="group" aria-label={t('form.type')}>
+                <label className="form-label">{t('form.type')}</label>
+                <div className="flex gap-sm">
+                  <button type="button" aria-pressed={type === 'expense'} onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>{t('form.expense')}</button>
+                  <button type="button" aria-pressed={type === 'income'} onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>{t('form.income')}</button>
+                </div>
+              </div>
 
-        <div className="form-group">
-          <label htmlFor="category-input" className="form-label"><Tag size={16} aria-hidden="true" /> {t('form.category')}</label>
-          <select
-            id="category-input"
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            className="form-select"
-          >
-            <option value="">Selecione uma categoria</option>
-            {categories.map(cat => (
-              <option key={cat} value={cat}>{t(`categories.${cat}`)}</option>
-            ))}
-          </select>
-        </div>
+              <div className="form-group">
+                <label htmlFor="desc-input" className="form-label"><AlignLeft size={16} aria-hidden="true" /> {t('common.description')} *</label>
+                <input 
+                  id="desc-input"
+                  type="text" 
+                  value={description} 
+                  onChange={e => setDescription(e.target.value)} 
+                  placeholder="Ex: Supermercado"
+                  required
+                  className="form-input"
+                />
+              </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="amount-input" className="form-label"><DollarSign size={16} aria-hidden="true" /> {t('form.totalAmount')}</label>
-            <CurrencyInput 
-              id="amount-input"
-              value={amount} 
-              onChangeValue={setAmount} 
-              required
-              className="form-input"
-            />
-          </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="amount-input" className="form-label"><DollarSign size={16} aria-hidden="true" /> {t('form.totalAmount')} *</label>
+                  <CurrencyInput 
+                    id="amount-input"
+                    value={amount} 
+                    onChangeValue={setAmount} 
+                    required
+                    className="form-input"
+                  />
+                </div>
 
-          <div className="form-group">
-            <label htmlFor="date-input" className="form-label"><Calendar size={16} aria-hidden="true" /> {t('common.date')}</label>
-            <DateInput 
-              id="date-input"
-              value={date} 
-              onChangeValue={setDate}
-              required
-              className="form-input"
-            />
-          </div>
-        </div>
+                <div className="form-group">
+                  <label htmlFor="date-input" className="form-label"><Calendar size={16} aria-hidden="true" /> {t('common.date')} *</label>
+                  <DateInput 
+                    id="date-input"
+                    value={date} 
+                    onChangeValue={setDate}
+                    required
+                    className="form-input"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="payment-method-input" className="form-label"><CreditCard size={16} aria-hidden="true" /> {type === 'income' ? 'Recebimento' : 'Pagamento'}</label>
-            <select 
-              id="payment-method-input"
-              value={paymentMethod} 
-              onChange={e => setPaymentMethod(e.target.value)}
-              className="form-select"
-            >
-              {type === 'expense' && <option value="Crédito">Crédito</option>}
-              {type === 'expense' && <option value="Débito">Débito</option>}
-              <option value="Pix">Pix</option>
-              <option value="Dinheiro">Dinheiro</option>
-              {type === 'income' && <option value="Transferência">Transferência</option>}
-            </select>
-          </div>
+          {(!isMobile || currentStep === 2) && (
+            <div className={!isMobile ? "wizard-column step2-column" : ""}>
+              <div className="form-row">
+                <div className="form-group">
+                  <label htmlFor="payment-method-input" className="form-label"><CreditCard size={16} aria-hidden="true" /> {type === 'income' ? t('form.receipt') : t('form.payment')}</label>
+                  <select 
+                    id="payment-method-input"
+                    value={paymentMethod} 
+                    onChange={e => setPaymentMethod(e.target.value)}
+                    className="form-select"
+                  >
+                    {type === 'expense' && <option value="Crédito">Crédito</option>}
+                    {type === 'expense' && <option value="Débito">Débito</option>}
+                    <option value="Pix">Pix</option>
+                    <option value="Dinheiro">Dinheiro</option>
+                    {type === 'income' && <option value="Transferência">Transferência</option>}
+                  </select>
+                </div>
 
-          {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
-            <div className="form-group">
-              <label htmlFor="installments-input" className="form-label"><Layers size={16} aria-hidden="true" /> Parcelas</label>
-              <input 
-                id="installments-input"
-                type="number" 
-                min="1" 
-                value={installments} 
-                onChange={e => setInstallments(parseInt(e.target.value))}
-                className="form-input"
-              />
+                {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
+                  <div className="form-group">
+                    <label htmlFor="installments-input" className="form-label"><Layers size={16} aria-hidden="true" /> Parcelas</label>
+                    <input 
+                      id="installments-input"
+                      type="number" 
+                      min="1" 
+                      value={installments} 
+                      onChange={e => setInstallments(parseInt(e.target.value))}
+                      className="form-input"
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="category-input" className="form-label"><Tag size={16} aria-hidden="true" /> {t('form.category')}</label>
+                <select
+                  id="category-input"
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                  className="form-select"
+                >
+                  <option value="">Selecione uma categoria</option>
+                  {categories.map(cat => (
+                    <option key={cat} value={cat}>{t(`categories.${cat}`)}</option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
         </div>
 
-        <button type="submit" className="btn btn-primary hover-glow form-submit-btn">
-          {initialData ? t('common.saveChanges') : t('form.addTransaction')}
-        </button>
+        <div className="flex gap-sm" style={{ marginTop: '24px' }}>
+          {isMobile && currentStep === 2 && (
+            <button type="button" onClick={() => setCurrentStep(1)} className="btn btn-secondary flex-1">
+              {t('form.back')}
+            </button>
+          )}
+          <button type="submit" className="btn btn-primary hover-glow flex-1">
+            {(isMobile && currentStep === 1) ? t('form.next') : (initialData ? t('common.saveChanges') : t('form.addTransaction'))}
+          </button>
+        </div>
       </form>
   );
 }
