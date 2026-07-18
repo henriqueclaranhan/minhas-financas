@@ -84,44 +84,44 @@
     gap: 8px;
   }
   
-  .summary-card:first-child {
+  .summary-cards-container .summary-card:first-child {
     grid-column: 1 / -1;
   }
   
-  .summary-card {
+  .summary-cards-container .summary-card {
     padding: var(--spacing-md);
   }
 
-  .summary-card-icon-wrapper {
+  .summary-cards-container .summary-card-icon-wrapper {
     width: 32px;
     height: 32px;
   }
 
-  .summary-card-header svg {
+  .summary-cards-container .summary-card-header svg {
     width: 16px;
     height: 16px;
   }
 
-  .summary-card-value {
+  .summary-cards-container .summary-card-value {
     font-size: 1.5rem;
   }
 
   /* Compact styling for the 3 secondary cards */
-  .summary-card:not(:first-child) {
+  .summary-cards-container .summary-card:not(:first-child) {
     padding: 10px 4px;
     align-items: center;
     gap: 8px; /* Increased gap to add spacing before value */
     min-width: 0; /* Important for flex children overflow to work */
   }
 
-  .summary-card:not(:first-child) .summary-card-header {
+  .summary-cards-container .summary-card:not(:first-child) .summary-card-header {
     flex-direction: column;
     gap: 6px;
     text-align: center;
     width: 100%;
   }
 
-  .summary-card:not(:first-child) .summary-card-title {
+  .summary-cards-container .summary-card:not(:first-child) .summary-card-title {
     font-size: 0.75rem;
     line-height: 1.15;
     white-space: normal;
@@ -129,7 +129,7 @@
     max-width: 100%;
   }
 
-  .summary-card:not(:first-child) .summary-card-value {
+  .summary-cards-container .summary-card:not(:first-child) .summary-card-value {
     font-size: 1rem;
     text-align: center;
     margin-top: auto; /* Aligns to bottom */

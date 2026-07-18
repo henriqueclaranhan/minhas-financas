@@ -55,6 +55,14 @@
   transform: translateX(19px);
 }
 
-
-
-
+@media (max-width: 768px) {
+  .forecast-page .filter-tabs-container {
+    flex-direction: column;
+    gap: 12px;
+  }
+  
+  .forecast-page .filter-tab-btn {
+    width: 100%;
+    justify-content: flex-start;
+  }
+}
