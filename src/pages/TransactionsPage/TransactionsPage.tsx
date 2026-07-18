@@ -6,26 +6,24 @@ import { Modal } from '../../components/Modal';
 import { Plus } from 'lucide-react';
 import type { Transaction } from '../../types';
 import { useTransactionsViewModel } from './hooks/useTransactionsViewModel';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
+  // Force HMR update
   const { state, actions } = useTransactionsViewModel();
 
   return (
     <div className="animate-fade-in">
-      <header className="page-header">
-        <div>
-          <h1>Histórico de Transações</h1>
-          <p className="text-secondary">Todas as suas entradas e saídas.</p>
-        </div>
-        {/* Desktop Button */}
-        <button 
-          className="btn btn-primary hover-glow hide-on-mobile" 
-          onClick={actions.openNewModal}
-        >
-          <Plus size={18} className="mr-sm" /> Nova Transação
-        </button>
-      </header>
+      <PageHeader 
+        title="Histórico de Transações"
+        description="Todas as suas entradas e saídas."
+        primaryButton={{
+          label: 'Nova Transação',
+          icon: <Plus size={18} className="mr-sm" />,
+          onClick: actions.openNewModal
+        }}
+      />
 
       <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>

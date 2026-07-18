@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
 import { TransactionsPage } from '../../../pages/TransactionsPage/TransactionsPage';
 import { useTransactionsViewModel } from '../../../pages/TransactionsPage/hooks/useTransactionsViewModel';
 
@@ -49,8 +50,12 @@ describe('TransactionsPage UI', () => {
     } as any);
   });
 
+  const renderWithRouter = (ui: React.ReactElement) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+  };
+
   it('renders page header and summary cards correctly', () => {
-    render(<TransactionsPage />);
+    renderWithRouter(<TransactionsPage />);
     
     expect(screen.getByText('Histórico de Transações')).toBeInTheDocument();
     
@@ -60,13 +65,13 @@ describe('TransactionsPage UI', () => {
   });
 
   it('renders transactions in the table', () => {
-    render(<TransactionsPage />);
+    renderWithRouter(<TransactionsPage />);
     expect(screen.getAllByText('Mercado').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Crédito').length).toBeGreaterThan(0);
   });
 
   it('calls openNewModal when clicking Nova Transação', () => {
-    render(<TransactionsPage />);
+    renderWithRouter(<TransactionsPage />);
     const buttons = screen.getAllByRole('button');
     const newTxButton = buttons.find(b => b.textContent?.includes('Nova Transação'));
     

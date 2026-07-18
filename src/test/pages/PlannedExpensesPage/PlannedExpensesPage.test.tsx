@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
 import { PlannedExpensesPage } from '../../../pages/PlannedExpensesPage/PlannedExpensesPage';
 import { usePlannedExpensesViewModel } from '../../../pages/PlannedExpensesPage/hooks/usePlannedExpensesViewModel';
 
@@ -57,8 +58,12 @@ describe('PlannedExpensesPage UI', () => {
     } as any);
   });
 
+  const renderWithRouter = (ui: React.ReactElement) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+  };
+
   it('renders page header and summary cards correctly', () => {
-    render(<PlannedExpensesPage />);
+    renderWithRouter(<PlannedExpensesPage />);
     
     expect(screen.getByText('Planejamento')).toBeInTheDocument();
     
@@ -67,13 +72,13 @@ describe('PlannedExpensesPage UI', () => {
   });
 
   it('renders expenses in the table', () => {
-    render(<PlannedExpensesPage />);
+    renderWithRouter(<PlannedExpensesPage />);
     expect(screen.getAllByText('Aluguel').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Pix').length).toBeGreaterThan(0);
   });
 
   it('calls openNewModal when clicking Planejar', () => {
-    render(<PlannedExpensesPage />);
+    renderWithRouter(<PlannedExpensesPage />);
     const buttons = screen.getAllByRole('button');
     const newPlanButton = buttons.find(b => b.textContent?.includes('Planejar'));
     

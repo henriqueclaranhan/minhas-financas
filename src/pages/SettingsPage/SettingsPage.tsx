@@ -1,29 +1,20 @@
-import { useNavigate } from 'react-router-dom';
+
 import { ThemeToggle } from './components/ThemeToggle';
-import { ChevronLeft, Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
+import { Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './SettingsPage.css';
 
 export function SettingsPage() {
-  const navigate = useNavigate();
+
   const { state, actions } = useSettingsViewModel();
 
   return (
     <div className="animate-fade-in">
-      <header className="hide-on-desktop mb-xl flex items-center">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="btn hide-on-desktop"
-          style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
-        >
-          <ChevronLeft size={24} /> Voltar
-        </button>
-      </header>
-      
-      <div>
-        <header className="page-header">
-          <h1>Ajustes</h1>
-        </header>
+      <PageHeader 
+        title="Ajustes"
+        showBackButton={true}
+      />
         
         {state.importStatus && (
           <div className={`p-md mb-lg settings-status ${state.importStatus.includes('Erro') ? 'error' : 'success'}`}>
@@ -111,7 +102,6 @@ export function SettingsPage() {
           </div>
 
         </div>
-      </div>
     </div>
   );
 }

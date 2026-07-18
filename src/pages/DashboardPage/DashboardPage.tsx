@@ -4,6 +4,7 @@ import { Modal } from '../../components/Modal';
 import { TransactionForm } from '../../components/TransactionForm';
 import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { useDashboardViewModel } from './hooks/useDashboardViewModel';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './DashboardPage.css';
 
 export function DashboardPage() {
@@ -15,18 +16,15 @@ export function DashboardPage() {
 
   return (
     <div className="animate-fade-in">
-      <header className="dashboard-header">
-        <div>
-          <h1>Olá, {state.userName}!</h1>
-          <p className="text-secondary">Acompanhe o resumo das suas finanças e a evolução do seu saldo.</p>
-        </div>
-        <button 
-          className="btn btn-primary hover-glow hide-on-mobile" 
-          onClick={() => { actions.setIsModalOpen(true); actions.setActionType('none'); }}
-        >
-          <Plus size={18} className="mr-sm" /> Nova Ação
-        </button>
-      </header>
+      <PageHeader 
+        title={`Olá, ${state.userName}!`}
+        description="Acompanhe o resumo das suas finanças e a evolução do seu saldo."
+        primaryButton={{
+          label: 'Nova Ação',
+          icon: <Plus size={18} className="mr-sm" />,
+          onClick: () => { actions.setIsModalOpen(true); actions.setActionType('none'); }
+        }}
+      />
       
       <div className="dashboard-widget dashboard-main animate-fade-in">
         <Dashboard chartData={state.chartData} />

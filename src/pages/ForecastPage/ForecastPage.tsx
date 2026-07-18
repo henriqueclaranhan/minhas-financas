@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
 import { useFinance } from '../../store/FinanceContext';
 import { DashboardChart } from '../../components/dashboard/DashboardChart';
-import { ChevronLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+
 import { calculateProjections } from '../../utils/projectionUtils';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './ForecastPage.css';
 
 export function ForecastPage() {
-  const navigate = useNavigate();
+
   const { transactions, plannedExpenses, initialBalance } = useFinance();
   
   const [includePlannedIncome, setIncludePlannedIncome] = useState(true);
@@ -33,19 +33,11 @@ export function ForecastPage() {
 
   return (
     <div className="animate-fade-in forecast-page">
-      <header className="hide-on-desktop mb-xl flex items-center">
-        <button 
-          onClick={() => navigate(-1)} 
-          className="btn forecast-back-btn p-0 flex items-center" 
-        >
-          <ChevronLeft size={24} /> Voltar
-        </button>
-      </header>
-
-      <header className="mb-lg">
-        <h1>Previsões e Cenários</h1>
-        <p className="text-secondary forecast-desc">Simule o futuro do seu saldo baseando-se nos seus planejamentos.</p>
-      </header>
+      <PageHeader 
+        title="Previsões e Cenários"
+        description="Simule o futuro do seu saldo baseando-se nos seus planejamentos."
+        showBackButton={true}
+      />
 
       <div className="forecast-content">
         <div className="glass-panel p-lg">

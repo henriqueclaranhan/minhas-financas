@@ -7,6 +7,7 @@ import { FilterType, TransactionType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
 import { PlannedExpenseTable } from './components/PlannedExpenseTable';
 import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
@@ -14,18 +15,15 @@ export function PlannedExpensesPage() {
 
   return (
     <div className="animate-fade-in">
-      <header className="page-header">
-        <div>
-          <h1>Planejamento</h1>
-          <p className="text-secondary">Programe suas receitas e despesas futuras.</p>
-        </div>
-        <button 
-          className="btn btn-primary hover-glow hide-on-mobile" 
-          onClick={actions.openNewModal}
-        >
-          <Plus size={18} className="mr-sm" /> Planejar
-        </button>
-      </header>
+      <PageHeader 
+        title="Planejamento"
+        description="Programe suas receitas e despesas futuras."
+        primaryButton={{
+          label: 'Planejar',
+          icon: <Plus size={18} className="mr-sm" />,
+          onClick: actions.openNewModal
+        }}
+      />
 
       <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>

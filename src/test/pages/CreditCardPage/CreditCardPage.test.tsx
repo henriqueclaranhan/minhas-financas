@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { BrowserRouter } from 'react-router-dom';
 import { CreditCardPage } from '../../../pages/CreditCardPage/CreditCardPage';
 import { useCreditCardViewModel } from '../../../pages/CreditCardPage/hooks/useCreditCardViewModel';
 
@@ -50,8 +51,12 @@ describe('CreditCardPage UI', () => {
     window.HTMLElement.prototype.scrollTo = vi.fn();
   });
 
+  const renderWithRouter = (ui: React.ReactElement) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+  };
+
   it('renders page header and current invoice', () => {
-    render(<CreditCardPage />);
+    renderWithRouter(<CreditCardPage />);
     
     expect(screen.getByText('Faturas e Previsões')).toBeInTheDocument();
     expect(screen.getByText('Setembro 2026')).toBeInTheDocument();
@@ -76,7 +81,7 @@ describe('CreditCardPage UI', () => {
       actions: mockActions
     } as any);
 
-    render(<CreditCardPage />);
+    renderWithRouter(<CreditCardPage />);
     expect(screen.getByText('Nenhuma compra no crédito para este mês.')).toBeInTheDocument();
   });
 });

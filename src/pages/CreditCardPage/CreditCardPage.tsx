@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { CreditCard, Calendar } from 'lucide-react';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useCreditCardViewModel } from './hooks/useCreditCardViewModel';
+import { PageHeader } from '../../components/shared/PageHeader';
 import './CreditCardPage.css';
 
 export function CreditCardPage() {
@@ -31,10 +32,10 @@ export function CreditCardPage() {
 
   return (
     <div className="animate-fade-in">
-      <header className="mb-lg">
-        <h1>Faturas e Previsões</h1>
-        <p className="text-secondary">Acompanhe os gastos no cartão de crédito nos próximos meses.</p>
-      </header>
+      <PageHeader 
+        title="Faturas e Previsões"
+        description="Acompanhe os gastos no cartão de crédito nos próximos meses."
+      />
 
       {/* Chart Section */}
       <div className="glass-panel p-lg mb-lg">
