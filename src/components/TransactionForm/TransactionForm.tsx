@@ -53,17 +53,18 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
   return (
       <form onSubmit={handleSubmit}>
-        <div className="form-group">
+        <div className="form-group" role="group" aria-label={t('form.type')}>
           <label className="form-label">{t('form.type')}</label>
           <div className="flex gap-sm">
-            <button type="button" onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>{t('form.expense')}</button>
-            <button type="button" onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>{t('form.income')}</button>
+            <button type="button" aria-pressed={type === 'expense'} onClick={() => handleTypeChange('expense')} className={`btn form-type-btn ${type === 'expense' ? 'form-type-btn-expense-active' : 'form-type-btn-inactive'}`}>{t('form.expense')}</button>
+            <button type="button" aria-pressed={type === 'income'} onClick={() => handleTypeChange('income')} className={`btn form-type-btn ${type === 'income' ? 'form-type-btn-income-active' : 'form-type-btn-inactive'}`}>{t('form.income')}</button>
           </div>
         </div>
 
         <div className="form-group">
-          <label className="form-label"><AlignLeft size={16} /> {t('common.description')}</label>
+          <label htmlFor="desc-input" className="form-label"><AlignLeft size={16} aria-hidden="true" /> {t('common.description')}</label>
           <input 
+            id="desc-input"
             type="text" 
             value={description} 
             onChange={e => setDescription(e.target.value)} 
@@ -75,8 +76,9 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label"><DollarSign size={16} /> {t('form.totalAmount')}</label>
+            <label htmlFor="amount-input" className="form-label"><DollarSign size={16} aria-hidden="true" /> {t('form.totalAmount')}</label>
             <CurrencyInput 
+              id="amount-input"
               value={amount} 
               onChangeValue={setAmount} 
               required
@@ -85,8 +87,9 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
           </div>
 
           <div className="form-group">
-            <label className="form-label"><Calendar size={16} /> {t('common.date')}</label>
+            <label htmlFor="date-input" className="form-label"><Calendar size={16} aria-hidden="true" /> {t('common.date')}</label>
             <DateInput 
+              id="date-input"
               value={date} 
               onChangeValue={setDate}
               required
@@ -97,8 +100,9 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
         <div className="form-row">
           <div className="form-group">
-            <label className="form-label"><CreditCard size={16} /> {type === 'income' ? 'Recebimento' : 'Pagamento'}</label>
+            <label htmlFor="payment-method-input" className="form-label"><CreditCard size={16} aria-hidden="true" /> {type === 'income' ? 'Recebimento' : 'Pagamento'}</label>
             <select 
+              id="payment-method-input"
               value={paymentMethod} 
               onChange={e => setPaymentMethod(e.target.value)}
               className="form-select"
@@ -113,8 +117,9 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
           {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
             <div className="form-group">
-              <label className="form-label"><Layers size={16} /> Parcelas</label>
+              <label htmlFor="installments-input" className="form-label"><Layers size={16} aria-hidden="true" /> Parcelas</label>
               <input 
+                id="installments-input"
                 type="number" 
                 min="1" 
                 value={installments} 

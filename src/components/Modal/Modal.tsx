@@ -25,12 +25,18 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="modal-overlay animate-fade-in" onClick={onClose}>
-      <div className="modal-content" onClick={e => e.stopPropagation()}>
+    <div className="modal-overlay animate-fade-in" onClick={onClose} aria-hidden="true">
+      <div 
+        className="modal-content" 
+        onClick={e => e.stopPropagation()} 
+        role="dialog" 
+        aria-modal="true" 
+        aria-labelledby="modal-title"
+      >
         <div className="modal-header">
-          <h3>{title}</h3>
-          <button className="modal-close" onClick={onClose}>
-            <X size={24} />
+          <h3 id="modal-title">{title}</h3>
+          <button className="modal-close" onClick={onClose} aria-label="Fechar modal">
+            <X size={24} aria-hidden="true" />
           </button>
         </div>
         <div className="modal-body">
