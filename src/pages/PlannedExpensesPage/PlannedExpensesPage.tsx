@@ -10,11 +10,12 @@ import { PlannedExpenseTable } from './components/PlannedExpenseTable';
 import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
+import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
   const { state, actions } = usePlannedExpensesViewModel();
-  const { formatCurrency, locale, t } = useLocale();
+  const { locale, t } = useLocale();
 
   return (
     <div className="animate-fade-in">
@@ -28,20 +29,10 @@ export function PlannedExpensesPage() {
         }}
       />
 
-      <div className="summary-cards" style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-        <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>
-          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>{t('transactions.incomePeriod')}</p>
-          <h3 style={{ margin: 0, color: 'var(--clr-success)' }}>
-            {formatCurrency(state.totalIncome)}
-          </h3>
-        </div>
-        <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-danger)' }}>
-          <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>{t('transactions.expensePeriod')}</p>
-          <h3 style={{ margin: 0, color: 'var(--clr-danger)' }}>
-            {formatCurrency(state.totalExpense)}
-          </h3>
-        </div>
-      </div>
+      <PeriodSummaryCards 
+        income={state.totalIncome} 
+        expense={state.totalExpense} 
+      />
 
       <FilterTabs 
         filter={state.filter}

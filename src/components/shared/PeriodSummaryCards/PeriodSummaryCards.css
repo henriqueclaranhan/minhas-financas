@@ -1,0 +1,83 @@
+.period-summary-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+}
+
+.period-summary-cards .summary-card {
+  padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.period-summary-cards .summary-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.period-summary-cards .summary-card-title {
+  color: var(--clr-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.period-summary-cards .summary-card-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.period-summary-cards .summary-card-icon-wrapper.success { background: rgba(52, 199, 89, 0.15); }
+.period-summary-cards .summary-card-icon-wrapper.danger { background: rgba(255, 59, 48, 0.15); }
+
+:root[data-theme="dark"] .period-summary-cards .summary-card-icon-wrapper.success { background: rgba(48, 209, 88, 0.2); }
+:root[data-theme="dark"] .period-summary-cards .summary-card-icon-wrapper.danger { background: rgba(255, 69, 58, 0.2); }
+
+.period-summary-cards .summary-card-value {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--clr-text-primary);
+  letter-spacing: -0.02em;
+  margin-top: 4px;
+}
+
+.period-summary-cards .summary-card-value.value-success {
+  color: var(--clr-success);
+}
+
+.period-summary-cards .summary-card-value.value-danger {
+  color: var(--clr-danger);
+}
+
+@media (max-width: 768px) {
+  .period-summary-cards {
+    gap: 8px;
+  }
+  
+  .period-summary-cards .summary-card {
+    padding: var(--spacing-md);
+  }
+
+  .period-summary-cards .summary-card-icon-wrapper {
+    width: 32px;
+    height: 32px;
+  }
+
+  .period-summary-cards .summary-card-header svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .period-summary-cards .summary-card-value {
+    font-size: 1.5rem;
+  }
+}

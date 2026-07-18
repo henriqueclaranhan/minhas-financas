@@ -6,6 +6,7 @@ import { Modal } from '../../components/Modal';
 import { format, parseISO } from 'date-fns';
 import { Filter, ArrowUpCircle, ArrowDownCircle, CalendarDays } from 'lucide-react';
 import { useLocale } from '../../store/LocaleContext';
+import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import '../../components/shared/FilterTabs/FilterTabs.css';
 import './ForecastPage.css';
 
@@ -26,6 +27,8 @@ export function ForecastPage() {
     selectedYear,
     tempFilterType,
     tempSelectedYear,
+    totalIncome,
+    totalExpense,
   } = state;
   const {
     setIncludePlannedIncome,
@@ -54,6 +57,11 @@ export function ForecastPage() {
         title={t('forecast.title')}
         description={t('forecast.description')}
         showBackButton={true}
+      />
+
+      <PeriodSummaryCards 
+        income={totalIncome} 
+        expense={totalExpense} 
       />
 
       <div className="forecast-content">

@@ -88,6 +88,9 @@ export function useForecastViewModel() {
     }
   };
 
+  const totalIncome = useMemo(() => chartData.data.reduce((sum, item) => sum + item.income, 0), [chartData.data]);
+  const totalExpense = useMemo(() => chartData.data.reduce((sum, item) => sum + item.expense, 0), [chartData.data]);
+
   return {
     state: {
       chartData,
@@ -102,7 +105,9 @@ export function useForecastViewModel() {
       tempStartDate,
       tempEndDate,
       filterType,
-      selectedYear
+      selectedYear,
+      totalIncome,
+      totalExpense,
     },
     actions: {
       setIncludePlannedIncome,
