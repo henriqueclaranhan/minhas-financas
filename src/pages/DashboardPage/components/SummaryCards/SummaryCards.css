@@ -30,3 +30,40 @@
   font-size: clamp(1.25rem, 4vw, 1.75rem);
   color: var(--clr-danger);
 }
+
+@media (max-width: 768px) {
+  .summary-cards-container {
+    grid-template-columns: 1fr 1fr;
+  }
+  .summary-card:first-child {
+    grid-column: 1 / -1;
+  }
+  
+  .summary-card:nth-child(2),
+  .summary-card:nth-child(3) {
+    padding: 12px;
+  }
+  
+  .summary-card:nth-child(2) {
+    border-left: 4px solid var(--clr-success);
+  }
+  .summary-card:nth-child(3) {
+    border-left: 4px solid var(--clr-danger);
+  }
+  
+  .summary-card:nth-child(2) .summary-card-header,
+  .summary-card:nth-child(3) .summary-card-header {
+    margin-bottom: 4px;
+    font-size: 0.75rem;
+  }
+  
+  .summary-card:nth-child(2) .summary-card-header > svg,
+  .summary-card:nth-child(3) .summary-card-header > svg {
+    display: none;
+  }
+  
+  .summary-card:nth-child(2) .summary-card-value,
+  .summary-card:nth-child(3) .summary-card-value {
+    font-size: 1.15rem;
+  }
+}
