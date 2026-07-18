@@ -1,105 +1,16 @@
-import { useState } from 'react';
-import { useFinance } from '../../store/FinanceContext';
 import { Plus } from 'lucide-react';
 import { Modal } from '../../components/Modal';
 import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { TransactionForm } from '../../components/TransactionForm';
-import { parseISO } from 'date-fns';
 import type { PlannedExpense } from '../../types';
-import { FilterType, ExpenseStatus, TransactionType } from '../../enums/FinanceEnums';
+import { FilterType, TransactionType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
 import { PlannedExpenseTable } from './components/PlannedExpenseTable';
-import { expandPlannedExpenses } from '../../utils/financeUtils';
-import type { ExpandedPlannedExpense } from '../../utils/financeUtils';
+import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
-  const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense } = useFinance();
-  
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const defaultMonth = 'all';
-  const defaultYear = new Date().getFullYear();
-
-  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(defaultMonth);
-  const [selectedYear, setSelectedYear] = useState(defaultYear);
-
-  const [tempSelectedMonth, setTempSelectedMonth] = useState<number | 'all'>(defaultMonth);
-  const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
-
-  const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
-  const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
-  const [expenseToConfirm, setExpenseToConfirm] = useState<PlannedExpense | null>(null);
-
-  const expandedPlannedExpenses = expandPlannedExpenses(plannedExpenses);
-  
-  const handleAddOrUpdate = (data: any) => {
-    if (editingExpense) {
-      updatePlannedExpense(editingExpense.id!, data);
-    } else {
-      addPlannedExpense(data);
-    }
-    setIsModalOpen(false);
-    setEditingExpense(null);
-  };
-
-  const openNewModal = () => {
-    setEditingExpense(null);
-    setIsModalOpen(true);
-  };
-
-  const openEditModal = (p: ExpandedPlannedExpense) => {
-    const originalP = p.originalId ? plannedExpenses.find(px => px.id === p.originalId) : p;
-    setEditingExpense(originalP as PlannedExpense);
-    setIsModalOpen(true);
-  };
-
-  const handleOpenFilters = () => {
-    setTempSelectedMonth(selectedMonth);
-    setTempSelectedYear(selectedYear);
-    setIsFilterModalOpen(true);
-  };
-
-  const handleApplyFilters = () => {
-    setSelectedMonth(tempSelectedMonth);
-    setSelectedYear(tempSelectedYear);
-    setIsFilterModalOpen(false);
-  };
-
-  const handleResetFilters = () => {
-    setSelectedMonth(defaultMonth);
-    setSelectedYear(defaultYear);
-    
-    setTempSelectedMonth(defaultMonth);
-    setTempSelectedYear(defaultYear);
-    
-    setIsFilterModalOpen(false);
-  };
-
-  const filterLabel = selectedMonth === 'all' 
-    ? `Ano todo, ${selectedYear}`
-    : `${new Date(2000, selectedMonth as number, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())} de ${selectedYear}`;
-
-  const pendingExpenses = expandedPlannedExpenses
-    .filter(p => {
-      const pMonth = parseISO(p.dueDate).getUTCMonth();
-      const pYear = parseISO(p.dueDate).getUTCFullYear();
-      
-      const isPending = p.status === ExpenseStatus.PENDING;
-      const matchesFilter = filter === FilterType.ALL || p.type === filter || (!p.type && filter === FilterType.EXPENSE);
-      const matchesMonth = selectedMonth === 'all' || pMonth === selectedMonth;
-      const matchesYear = pYear === selectedYear;
-      const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-      return isPending && matchesFilter && matchesMonth && matchesYear && matchesSearch;
-    })
-    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime());
-
-  const totalIncome = pendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0);
-  const totalExpense = pendingExpenses.filter(p => p.type === TransactionType.EXPENSE || !p.type).reduce((acc, p) => acc + p.amount, 0);
+  const { state, actions } = usePlannedExpensesViewModel();
 
   return (
     <div className="animate-fade-in">
@@ -110,7 +21,7 @@ export function PlannedExpensesPage() {
         </div>
         <button 
           className="btn btn-primary hover-glow hide-on-mobile" 
-          onClick={openNewModal}
+          onClick={actions.openNewModal}
         >
           <Plus size={18} className="mr-sm" /> Planejar
         </button>
@@ -120,103 +31,86 @@ export function PlannedExpensesPage() {
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-success)' }}>
           <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Entradas no Período</p>
           <h3 style={{ margin: 0, color: 'var(--clr-success)' }}>
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalIncome)}
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.totalIncome)}
           </h3>
         </div>
         <div className="glass-panel" style={{ padding: '16px', borderLeft: '4px solid var(--clr-danger)' }}>
           <p className="text-secondary" style={{ margin: '0 0 4px 0', fontSize: '0.875rem' }}>Saídas no Período</p>
           <h3 style={{ margin: 0, color: 'var(--clr-danger)' }}>
-            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(totalExpense)}
+            {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(state.totalExpense)}
           </h3>
         </div>
       </div>
 
       <FilterTabs 
-        filter={filter}
-        setFilter={setFilter}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onOpenFilters={handleOpenFilters}
-        activeDateLabel={filterLabel}
+        filter={state.filter}
+        setFilter={actions.setFilter}
+        searchQuery={state.searchQuery}
+        setSearchQuery={actions.setSearchQuery}
+        onOpenFilters={actions.handleOpenFilters}
+        activeDateLabel={state.filterLabel}
       />
 
       <div className="glass-panel panel-no-padding">
         <PlannedExpenseTable 
-          expenses={pendingExpenses as PlannedExpense[]}
-          onConfirm={(id) => {
-            const p = pendingExpenses.find(px => px.id === id);
-            setExpenseToConfirm(plannedExpenses.find(px => px.id === (p?.originalId || id)) || null);
-          }}
-          onReject={(id) => {
-            const p = pendingExpenses.find(px => px.id === id);
-            rejectPlannedExpense(p?.originalId || id);
-          }}
-          onEdit={openEditModal}
-          onDelete={(id) => {
-            const p = pendingExpenses.find(px => px.id === id);
-            setExpenseToDelete(p?.originalId || id);
-          }}
+          expenses={state.pendingExpenses as PlannedExpense[]}
+          onConfirm={actions.handleConfirmPrompt}
+          onReject={actions.rejectAction}
+          onEdit={actions.openEditModal}
+          onDelete={actions.handleDeletePrompt}
         />
       </div>
 
-      <button className="btn btn-primary fab hide-on-desktop" onClick={openNewModal}>
+      <button className="btn btn-primary fab hide-on-desktop" onClick={actions.openNewModal}>
         <Plus size={28} />
       </button>
 
-      <Modal isOpen={isModalOpen} onClose={() => { setIsModalOpen(false); setEditingExpense(null); }} title={editingExpense ? "Editar Planejamento" : "Planejar"}>
+      <Modal isOpen={state.isModalOpen} onClose={() => { actions.setIsModalOpen(false); actions.setEditingExpense(null); }} title={state.editingExpense ? "Editar Planejamento" : "Planejar"}>
         <PlannedExpenseForm 
-          onSubmit={handleAddOrUpdate} 
-          initialData={editingExpense || undefined} 
-          defaultType={filter === FilterType.INCOME ? TransactionType.INCOME : TransactionType.EXPENSE}
+          onSubmit={actions.handleAddOrUpdate} 
+          initialData={state.editingExpense || undefined} 
+          defaultType={state.filter === FilterType.INCOME ? TransactionType.INCOME : TransactionType.EXPENSE}
         />
       </Modal>
 
-      <Modal isOpen={!!expenseToConfirm} onClose={() => setExpenseToConfirm(null)} title={expenseToConfirm?.type === 'income' ? "Confirmar Recebimento" : "Confirmar Pagamento"}>
-        {expenseToConfirm && (
+      <Modal isOpen={!!state.expenseToConfirm} onClose={() => actions.setExpenseToConfirm(null)} title={state.expenseToConfirm?.type === 'income' ? "Confirmar Recebimento" : "Confirmar Pagamento"}>
+        {state.expenseToConfirm && (
           <TransactionForm 
-            onSubmit={(data) => {
-              confirmPlannedExpense(expenseToConfirm.id!, data);
-              setExpenseToConfirm(null);
-            }} 
+            onSubmit={actions.confirmAction} 
             initialData={{
-              description: expenseToConfirm.description,
-              amount: expenseToConfirm.amount,
-              date: expenseToConfirm.dueDate,
-              type: expenseToConfirm.type || 'expense',
-              paymentMethod: expenseToConfirm.type === 'income' ? 'Pix' : 'Pix',
+              description: state.expenseToConfirm.description,
+              amount: state.expenseToConfirm.amount,
+              date: state.expenseToConfirm.dueDate,
+              type: state.expenseToConfirm.type || 'expense',
+              paymentMethod: state.expenseToConfirm.type === 'income' ? 'Pix' : 'Pix',
               installments: 1
             }}
-            defaultType={expenseToConfirm.type || 'expense'}
+            defaultType={state.expenseToConfirm.type || 'expense'}
           />
         )}
       </Modal>
 
-      <Modal isOpen={!!expenseToDelete} onClose={() => setExpenseToDelete(null)} title="Confirmar Exclusão">
+      <Modal isOpen={!!state.expenseToDelete} onClose={() => actions.setExpenseToDelete(null)} title="Confirmar Exclusão">
         <div className="delete-modal-content">
           <p className="delete-modal-text">Tem certeza que deseja apagar este planejamento?</p>
           <p className="delete-modal-subtext">Esta ação não pode ser desfeita.</p>
         </div>
         <div className="modal-actions">
-          <button className="btn" onClick={() => setExpenseToDelete(null)}>Cancelar</button>
+          <button className="btn" onClick={() => actions.setExpenseToDelete(null)}>Cancelar</button>
           <button 
             className="btn btn-primary btn-danger-bg" 
-            onClick={() => {
-              if (expenseToDelete) {
-                deletePlannedExpense(expenseToDelete);
-                setExpenseToDelete(null);
-              }
-            }}
+            onClick={actions.confirmDelete}
           >
             Apagar
           </button>
         </div>
       </Modal>
 
-      <Modal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} title="Filtros">
+      <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title="Filtros">
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">Mês</label>
-            <select className="form-select" value={tempSelectedMonth} onChange={(e) => setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
+            <select className="form-select" value={state.tempSelectedMonth} onChange={(e) => actions.setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
               <option value="all">Ano Todo</option>
               {Array.from({ length: 12 }).map((_, i) => (
                 <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString('pt-BR', { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
@@ -225,8 +119,8 @@ export function PlannedExpensesPage() {
           </div>
           <div className="form-group">
             <label className="form-label">Ano</label>
-            <select className="form-select" value={tempSelectedYear} onChange={(e) => setTempSelectedYear(Number(e.target.value))}>
-              {[defaultYear - 1, defaultYear, defaultYear + 1].map(y => (
+            <select className="form-select" value={state.tempSelectedYear} onChange={(e) => actions.setTempSelectedYear(Number(e.target.value))}>
+              {[state.defaultYear - 1, state.defaultYear, state.defaultYear + 1].map(y => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
@@ -234,10 +128,10 @@ export function PlannedExpensesPage() {
         </div>
 
         <div className="modal-actions-filters">
-          <button className="btn flex-1 btn-alt-bg" onClick={handleResetFilters}>
+          <button className="btn flex-1 btn-alt-bg" onClick={actions.handleResetFilters}>
             Resetar
           </button>
-          <button className="btn btn-primary" style={{ flex: 2 }} onClick={handleApplyFilters}>
+          <button className="btn btn-primary" style={{ flex: 2 }} onClick={actions.handleApplyFilters}>
             Aplicar Filtros
           </button>
         </div>
