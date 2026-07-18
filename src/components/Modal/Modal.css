@@ -92,27 +92,7 @@
   }
 }
 
-/* Floating Action Button (FAB) */
-.fab {
-  position: fixed;
-  bottom: calc(80px + env(safe-area-inset-bottom, 0)); /* above bottom nav */
-  right: var(--spacing-lg);
-  width: 56px;
-  height: 56px;
-  padding: 0; /* Remove .btn horizontal padding which was squishing the icon */
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3);
-  z-index: 90;
-}
-
 @media (min-width: 769px) {
-  .fab {
-    display: none; /* Hide FAB on desktop, use inline buttons */
-  }
-
   .modal-content {
     max-width: 900px; /* Increased width to accommodate side-by-side wizard columns */
   }

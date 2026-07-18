@@ -351,7 +351,7 @@ p {
 
 .fab {
   position: fixed;
-  bottom: 80px;
+  bottom: 100px;
   right: var(--spacing-md);
   width: 56px;
   height: 56px;

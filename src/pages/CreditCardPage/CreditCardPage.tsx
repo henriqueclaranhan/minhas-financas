@@ -1,5 +1,8 @@
 import { useEffect, useRef } from 'react';
-import { CreditCard, Calendar } from 'lucide-react';
+import { CreditCard, Calendar, Plus, Wallet, CalendarClock } from 'lucide-react';
+import { Modal } from '../../components/Modal';
+import { TransactionForm } from '../../components/TransactionForm';
+import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { BarChart, Bar, XAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import { useCreditCardViewModel } from './hooks/useCreditCardViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
@@ -174,6 +177,52 @@ export function CreditCardPage() {
           )}
         </div>
       </div>
+      {/* Mobile FAB */}
+      <button 
+        className="btn btn-primary fab hide-on-desktop" 
+        onClick={() => { actions.setIsModalOpen(true); actions.setActionType('none'); }}
+      >
+        <Plus size={28} />
+      </button>
+
+      <Modal 
+        isOpen={state.isModalOpen} 
+        onClose={() => { actions.setIsModalOpen(false); setTimeout(() => actions.setActionType('none'), 300); }} 
+        title={state.actionType === 'none' ? t('dashboard.whatToDo') : state.actionType === 'transaction' ? t('dashboard.newTransaction') : t('planning.new')}
+      >
+        {state.actionType === 'none' && (
+          <div className="dashboard-modal-grid">
+            <button 
+              className="glass-panel hover-lift dashboard-modal-btn" 
+              onClick={() => actions.setActionType('transaction')}
+            >
+              <div className="dashboard-icon-bg primary">
+                <Wallet size={24} color="#fff" />
+              </div>
+              <div>
+                <h3 className="dashboard-modal-title">{t('dashboard.newTransaction')}</h3>
+                <p className="dashboard-modal-desc">{t('dashboard.transactionDescription')}</p>
+              </div>
+            </button>
+
+            <button 
+              className="glass-panel hover-lift dashboard-modal-btn" 
+              onClick={() => actions.setActionType('planning')}
+            >
+              <div className="dashboard-icon-bg warning">
+                <CalendarClock size={24} color="#fff" />
+              </div>
+              <div>
+                <h3 className="dashboard-modal-title">{t('dashboard.newPlanning')}</h3>
+                <p className="dashboard-modal-desc">{t('dashboard.planningDescription')}</p>
+              </div>
+            </button>
+          </div>
+        )}
+
+        {state.actionType === 'transaction' && <TransactionForm onSubmit={actions.handleTransactionAdd} />}
+        {state.actionType === 'planning' && <PlannedExpenseForm onSubmit={actions.handlePlanningAdd} />}
+      </Modal>
     </div>
   );
 }
