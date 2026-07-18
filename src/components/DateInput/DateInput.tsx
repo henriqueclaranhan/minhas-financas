@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Calendar } from 'lucide-react';
 import { useLocale } from '../../store/LocaleContext';
+import './DateInput.css';
 
 interface DateInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'value' | 'onChange'> {
   value: string; // Always YYYY-MM-DD
@@ -66,65 +67,40 @@ export function DateInput({ value, onChangeValue, className, required, ...rest }
     if (rest.onBlur) rest.onBlur(e);
   };
 
-  const handleIconClick = () => {
-    if (dateInputRef.current) {
-      try {
-        if ('showPicker' in HTMLInputElement.prototype) {
-          dateInputRef.current.showPicker();
-        } else {
-          dateInputRef.current.focus();
-        }
-      } catch (e) {
-        dateInputRef.current.focus();
-      }
-    }
-  };
-
   return (
-    <div style={{ position: 'relative', display: 'flex', alignItems: 'center', width: '100%' }}>
+    <div className="date-input-wrapper">
       <input
         {...rest}
         type="text"
-        className={className}
+        className={`${className || ''} date-input-field`.trim()}
         value={textValue}
         onChange={handleTextChange}
         onBlur={handleBlur}
         placeholder={locale === 'en-US' ? 'MM/DD/YYYY' : 'DD/MM/YYYY'}
         required={required}
-        style={{ paddingRight: '40px', width: '100%' }}
       />
       
-      <button 
-        type="button"
-        onClick={handleIconClick}
-        style={{ 
-          position: 'absolute', 
-          right: '12px', 
-          top: '50%', 
-          transform: 'translateY(-50%)', 
-          background: 'transparent', 
-          border: 'none', 
-          padding: 0, 
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        <Calendar size={20} style={{ color: 'var(--clr-text-secondary)' }} />
-      </button>
-
-      <input 
-        ref={dateInputRef}
-        type="date"
-        value={value}
-        onChange={(e) => {
-          if (e.target.value) {
-            onChangeValue(e.target.value);
-          }
-        }}
-        style={{ position: 'absolute', opacity: 0, width: 0, height: 0, pointerEvents: 'none', bottom: 0, right: 0 }}
-      />
+      <div className="date-input-picker-wrapper">
+        <Calendar size={20} className="date-input-icon" />
+        <input 
+          ref={dateInputRef}
+          type="date"
+          className="date-input-native-picker"
+          value={value}
+          onChange={(e) => {
+            if (e.target.value) {
+              onChangeValue(e.target.value);
+            }
+          }}
+          onClick={(e) => {
+            try {
+              if ('showPicker' in HTMLInputElement.prototype) {
+                (e.target as HTMLInputElement).showPicker();
+              }
+            } catch (err) {}
+          }}
+        />
+      </div>
     </div>
   );
 }
