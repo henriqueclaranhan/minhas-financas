@@ -272,16 +272,21 @@ p {
 
 .form-input, .form-select {
   width: 100%;
-  padding: 14px 16px;
+  height: 46px;
+  padding: 0 16px;
   border-radius: 10px;
   border: 1px solid var(--clr-border);
   background: var(--clr-surface-alt);
   color: var(--clr-text-primary);
   font-family: var(--font-sans);
   font-size: var(--text-base);
+  line-height: 44px;
+  box-sizing: border-box;
+  margin: 0;
   transition: all var(--transition-fast);
   outline: none;
   -webkit-appearance: none;
+  -moz-appearance: none;
   appearance: none;
 }
 
@@ -291,6 +296,7 @@ p {
   background-position: right 16px center;
   background-size: 16px;
   padding-right: 40px;
+  padding-left: 12px;
 }
 
 .form-input:focus, .form-select:focus {
