@@ -4,7 +4,10 @@ import { TransactionTable } from './components/TransactionTable';
 import { TransactionForm } from '../../components/TransactionForm';
 import { Modal } from '../../components/Modal';
 import { Plus } from 'lucide-react';
+import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
+import { getPaymentMethodIcon } from '../../utils/categoryIcons';
 import type { Transaction } from '../../types';
+import { PaymentMethod } from '../../enums/FinanceEnums';
 import { useTransactionsViewModel } from './hooks/useTransactionsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
@@ -95,33 +98,46 @@ export function TransactionsPage() {
       <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title={t('filters.title')}>
         <div className="form-group">
             <label className="form-label">{t('common.paymentMethod')}</label>
-          <select className="form-select" value={state.tempMethodFilter} onChange={e => actions.setTempMethodFilter(e.target.value)}>
-            <option value="all">{t('filters.allMethods')}</option>
-            <option value="Crédito">Crédito</option>
-            <option value="Débito">Débito</option>
-            <option value="Pix">Pix</option>
-            <option value="Dinheiro">Dinheiro</option>
-            <option value="Transferência">Transferência</option>
-          </select>
+            <CustomSelect
+              value={state.tempMethodFilter}
+              onChange={actions.setTempMethodFilter}
+              options={[
+                { value: 'all', label: t('filters.allMethods') },
+                { value: PaymentMethod.CREDIT, label: 'Crédito', icon: getPaymentMethodIcon(PaymentMethod.CREDIT) },
+                { value: PaymentMethod.DEBIT, label: 'Débito', icon: getPaymentMethodIcon(PaymentMethod.DEBIT) },
+                { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+                { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+                { value: PaymentMethod.TRANSFER, label: 'Transferência', icon: getPaymentMethodIcon(PaymentMethod.TRANSFER) },
+              ]}
+            />
         </div>
 
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">{t('filters.month')}</label>
-            <select className="form-select" value={state.tempSelectedMonth} onChange={(e) => actions.setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
-              <option value="all">{t('filters.fullYear')}</option>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
-              ))}
-            </select>
+            <CustomSelect
+              value={String(state.tempSelectedMonth)}
+              onChange={(val) => actions.setTempSelectedMonth(val === 'all' ? 'all' : Number(val))}
+              options={[
+                { value: 'all', label: t('filters.fullYear') },
+                ...Array.from({ length: 12 }).map((_, i) => ({
+                  value: String(i),
+                  label: new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())
+                }))
+              ]}
+            />
           </div>
           <div className="form-group">
             <label className="form-label">{t('filters.year')}</label>
-            <select className="form-select" value={state.tempSelectedYear} onChange={(e) => actions.setTempSelectedYear(Number(e.target.value))}>
-              {[state.defaultYear - 1, state.defaultYear, state.defaultYear + 1].map(y => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
+            <CustomSelect
+              value={String(state.tempSelectedYear)}
+              onChange={(val) => actions.setTempSelectedYear(Number(val))}
+              options={[
+                state.defaultYear - 1,
+                state.defaultYear,
+                state.defaultYear + 1
+              ].map(y => ({ value: String(y), label: String(y) }))}
+            />
           </div>
         </div>
 

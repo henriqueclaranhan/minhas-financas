@@ -1,6 +1,7 @@
 import { useForecastViewModel } from './hooks/useForecastViewModel';
 import { DashboardChart } from '../../components/dashboard/DashboardChart';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
 import './ForecastPage.css';
 import { useLocale } from '../../store/LocaleContext';
 
@@ -35,26 +36,28 @@ export function ForecastPage() {
           <div className="form-row mb-lg">
             <div className="form-group forecast-form-group">
               <label className="form-label">{t('forecast.start')}</label>
-              <select
-                className="form-select"
-                value={startMonthOffset}
-                onChange={(e) => setStartMonthOffset(Number(e.target.value))}
-              >
-                <option value={-3}>{t('forecast.threeMonthsAgo')}</option><option value={-1}>{t('forecast.oneMonthAgo')}</option><option value={0}>{t('forecast.currentMonth')}</option><option value={1}>{t('forecast.nextMonth')}</option>
-              </select>
+              <CustomSelect
+                value={String(startMonthOffset)}
+                onChange={(val) => setStartMonthOffset(Number(val))}
+                options={[
+                  { value: '-3', label: t('forecast.threeMonthsAgo') },
+                  { value: '-1', label: t('forecast.oneMonthAgo') },
+                  { value: '0', label: t('forecast.currentMonth') },
+                  { value: '1', label: t('forecast.nextMonth') }
+                ]}
+              />
             </div>
 
             <div className="form-group forecast-form-group">
               <label className="form-label">{t('forecast.visiblePeriod')}</label>
-              <select
-                className="form-select"
-                value={monthsToProject}
-                onChange={(e) => setMonthsToProject(Number(e.target.value))}
-              >
-                {[3, 6, 12, 24].map((count) => (
-                  <option key={count} value={count}>{t('forecast.monthCount', { count })}</option>
-                ))}
-              </select>
+              <CustomSelect
+                value={String(monthsToProject)}
+                onChange={(val) => setMonthsToProject(Number(val))}
+                options={[3, 6, 12, 24].map((count) => ({
+                  value: String(count),
+                  label: t('forecast.monthCount', { count })
+                }))}
+              />
             </div>
           </div>
 

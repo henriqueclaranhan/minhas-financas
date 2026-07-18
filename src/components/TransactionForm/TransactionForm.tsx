@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Calendar, DollarSign, CreditCard, AlignLeft, Layers, Tag } from 'lucide-react';
 import type { Transaction } from '../../types';
-import { ExpenseCategory, IncomeCategory } from '../../enums/FinanceEnums';
+import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../../enums/FinanceEnums';
 import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { getLocalDateString } from '../../utils/dateUtils';
 import { useLocale } from '../../store/LocaleContext';
 import { useIsMobile } from '../../hooks/useIsMobile';
+import { CustomSelect } from '../shared/CustomSelect/CustomSelect';
+import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons';
 import '../../styles/FormStyles.css';
 
 interface TransactionFormProps {
@@ -30,6 +32,24 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
 
   const categories = type === 'expense' ? Object.values(ExpenseCategory) : Object.values(IncomeCategory);
 
+  const paymentOptions = type === 'expense' 
+    ? [
+        { value: PaymentMethod.CREDIT, label: 'Crédito', icon: getPaymentMethodIcon(PaymentMethod.CREDIT) },
+        { value: PaymentMethod.DEBIT, label: 'Débito', icon: getPaymentMethodIcon(PaymentMethod.DEBIT) },
+        { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+        { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+      ]
+    : [
+        { value: PaymentMethod.PIX, label: 'Pix', icon: getPaymentMethodIcon(PaymentMethod.PIX) },
+        { value: PaymentMethod.CASH, label: 'Dinheiro', icon: getPaymentMethodIcon(PaymentMethod.CASH) },
+        { value: PaymentMethod.TRANSFER, label: 'Transferência', icon: getPaymentMethodIcon(PaymentMethod.TRANSFER) },
+      ];
+
+  const categoryOptions = categories.map(cat => ({
+    value: cat,
+    label: t(`categories.${cat}`),
+    icon: getCategoryIcon(cat)
+  }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -152,18 +172,11 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
               <div className="form-row">
                 <div className="form-group">
                   <label htmlFor="payment-method-input" className="form-label"><CreditCard size={16} aria-hidden="true" /> {type === 'income' ? t('form.receipt') : t('form.payment')}</label>
-                  <select 
-                    id="payment-method-input"
-                    value={paymentMethod} 
-                    onChange={e => setPaymentMethod(e.target.value)}
-                    className="form-select"
-                  >
-                    {type === 'expense' && <option value="Crédito">Crédito</option>}
-                    {type === 'expense' && <option value="Débito">Débito</option>}
-                    <option value="Pix">Pix</option>
-                    <option value="Dinheiro">Dinheiro</option>
-                    {type === 'income' && <option value="Transferência">Transferência</option>}
-                  </select>
+                  <CustomSelect
+                    value={paymentMethod}
+                    onChange={setPaymentMethod}
+                    options={paymentOptions}
+                  />
                 </div>
 
                 {type === 'expense' && paymentMethod.toLowerCase().includes('crédito') && (
@@ -181,19 +194,15 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
                 )}
               </div>
 
-              <div className="form-group">
+              <div className="form-group" style={{ zIndex: 40 }}>
                 <label htmlFor="category-input" className="form-label"><Tag size={16} aria-hidden="true" /> {t('form.category')}</label>
-                <select
-                  id="category-input"
+                <CustomSelect
                   value={category}
-                  onChange={e => setCategory(e.target.value)}
-                  className="form-select"
-                >
-                  <option value="">Selecione uma categoria</option>
-                  {categories.map(cat => (
-                    <option key={cat} value={cat}>{t(`categories.${cat}`)}</option>
-                  ))}
-                </select>
+                  onChange={setCategory}
+                  options={categoryOptions}
+                  placeholder="Selecione uma categoria"
+                  searchable={true}
+                />
               </div>
             </div>
           )}

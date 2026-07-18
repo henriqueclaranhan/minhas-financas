@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react';
+import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
 import { Modal } from '../../components/Modal';
 import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { TransactionForm } from '../../components/TransactionForm';
@@ -110,20 +111,29 @@ export function PlannedExpensesPage() {
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">{t('filters.month')}</label>
-            <select className="form-select" value={state.tempSelectedMonth} onChange={(e) => actions.setTempSelectedMonth(e.target.value === 'all' ? 'all' : Number(e.target.value))}>
-              <option value="all">{t('filters.fullYear')}</option>
-              {Array.from({ length: 12 }).map((_, i) => (
-                <option key={i} value={i}>{new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())}</option>
-              ))}
-            </select>
+            <CustomSelect
+              value={String(state.tempSelectedMonth)}
+              onChange={(val) => actions.setTempSelectedMonth(val === 'all' ? 'all' : Number(val))}
+              options={[
+                { value: 'all', label: t('filters.fullYear') },
+                ...Array.from({ length: 12 }).map((_, i) => ({
+                  value: String(i),
+                  label: new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())
+                }))
+              ]}
+            />
           </div>
           <div className="form-group">
             <label className="form-label">{t('filters.year')}</label>
-            <select className="form-select" value={state.tempSelectedYear} onChange={(e) => actions.setTempSelectedYear(Number(e.target.value))}>
-              {[state.defaultYear - 1, state.defaultYear, state.defaultYear + 1].map(y => (
-                <option key={y} value={y}>{y}</option>
-              ))}
-            </select>
+            <CustomSelect
+              value={String(state.tempSelectedYear)}
+              onChange={(val) => actions.setTempSelectedYear(Number(val))}
+              options={[
+                state.defaultYear - 1,
+                state.defaultYear,
+                state.defaultYear + 1
+              ].map(y => ({ value: String(y), label: String(y) }))}
+            />
           </div>
         </div>
 

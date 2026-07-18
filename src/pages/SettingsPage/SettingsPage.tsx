@@ -3,6 +3,7 @@ import { ThemeToggle } from './components/ThemeToggle';
 import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
 import { useNavigate } from 'react-router-dom';
 import { CURRENCY_LABELS, LOCALE_LABELS, useLocale } from '../../store/LocaleContext';
 import './SettingsPage.css';
@@ -50,16 +51,12 @@ export function SettingsPage() {
                 </div>
               </div>
             </div>
-            <select
-              aria-label={t('settings.language')}
-              className="form-select settings-select"
+            <CustomSelect
+              className="settings-select"
               value={locale}
-              onChange={(event) => setLocale(event.target.value as keyof typeof LOCALE_LABELS)}
-            >
-              {Object.entries(LOCALE_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+              onChange={(val) => setLocale(val as keyof typeof LOCALE_LABELS)}
+              options={Object.entries(LOCALE_LABELS).map(([val, label]) => ({ value: val, label }))}
+            />
           </div>
 
           <div className="settings-item settings-preferences-item">
@@ -74,16 +71,12 @@ export function SettingsPage() {
                 </div>
               </div>
             </div>
-            <select
-              aria-label={t('settings.currency')}
-              className="form-select settings-select"
+            <CustomSelect
+              className="settings-select"
               value={currency}
-              onChange={(event) => setCurrency(event.target.value as keyof typeof CURRENCY_LABELS)}
-            >
-              {Object.entries(CURRENCY_LABELS).map(([value, label]) => (
-                <option key={value} value={value}>{label}</option>
-              ))}
-            </select>
+              onChange={(val) => setCurrency(val as keyof typeof CURRENCY_LABELS)}
+              options={Object.entries(CURRENCY_LABELS).map(([val, label]) => ({ value: val, label }))}
+            />
           </div>
 
           <div 
