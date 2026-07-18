@@ -48,6 +48,7 @@ export function DashboardChart({ data, formatCurrency, title, headerAction }: Da
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--clr-border)" />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--clr-text-secondary)', fontSize: 12 }} dy={10} />
             <YAxis 
+              width={90}
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: 'var(--clr-text-secondary)', fontSize: 12 }}
