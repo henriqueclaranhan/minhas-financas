@@ -1,69 +1,139 @@
 .summary-cards-container {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: var(--spacing-md);
 }
+
 .summary-card {
   padding: var(--spacing-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
+
+.summary-card.hover-lift:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+}
+
 .summary-card-header {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
+}
+
+.summary-card-title {
   color: var(--clr-text-secondary);
-  margin-bottom: 8px;
   font-size: 0.875rem;
   font-weight: 500;
+  line-height: 1.2;
 }
+
+.summary-card-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.summary-card-icon-wrapper.primary { background: var(--clr-primary-glow); }
+.summary-card-icon-wrapper.success { background: rgba(52, 199, 89, 0.15); }
+.summary-card-icon-wrapper.danger { background: rgba(255, 59, 48, 0.15); }
+.summary-card-icon-wrapper.warning { background: rgba(255, 149, 0, 0.15); }
+
+:root[data-theme="dark"] .summary-card-icon-wrapper.success { background: rgba(48, 209, 88, 0.2); }
+:root[data-theme="dark"] .summary-card-icon-wrapper.danger { background: rgba(255, 69, 58, 0.2); }
+:root[data-theme="dark"] .summary-card-icon-wrapper.warning { background: rgba(255, 159, 10, 0.2); }
+
 .summary-card-value {
-  font-weight: bold;
-}
-.summary-card-value-primary {
-  font-size: clamp(1.5rem, 5vw, 2.25rem);
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
   color: var(--clr-text-primary);
+  letter-spacing: -0.02em;
+  margin-top: 4px;
 }
-.summary-card-value-success {
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
+
+.summary-card-value.value-success {
   color: var(--clr-success);
 }
-.summary-card-value-danger {
-  font-size: clamp(1.25rem, 4vw, 1.75rem);
+
+.summary-card-value.value-danger {
   color: var(--clr-danger);
+}
+
+.summary-card-value.value-warning {
+  color: var(--clr-warning);
+}
+
+@media (max-width: 1024px) {
+  .summary-cards-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
   .summary-cards-container {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
   }
+  
   .summary-card:first-child {
     grid-column: 1 / -1;
   }
   
-  .summary-card:nth-child(2),
-  .summary-card:nth-child(3) {
-    padding: 12px;
+  .summary-card {
+    padding: var(--spacing-md);
   }
-  
-  .summary-card:nth-child(2) {
-    border-left: 4px solid var(--clr-success);
+
+  .summary-card-icon-wrapper {
+    width: 32px;
+    height: 32px;
   }
-  .summary-card:nth-child(3) {
-    border-left: 4px solid var(--clr-danger);
+
+  .summary-card-header svg {
+    width: 16px;
+    height: 16px;
   }
-  
-  .summary-card:nth-child(2) .summary-card-header,
-  .summary-card:nth-child(3) .summary-card-header {
-    margin-bottom: 4px;
+
+  .summary-card-value {
+    font-size: 1.5rem;
+  }
+
+  /* Compact styling for the 3 secondary cards */
+  .summary-card:not(:first-child) {
+    padding: 10px 4px;
+    align-items: center;
+    gap: 8px; /* Increased gap to add spacing before value */
+    min-width: 0; /* Important for flex children overflow to work */
+  }
+
+  .summary-card:not(:first-child) .summary-card-header {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .summary-card:not(:first-child) .summary-card-title {
     font-size: 0.75rem;
+    line-height: 1.15;
+    white-space: normal;
+    text-align: center;
+    max-width: 100%;
   }
-  
-  .summary-card:nth-child(2) .summary-card-header > svg,
-  .summary-card:nth-child(3) .summary-card-header > svg {
-    display: none;
-  }
-  
-  .summary-card:nth-child(2) .summary-card-value,
-  .summary-card:nth-child(3) .summary-card-value {
-    font-size: 1.15rem;
+
+  .summary-card:not(:first-child) .summary-card-value {
+    font-size: 1rem;
+    text-align: center;
+    margin-top: auto; /* Aligns to bottom */
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

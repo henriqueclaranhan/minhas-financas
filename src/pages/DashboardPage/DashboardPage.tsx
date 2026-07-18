@@ -32,6 +32,7 @@ export function DashboardPage() {
         <Dashboard 
           chartData={state.chartData} 
           expensesByCategory={state.expensesByCategory}
+          currentInvoice={state.currentInvoice}
         />
       </div>
 

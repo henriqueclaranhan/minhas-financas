@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { parseISO } from 'date-fns';
 import { FilterType, TransactionType } from '../../../enums/FinanceEnums';
 import type { Transaction } from '../../../types';
@@ -14,9 +15,12 @@ export function useTransactionsViewModel() {
   const { user } = useAuth();
   const { locale, t } = useLocale();
   
+  const location = useLocation();
+  const initialFilter = location.state?.filter === 'income' ? FilterType.INCOME : location.state?.filter === 'expense' ? FilterType.EXPENSE : FilterType.ALL;
+  
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
+  const [filter, setFilter] = useState<FilterType>(initialFilter);
   const [searchQuery, setSearchQuery] = useState('');
   
   const defaultMonth = new Date().getMonth();

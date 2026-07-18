@@ -21,9 +21,10 @@ interface DashboardProps {
     monthlyExpense: number;
   };
   expensesByCategory: CategoryExpense[];
+  currentInvoice: number;
 }
 
-export function Dashboard({ chartData, expensesByCategory }: DashboardProps) {
+export function Dashboard({ chartData, expensesByCategory, currentInvoice }: DashboardProps) {
   const { formatCurrency, t } = useLocale();
 
   return (
@@ -32,6 +33,7 @@ export function Dashboard({ chartData, expensesByCategory }: DashboardProps) {
         currentBalance={chartData.currentBalance}
         monthlyIncome={chartData.monthlyIncome}
         monthlyExpense={chartData.monthlyExpense}
+        currentInvoice={currentInvoice}
         formatCurrency={formatCurrency}
       />
 

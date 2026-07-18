@@ -5,6 +5,7 @@ import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
 import { TransactionType, PaymentMethod } from '../../../enums/FinanceEnums';
 import { parseISO, isSameMonth, addMonths } from 'date-fns';
+import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
 
 export function useDashboardViewModel() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
@@ -27,6 +28,11 @@ export function useDashboardViewModel() {
       locale
     });
   }, [transactions, plannedExpenses, resolvedInitialBalance, locale]);
+
+  const currentInvoice = useMemo(() => {
+    const bills = calculateCreditCardBills(transactions, new Date(), locale);
+    return bills[4]?.data.total || 0; // Index 4 is the next month (which acts as the current open invoice for the user)
+  }, [transactions, locale]);
 
   const handleTransactionAdd = (data: any) => {
     addTransaction(data);
@@ -94,7 +100,8 @@ export function useDashboardViewModel() {
       isModalOpen,
       actionType,
       chartData,
-      expensesByCategory
+      expensesByCategory,
+      currentInvoice
     },
     actions: {
       setIsModalOpen,
