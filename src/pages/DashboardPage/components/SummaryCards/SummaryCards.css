@@ -122,7 +122,7 @@
   }
 
   .summary-cards-container .summary-card:not(:first-child) .summary-card-title {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     line-height: 1.15;
     white-space: normal;
     text-align: center;
@@ -130,7 +130,7 @@
   }
 
   .summary-cards-container .summary-card:not(:first-child) .summary-card-value {
-    font-size: 1rem;
+    font-size: 0.85rem;
     text-align: center;
     margin-top: auto; /* Aligns to bottom */
     width: 100%;

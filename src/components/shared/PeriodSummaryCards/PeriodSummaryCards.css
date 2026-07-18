@@ -64,12 +64,26 @@
   }
   
   .period-summary-cards .summary-card {
-    padding: var(--spacing-md);
+    padding: 12px 8px;
+    container-type: inline-size;
   }
 
   .period-summary-cards .summary-card-icon-wrapper {
     width: 32px;
     height: 32px;
+  }
+
+  .period-summary-cards .summary-card-header {
+    flex-direction: column;
+    gap: 6px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .period-summary-cards .summary-card-title {
+    font-size: 0.75rem;
+    line-height: 1.15;
+    text-align: center;
   }
 
   .period-summary-cards .summary-card-header svg {
@@ -78,6 +92,10 @@
   }
 
   .period-summary-cards .summary-card-value {
-    font-size: 1.5rem;
+    font-size: clamp(0.85rem, 11cqw, 1.2rem);
+    text-align: center;
+    margin-top: auto; /* Aligns to bottom */
+    width: 100%;
+    word-break: break-word; /* Prevents overflow if number grows */
   }
 }
