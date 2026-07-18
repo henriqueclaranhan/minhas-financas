@@ -1,100 +1,29 @@
-import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft, Save, User as UserIcon, Mail, Shield, Loader, MailCheck } from 'lucide-react';
-import { useAuth } from '../../store/AuthContext';
-import { AuthService } from '../../services/AuthService';
+import { useProfileSettingsViewModel } from './hooks/useProfileSettingsViewModel';
 import './ProfileSettingsPage.css';
 
 export function ProfileSettingsPage() {
-  const { user, resendVerification } = useAuth();
   const navigate = useNavigate();
-
-  const [name, setName] = useState(user?.displayName || '');
-  const [email, setEmail] = useState(user?.email || '');
-  const [newPassword, setNewPassword] = useState('');
-
-  const [status, setStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [verificationSent, setVerificationSent] = useState(false);
-  const [emailVerificationSent, setEmailVerificationSent] = useState(false);
-
-  // Sincroniza o state local sempre que o objeto user do Firebase atualizar
-  useEffect(() => {
-    if (user) {
-      setName(user.displayName || '');
-      setEmail(user.email || '');
-    }
-  }, [user?.displayName, user?.email]);
-
-  const handleResendVerification = async () => {
-    try {
-      await resendVerification();
-      setVerificationSent(true);
-      setStatus({ type: 'success', message: 'E-mail de verificação enviado! Verifique sua caixa de entrada.' });
-    } catch (err) {
-      console.error(err);
-      setStatus({ type: 'error', message: 'Erro ao enviar e-mail de verificação.' });
-    }
-  };
-
-  const handleSubmit = useCallback(async (e: React.SyntheticEvent) => {
-    e.preventDefault();
-    if (!user) return;
-
-    setLoading(true);
-    setStatus(null);
-
-    try {
-      const promises: Promise<void>[] = [];
-
-      if (name !== user.displayName) {
-        promises.push(AuthService.updateDisplayName(user, name));
-      }
-
-      let emailChanged = false;
-      if (email !== user.email) {
-        promises.push(AuthService.updateEmail(user, email));
-        emailChanged = true;
-      }
-
-      if (newPassword) {
-        promises.push(AuthService.updatePassword(user, newPassword));
-      }
-
-      if (promises.length === 0) {
-        setStatus({ type: 'success', message: 'Nenhuma alteração para salvar.' });
-        return;
-      }
-
-      await Promise.all(promises);
-      await user.reload();
-
-      if (emailChanged) {
-        setEmailVerificationSent(true);
-      } else {
-        setStatus({ type: 'success', message: 'Perfil atualizado com sucesso!' });
-        setNewPassword('');
-      }
-    } catch (err: any) {
-      console.error('Erro ao atualizar perfil:', err);
-      const code = err?.code ?? '';
-      let msg = 'Erro ao atualizar o perfil.';
-      if (code === 'auth/requires-recent-login') {
-        msg = 'Por segurança, saia da conta e entre novamente antes de alterar dados sensíveis.';
-      } else if (code === 'auth/email-already-in-use') {
-        msg = 'Este e-mail já está em uso por outra conta.';
-      } else if (code === 'auth/invalid-email') {
-        msg = 'Endereço de e-mail inválido.';
-      } else if (code === 'auth/operation-not-allowed') {
-        msg = 'Operação não permitida. Verifique as configurações do Firebase.';
-      } else if (err.message) {
-        msg = `Erro: ${err.message}`;
-      }
-      setStatus({ type: 'error', message: msg });
-    } finally {
-      setLoading(false);
-    }
-  }, [user, name, email, newPassword]);
+  const { state, actions } = useProfileSettingsViewModel();
+  const {
+    user,
+    name,
+    email,
+    newPassword,
+    status,
+    loading,
+    verificationSent,
+    emailVerificationSent,
+  } = state;
+  const {
+    setName,
+    setEmail,
+    setNewPassword,
+    handleSubmit,
+    handleResendVerification,
+    dismissEmailVerification,
+  } = actions;
 
   if (emailVerificationSent) {
     return (
@@ -110,15 +39,7 @@ export function ProfileSettingsPage() {
             Não encontrou? Verifique a pasta de spam. O link expira em 1 hora.
           </p>
           <div className="profile-email-sent-actions">
-            <button
-              type="button"
-              className="btn btn-primary"
-              onClick={() => {
-                setEmailVerificationSent(false);
-                setEmail(user?.email || '');
-                setStatus(null);
-              }}
-            >
+            <button type="button" className="btn btn-primary" onClick={dismissEmailVerification}>
               OK, entendi
             </button>
           </div>
