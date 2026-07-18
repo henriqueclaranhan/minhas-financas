@@ -34,6 +34,7 @@ export const ExpenseCategory = {
   EDUCATION: 'education',
   ENTERTAINMENT: 'entertainment',
   SHOPPING: 'shopping',
+  PETS: 'pets',
   OTHERS: 'others'
 } as const;
 export type ExpenseCategory = (typeof ExpenseCategory)[keyof typeof ExpenseCategory];
