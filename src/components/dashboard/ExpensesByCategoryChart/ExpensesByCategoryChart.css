@@ -74,8 +74,13 @@
 @media (max-width: 768px) {
   .pie-chart-container {
     flex-direction: column;
+    gap: 0;
   }
   
+  .pie-chart-graphic {
+    margin: -16px 0;
+  }
+
   .pie-chart-graphic,
   .pie-legend-wrapper {
     width: 100%;

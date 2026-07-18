@@ -23,7 +23,10 @@ export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCate
       const data = payload[0].payload;
       return (
         <div className="pie-tooltip glass-panel">
-          <p className="pie-tooltip-label">{t(data.name)}</p>
+          <div className="flex items-center" style={{ gap: '6px', marginBottom: '4px' }}>
+            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: data.color }} />
+            <p className="pie-tooltip-label" style={{ margin: 0 }}>{t(data.name)}</p>
+          </div>
           <p className="pie-tooltip-value text-danger">{formatCurrency(data.value)}</p>
           <p className="pie-tooltip-percent">{data.percentage.toFixed(1)}%</p>
         </div>

@@ -25,7 +25,7 @@ export function DashboardMetrics({ expensesByCategory, formatCurrency, monthlyIn
   const isNegative = balance < 0;
 
   return (
-    <div className="dashboard-metrics-grid mt-xl animate-fade-in">
+    <div className="dashboard-metrics-grid animate-fade-in">
       <ExpensesByCategoryChart data={expensesByCategory} formatCurrency={formatCurrency} />
       
       <div className="glass-panel chart-panel flex flex-col justify-between" style={{ height: '100%' }}>
