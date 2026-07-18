@@ -1,165 +1,19 @@
-import { useMemo } from 'react';
-import { parseISO, addMonths, isSameMonth, format, isBefore, startOfMonth } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { SummaryCards } from '../SummaryCards';
 import { DashboardChart } from '../../../../components/dashboard/DashboardChart';
-import type { Transaction, PlannedExpense } from '../../../../types';
 import './Dashboard.css';
 
 interface DashboardProps {
-  transactions: Transaction[];
-  plannedExpenses: PlannedExpense[];
-  initialBalance: number;
+  chartData: {
+    data: any[];
+    currentBalance: number;
+    monthlyIncome: number;
+    monthlyExpense: number;
+  };
 }
 
-export function Dashboard({ transactions, plannedExpenses, initialBalance }: DashboardProps) {
-  const currentDate = useMemo(() => new Date(), []);
-
-  // Helper to get data up to 6 months ago + current month
-  const chartData = useMemo(() => {
-    const data = [];
-    
-    // Calculate total historical balance up to 1 month ago (startOffset - 1)
-    const startOffset = -1;
-    const endOffset = 4;
-    const startMonthDate = startOfMonth(addMonths(currentDate, startOffset));
-    
-    // We need to calculate the balance for each of the last 6 months.
-    // For simplicity, we calculate the net flow for EVERY month since the beginning of time.
-    const monthlyData: Record<string, { income: number, expense: number }> = {};
-    const getMonthData = (m: string) => {
-      if (!monthlyData[m]) monthlyData[m] = { income: 0, expense: 0 };
-      return monthlyData[m];
-    };
-    
-    transactions.forEach(t => {
-      const txDate = parseISO(t.date);
-      const isCredit = t.paymentMethod.toLowerCase().includes('crédito');
-      const isExpense = t.type !== 'income';
-      
-      if (isExpense && isCredit) {
-        const numInstallments = t.installments || 1;
-        const instAmount = t.amount / numInstallments;
-        for (let i = 1; i <= numInstallments; i++) {
-          const instDate = addMonths(txDate, i);
-          const monthKey = format(instDate, 'yyyy-MM');
-          getMonthData(monthKey).expense += instAmount;
-        }
-      } else {
-        const monthKey = format(txDate, 'yyyy-MM');
-        if (isExpense) {
-          getMonthData(monthKey).expense += t.amount;
-        } else {
-          getMonthData(monthKey).income += t.amount;
-        }
-      }
-    });
-
-    // Project pending planned expenses
-    plannedExpenses.forEach(pe => {
-      if (pe.status === 'pending') {
-        const isIncome = pe.type === 'income';
-        const isCredit = pe.paymentMethod?.toLowerCase().includes('crédito');
-        const numInstallments = pe.installments || 1;
-        const instAmount = pe.amount / numInstallments;
-        
-        let currentDateIter = parseISO(pe.dueDate);
-        const limitDate = addMonths(currentDate, endOffset);
-        
-        const addAmountToMonths = (dateIter: Date) => {
-          if (isCredit && !isIncome) {
-            for (let i = 1; i <= numInstallments; i++) {
-              const instDate = addMonths(dateIter, i);
-              const monthKey = format(instDate, 'yyyy-MM');
-              if (monthKey > format(currentDate, 'yyyy-MM')) {
-                getMonthData(monthKey).expense += instAmount;
-              }
-            }
-          } else {
-            const monthKey = format(dateIter, 'yyyy-MM');
-            if (monthKey > format(currentDate, 'yyyy-MM')) {
-              if (isIncome) getMonthData(monthKey).income += pe.amount;
-              else getMonthData(monthKey).expense += pe.amount;
-            }
-          }
-        };
-
-        if (!pe.isRecurring) {
-          addAmountToMonths(currentDateIter);
-        } else {
-          while (!isBefore(limitDate, currentDateIter)) {
-            addAmountToMonths(currentDateIter);
-            currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
-          }
-        }
-      }
-    });
-
-
-    
-    // Let's do a chronological sum for chart:
-    // First, find all unique months before and during our 6 month window.
-    const allMonths = Object.keys(monthlyData).sort();
-    let accumulated = initialBalance;
-    
-    // Apply all history up to startOffset - 1
-    for (const m of allMonths) {
-      if (m < format(startMonthDate, 'yyyy-MM')) {
-        accumulated += monthlyData[m].income - monthlyData[m].expense;
-      }
-    }
-
-    let actualCurrentBalance = accumulated;
-    for (let i = startOffset; i <= endOffset; i++) {
-      const monthDate = addMonths(currentDate, i);
-      const monthKey = format(monthDate, 'yyyy-MM');
-      const mData = monthlyData[monthKey] || { income: 0, expense: 0 };
-      accumulated += mData.income - mData.expense;
-      
-      if (i === 0) {
-        actualCurrentBalance = accumulated;
-      }
-      
-      data.push({
-        name: format(monthDate, 'MMM/yy', { locale: ptBR }).toUpperCase(),
-        saldo: accumulated,
-        income: mData.income,
-        expense: mData.expense
-      });
-    }
-
-    let monthlyInc = 0;
-    let monthlyExp = 0;
-    
-    transactions.forEach(t => {
-      const txDate = parseISO(t.date);
-      const isCredit = t.paymentMethod.toLowerCase().includes('crédito');
-      const isExpense = t.type !== 'income';
-      
-      if (isExpense && isCredit) {
-        const numInstallments = t.installments || 1;
-        const instAmount = t.amount / numInstallments;
-        for (let i = 1; i <= numInstallments; i++) {
-          if (isSameMonth(addMonths(txDate, i), currentDate)) {
-             monthlyExp += instAmount;
-          }
-        }
-      } else if (isSameMonth(txDate, currentDate)) {
-         if (isExpense) monthlyExp += t.amount;
-         else monthlyInc += t.amount;
-      }
-    });
-
-    return {
-      data,
-      currentBalance: actualCurrentBalance,
-      monthlyIncome: monthlyInc,
-      monthlyExpense: monthlyExp
-    };
-  }, [transactions, plannedExpenses, initialBalance, currentDate]);
-
+export function Dashboard({ chartData }: DashboardProps) {
   const formatCurrency = (val: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val);
 
   return (

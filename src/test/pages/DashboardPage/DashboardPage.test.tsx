@@ -1,0 +1,66 @@
+import { render, screen, fireEvent } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { DashboardPage } from '../../../pages/DashboardPage/DashboardPage';
+import { useDashboardViewModel } from '../../../pages/DashboardPage/hooks/useDashboardViewModel';
+import { BrowserRouter } from 'react-router-dom';
+
+vi.mock('../../../pages/DashboardPage/hooks/useDashboardViewModel');
+
+describe('DashboardPage UI', () => {
+  const mockActions = {
+    setIsModalOpen: vi.fn(),
+    setActionType: vi.fn(),
+    handleTransactionAdd: vi.fn(),
+    handlePlanningAdd: vi.fn()
+  };
+
+  const mockState = {
+    initialBalance: 0,
+    hasData: true,
+    resolvedInitialBalance: 0,
+    userName: 'Henrique',
+    isModalOpen: false,
+    actionType: 'none',
+    chartData: {
+      data: [
+        { name: 'MAI/26', saldo: 1000, income: 1000, expense: 0 }
+      ],
+      currentBalance: 1000,
+      monthlyIncome: 1000,
+      monthlyExpense: 0
+    }
+  };
+
+  beforeEach(() => {
+    vi.mocked(useDashboardViewModel).mockReturnValue({
+      state: mockState,
+      actions: mockActions
+    } as any);
+  });
+
+  const renderWithRouter = (ui: React.ReactElement) => {
+    return render(<BrowserRouter>{ui}</BrowserRouter>);
+  };
+
+  it('renders page header and summary correctly', () => {
+    renderWithRouter(<DashboardPage />);
+    
+    expect(screen.getByText('Olá, Henrique!')).toBeInTheDocument();
+    
+    const allText = document.body.textContent;
+    expect(allText).toMatch(/1\.000,00/);
+  });
+
+  it('calls openNewModal when clicking Nova Ação', () => {
+    renderWithRouter(<DashboardPage />);
+    const buttons = screen.getAllByRole('button');
+    const newActionButton = buttons.find(b => b.textContent?.includes('Nova Ação'));
+    
+    if (newActionButton) {
+      fireEvent.click(newActionButton);
+    }
+    
+    expect(mockActions.setIsModalOpen).toHaveBeenCalledWith(true);
+    expect(mockActions.setActionType).toHaveBeenCalledWith('none');
+  });
+});
