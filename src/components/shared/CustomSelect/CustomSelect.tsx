@@ -1,4 +1,5 @@
-import React, { useState, useRef, useEffect, useLayoutEffect, ReactNode } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import type { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { ChevronDown, Search } from 'lucide-react';
 import './CustomSelect.css';
