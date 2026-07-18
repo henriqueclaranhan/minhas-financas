@@ -37,3 +37,31 @@
   text-align: right;
   font-weight: 600;
 }
+
+.chart-table-toggle-container {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--spacing-lg);
+  border-top: 1px dashed var(--clr-border);
+  padding-top: var(--spacing-md);
+}
+
+.chart-table-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--clr-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 20px;
+  background: var(--clr-surface);
+  border: 1px solid var(--clr-border);
+  transition: all 0.2s ease;
+}
+
+.chart-table-toggle:hover {
+  color: var(--clr-text-primary);
+  border-color: var(--clr-text-secondary);
+  transform: translateY(-1px);
+}

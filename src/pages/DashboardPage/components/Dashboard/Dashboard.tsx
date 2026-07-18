@@ -2,8 +2,16 @@ import { Link } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
 import { SummaryCards } from '../SummaryCards';
 import { DashboardChart } from '../../../../components/dashboard/DashboardChart';
+import { DashboardMetrics } from '../DashboardMetrics';
 import { useLocale } from '../../../../store/LocaleContext';
 import './Dashboard.css';
+
+interface CategoryExpense {
+  name: string;
+  value: number;
+  color: string;
+  percentage: number;
+}
 
 interface DashboardProps {
   chartData: {
@@ -12,9 +20,10 @@ interface DashboardProps {
     monthlyIncome: number;
     monthlyExpense: number;
   };
+  expensesByCategory: CategoryExpense[];
 }
 
-export function Dashboard({ chartData }: DashboardProps) {
+export function Dashboard({ chartData, expensesByCategory }: DashboardProps) {
   const { formatCurrency, t } = useLocale();
 
   return (
@@ -37,6 +46,13 @@ export function Dashboard({ chartData }: DashboardProps) {
             <span className="hide-on-mobile">{t('dashboard.viewAll')}</span> <ChevronRight size={20} />
           </Link>
         }
+      />
+
+      <DashboardMetrics
+        expensesByCategory={expensesByCategory}
+        formatCurrency={formatCurrency}
+        monthlyIncome={chartData.monthlyIncome}
+        monthlyExpense={chartData.monthlyExpense}
       />
     </div>
   );

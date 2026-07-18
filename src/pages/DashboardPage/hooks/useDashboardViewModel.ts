@@ -3,6 +3,7 @@ import { useFinance } from '../../../store/FinanceContext';
 import { useAuth } from '../../../store/AuthContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
+import { TransactionType } from '../../../enums/FinanceEnums';
 
 export function useDashboardViewModel() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
@@ -40,6 +41,33 @@ export function useDashboardViewModel() {
 
   const userName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário';
 
+  const expensesByCategory = useMemo(() => {
+    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const categoryTotals: Record<string, number> = {};
+    
+    let totalExpense = 0;
+    transactions.forEach(t => {
+      const type = t.type || TransactionType.EXPENSE;
+      if (type === TransactionType.EXPENSE && t.date.startsWith(currentMonth)) {
+        const cat = t.category || 'others';
+        categoryTotals[cat] = (categoryTotals[cat] || 0) + t.amount;
+        totalExpense += t.amount;
+      }
+    });
+
+    // Premium colors for the pie chart
+    const colors = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#14b8a6', '#f97316'];
+    
+    return Object.entries(categoryTotals)
+      .sort((a, b) => b[1] - a[1]) // highest first
+      .map(([name, value], index) => ({
+        name: `categories.${name}`,
+        value,
+        color: colors[index % colors.length],
+        percentage: totalExpense > 0 ? (value / totalExpense) * 100 : 0
+      }));
+  }, [transactions]);
+
   return {
     state: {
       initialBalance,
@@ -48,7 +76,8 @@ export function useDashboardViewModel() {
       userName,
       isModalOpen,
       actionType,
-      chartData
+      chartData,
+      expensesByCategory
     },
     actions: {
       setIsModalOpen,

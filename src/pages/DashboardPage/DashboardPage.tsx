@@ -29,7 +29,10 @@ export function DashboardPage() {
       />
       
       <div className="dashboard-widget dashboard-main animate-fade-in">
-        <Dashboard chartData={state.chartData} />
+        <Dashboard 
+          chartData={state.chartData} 
+          expensesByCategory={state.expensesByCategory}
+        />
       </div>
 
       {/* Mobile FAB */}
