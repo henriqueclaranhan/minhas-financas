@@ -1,13 +1,15 @@
 
 import { ThemeToggle } from './components/ThemeToggle';
-import { Download, Upload, Trash2, Moon, LogOut } from 'lucide-react';
+import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
+import { useNavigate } from 'react-router-dom';
 import './SettingsPage.css';
 
 export function SettingsPage() {
 
   const { state, actions } = useSettingsViewModel();
+  const navigate = useNavigate();
 
   return (
     <div className="animate-fade-in">
@@ -32,6 +34,25 @@ export function SettingsPage() {
               <span className="font-medium settings-item-title">Aparência</span>
             </div>
             <ThemeToggle />
+          </div>
+
+          <div 
+            className="settings-item"
+            onClick={() => navigate('/settings/profile')}
+            style={{ cursor: 'pointer' }}
+          >
+            <div className="flex items-center justify-between" style={{ width: '100%' }}>
+              <div className="flex items-center gap-md">
+                <div className="settings-icon-wrapper" style={{ background: 'var(--clr-primary-glow)' }}>
+                  <UserIcon size={20} color="var(--clr-primary)" />
+                </div>
+                <div>
+                  <div className="font-medium settings-item-title">Meu Perfil</div>
+                  <div className="settings-item-desc text-secondary">Atualizar nome, email e senha</div>
+                </div>
+              </div>
+              <ChevronRight size={20} color="var(--clr-text-secondary)" />
+            </div>
           </div>
 
           <div 

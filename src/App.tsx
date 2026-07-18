@@ -9,6 +9,7 @@ import { CreditCardPage } from './pages/CreditCardPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { AuthPage } from './pages/AuthPage';
 import { ForecastPage } from './pages/ForecastPage';
+import { ProfileSettingsPage } from './pages/ProfileSettingsPage/ProfileSettingsPage';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import './App.css';
 
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: "/credit", element: <CreditCardPage /> },
       { path: "/forecast", element: <ForecastPage /> },
       { path: "/settings", element: <SettingsPage /> },
+      { path: "/settings/profile", element: <ProfileSettingsPage /> },
     ]
   }
 ]);

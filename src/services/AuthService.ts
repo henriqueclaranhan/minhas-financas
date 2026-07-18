@@ -3,7 +3,10 @@ import {
   createUserWithEmailAndPassword, 
   sendEmailVerification,
   sendPasswordResetEmail,
-  updateProfile
+  updateProfile,
+  verifyBeforeUpdateEmail,
+  updatePassword,
+  type User
 } from 'firebase/auth';
 import { auth } from '../config/firebase';
 
@@ -21,5 +24,21 @@ export class AuthService {
 
   static async resetPassword(email: string) {
     return sendPasswordResetEmail(auth, email);
+  }
+
+  static async updateDisplayName(user: User, name: string): Promise<void> {
+    await updateProfile(user, { displayName: name });
+  }
+
+  /**
+   * Sends a verification email to the new address.
+   * The change only takes effect after the user clicks the link in the new email.
+   */
+  static async updateEmail(user: User, newEmail: string): Promise<void> {
+    await verifyBeforeUpdateEmail(user, newEmail);
+  }
+
+  static async updatePassword(user: User, newPassword: string): Promise<void> {
+    await updatePassword(user, newPassword);
   }
 }
