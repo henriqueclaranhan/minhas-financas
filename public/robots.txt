@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /transactions
+Disallow: /planned
+Disallow: /credit
+Disallow: /forecast
+Disallow: /settings
