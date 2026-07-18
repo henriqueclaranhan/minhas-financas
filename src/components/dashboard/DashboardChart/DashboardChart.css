@@ -9,9 +9,32 @@
   width: 100%;
   height: 260px;
 }
+.chart-table-wrapper {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--transition-normal);
+}
+
+.chart-table-wrapper.expanded {
+  grid-template-rows: 1fr;
+}
+
+.chart-table-inner {
+  overflow: hidden;
+  opacity: 0;
+  visibility: hidden;
+  padding-top: var(--spacing-md);
+  transition: opacity var(--transition-normal), visibility var(--transition-normal);
+}
+
+.chart-table-wrapper.expanded .chart-table-inner {
+  opacity: 1;
+  visibility: visible;
+}
+
 .chart-table-container {
   overflow-x: auto;
-  margin-top: var(--spacing-lg);
+  margin-top: 0;
 }
 .chart-table {
   min-width: auto;

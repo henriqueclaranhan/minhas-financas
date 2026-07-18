@@ -75,43 +75,45 @@ export function DashboardChart({ data, formatCurrency, title, headerAction }: Da
         </button>
       </div>
 
-      {isTableExpanded && (
-        <div className="chart-table-container animate-fade-in">
-          <table className="data-table chart-table">
-            <thead>
-              <tr>
-                <th>{t('chart.month')}</th>
-                <th className="hide-on-mobile text-right">{t('chart.income')}</th>
-                <th className="hide-on-mobile text-right">{t('chart.expense')}</th>
-                <th className="text-right">{t('chart.balance')}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((item, index) => (
-                <tr key={index}>
-                  <td className="chart-table-month">
-                    {item.name}
-                    {/* Show summary on mobile */}
-                    <div className="hide-on-desktop flex gap-sm chart-table-mobile-summary">
-                       {item.income !== undefined && <span className="text-success">+{formatCurrency(item.income)}</span>}
-                       {item.expense !== undefined && <span className="text-danger">-{formatCurrency(item.expense)}</span>}
-                    </div>
-                  </td>
-                  <td className="hide-on-mobile chart-table-income">
-                    {item.income !== undefined && item.income > 0 ? `+ ${formatCurrency(item.income)}` : '-'}
-                  </td>
-                  <td className="hide-on-mobile chart-table-expense">
-                    {item.expense !== undefined && item.expense > 0 ? `- ${formatCurrency(item.expense)}` : '-'}
-                  </td>
-                  <td className={`chart-table-balance ${item.saldo >= 0 ? 'text-primary' : 'text-danger'}`}>
-                    {formatCurrency(item.saldo)}
-                  </td>
+      <div className={`chart-table-wrapper ${isTableExpanded ? 'expanded' : ''}`}>
+        <div className="chart-table-inner">
+          <div className="chart-table-container">
+            <table className="data-table chart-table">
+              <thead>
+                <tr>
+                  <th>{t('chart.month')}</th>
+                  <th className="hide-on-mobile text-right">{t('chart.income')}</th>
+                  <th className="hide-on-mobile text-right">{t('chart.expense')}</th>
+                  <th className="text-right">{t('chart.balance')}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {data.map((item, index) => (
+                  <tr key={index}>
+                    <td className="chart-table-month">
+                      {item.name}
+                      {/* Show summary on mobile */}
+                      <div className="hide-on-desktop flex gap-sm chart-table-mobile-summary">
+                         {item.income !== undefined && <span className="text-success">+{formatCurrency(item.income)}</span>}
+                         {item.expense !== undefined && <span className="text-danger">-{formatCurrency(item.expense)}</span>}
+                      </div>
+                    </td>
+                    <td className="hide-on-mobile chart-table-income">
+                      {item.income !== undefined && item.income > 0 ? `+ ${formatCurrency(item.income)}` : '-'}
+                    </td>
+                    <td className="hide-on-mobile chart-table-expense">
+                      {item.expense !== undefined && item.expense > 0 ? `- ${formatCurrency(item.expense)}` : '-'}
+                    </td>
+                    <td className={`chart-table-balance ${item.saldo >= 0 ? 'text-primary' : 'text-danger'}`}>
+                      {formatCurrency(item.saldo)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 }
