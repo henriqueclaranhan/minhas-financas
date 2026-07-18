@@ -20,8 +20,8 @@ describe('projectionUtils', () => {
       transactions,
       plannedExpenses,
       initialBalance: 1000,
-      startMonthOffset: -1, // April
-      monthsToProject: 6, // Apr, May, Jun, Jul, Aug, Sep
+      startDate: new Date('2026-04-01T12:00:00Z'),
+      endDate: new Date('2026-09-30T12:00:00Z'),
       currentDate: mockDate
     });
 
@@ -56,8 +56,8 @@ describe('projectionUtils', () => {
       transactions,
       plannedExpenses: [],
       initialBalance: 2000,
-      startMonthOffset: 0, // May
-      monthsToProject: 4, // May, Jun, Jul, Aug
+      startDate: new Date('2026-05-01T12:00:00Z'),
+      endDate: new Date('2026-08-31T12:00:00Z'),
       currentDate: mockDate
     });
 

@@ -58,6 +58,7 @@
 }
 
 :root[data-theme="dark"] {
+  color-scheme: dark;
   /* iOS Dark Theme */
   --clr-background: #000000;
   --clr-surface: #1C1C1E;

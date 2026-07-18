@@ -4,7 +4,7 @@ import { useAuth } from '../../../store/AuthContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
 import { TransactionType, PaymentMethod } from '../../../enums/FinanceEnums';
-import { parseISO, isSameMonth, addMonths } from 'date-fns';
+import { parseISO, isSameMonth, addMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
 
 export function useDashboardViewModel() {
@@ -23,8 +23,8 @@ export function useDashboardViewModel() {
       transactions,
       plannedExpenses,
       initialBalance: resolvedInitialBalance,
-      startMonthOffset: -1, // Dashboard rule: 1 past month
-      monthsToProject: 6,    // 1 past + current + 4 future
+      startDate: startOfMonth(addMonths(new Date(), -1)),
+      endDate: endOfMonth(addMonths(new Date(), 4)),
       locale
     });
   }, [transactions, plannedExpenses, resolvedInitialBalance, locale]);

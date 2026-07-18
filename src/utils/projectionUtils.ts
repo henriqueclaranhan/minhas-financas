@@ -7,8 +7,8 @@ export interface ProjectionOptions {
   transactions: Transaction[];
   plannedExpenses: PlannedExpense[];
   initialBalance: number;
-  startMonthOffset: number;
-  monthsToProject: number;
+  startDate: Date;
+  endDate: Date;
   includePlannedIncome?: boolean;
   includePlannedExpense?: boolean;
   currentDate?: Date;
@@ -20,8 +20,8 @@ export function calculateProjections(options: ProjectionOptions) {
     transactions,
     plannedExpenses,
     initialBalance,
-    startMonthOffset,
-    monthsToProject,
+    startDate,
+    endDate,
     includePlannedIncome = true,
     includePlannedExpense = true,
     currentDate = new Date(),
@@ -32,8 +32,15 @@ export function calculateProjections(options: ProjectionOptions) {
 
   const data = [];
   
-  const startDate = startOfMonth(addMonths(currentDate, startMonthOffset));
-  const endDate = endOfMonth(addMonths(startDate, monthsToProject - 1));
+  const startMonthDate = startOfMonth(startDate);
+  const endMonthDate = endOfMonth(endDate);
+  
+  let monthsToProject = 0;
+  let tempDate = startMonthDate;
+  while (!isBefore(endMonthDate, tempDate)) {
+    monthsToProject++;
+    tempDate = addMonths(tempDate, 1);
+  }
   
   const monthlyData: Record<string, { income: number, expense: number }> = {};
   const getMonthData = (m: string) => {
@@ -100,10 +107,10 @@ export function calculateProjections(options: ProjectionOptions) {
         }
       };
 
-      if (!pe.isRecurring) {
+        if (!pe.isRecurring) {
           addAmountToMonths(currentDateIter);
       } else {
-        const limitDate = addMonths(endDate, 1);
+        const limitDate = addMonths(endMonthDate, 1);
         while (!isBefore(limitDate, currentDateIter)) {
           addAmountToMonths(currentDateIter);
           currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
@@ -116,14 +123,14 @@ export function calculateProjections(options: ProjectionOptions) {
   let accumulated = initialBalance;
   
   for (const m of allMonths) {
-    if (m < format(startDate, 'yyyy-MM')) {
+    if (m < format(startMonthDate, 'yyyy-MM')) {
       accumulated += monthlyData[m].income - monthlyData[m].expense;
     }
   }
 
   let actualCurrentBalance = accumulated;
   for (let i = 0; i < monthsToProject; i++) {
-    const monthDate = addMonths(startDate, i);
+    const monthDate = addMonths(startMonthDate, i);
     const monthKey = format(monthDate, 'yyyy-MM');
     
     const mData = monthlyData[monthKey] || { income: 0, expense: 0 };
