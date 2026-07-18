@@ -37,19 +37,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
 
   const selectedOption = options.find((opt) => opt.value === value);
 
-  useEffect(() => {
-    const handleOutsideClick = (event: MouseEvent) => {
-      if (
-        containerRef.current &&
-        !containerRef.current.contains(event.target as Node) &&
-        (!dropdownRef.current || !dropdownRef.current.contains(event.target as Node))
-      ) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleOutsideClick);
-    return () => document.removeEventListener('mousedown', handleOutsideClick);
-  }, []);
+  // Outside clicks are now handled by the transparent backdrop in the portal
 
   const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties | null>(null);
 
@@ -138,7 +126,18 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
       </div>
 
       {isOpen && dropdownStyle && createPortal(
-        <div className="custom-select-dropdown" ref={dropdownRef} style={dropdownStyle} onClick={(e) => e.stopPropagation()}>
+        <>
+          {/* Transparent backdrop to catch outside clicks and stop propagation */}
+          <div 
+            style={{ position: 'fixed', inset: 0, zIndex: 99998 }} 
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsOpen(false);
+            }}
+            onMouseDown={(e) => e.stopPropagation()}
+            onTouchStart={(e) => e.stopPropagation()}
+          />
+          <div className="custom-select-dropdown" ref={dropdownRef} style={dropdownStyle} onClick={(e) => e.stopPropagation()}>
           {searchable && (
             <div className="custom-select-search-wrapper">
               <Search size={16} className="custom-select-search-icon" />
@@ -168,7 +167,8 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
               <div className="custom-select-no-results">Nenhum resultado</div>
             )}
           </div>
-        </div>,
+        </div>
+        </>,
         document.body
       )}
     </div>
