@@ -369,7 +369,7 @@ p {
 
 @media (max-width: 768px) {
   .glass-panel {
-    padding: var(--spacing-md) !important;
+    padding: var(--spacing-md);
   }
 }
 
