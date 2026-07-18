@@ -86,15 +86,16 @@ export function Layout() {
           <div className="sidebar-logo">
             <PieChart size={28} /> Minhas Finanças
           </div>
+        </div>
 
-          {/* User Profile */}
-          <div className="flex items-center gap-sm">
-            <div className="avatar-icon-sidebar">
-              <User size={20} />
-            </div>
-            <div className="sidebar-user-name">
-              {userName}
-            </div>
+        {/* User Profile Card */}
+        <div className="sidebar-user-card">
+          <div className="avatar-wrapper">
+            <User size={20} className="avatar-icon-svg" />
+          </div>
+          <div className="sidebar-user-info">
+            <div className="sidebar-user-name" title={userName}>{userName}</div>
+            <div className="sidebar-user-email" title={user?.email || ''}>{user?.email || 'Bem-vindo(a)'}</div>
           </div>
         </div>
         
