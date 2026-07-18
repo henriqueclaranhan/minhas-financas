@@ -12,6 +12,7 @@
   justify-content: center;
   z-index: 1000;
   padding: var(--spacing-md);
+  overscroll-behavior: none;
 }
 
 .modal-content {
@@ -62,6 +63,7 @@
 .modal-body {
   padding: var(--spacing-lg);
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 @keyframes modal-slide-up {
@@ -86,6 +88,7 @@
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
     max-height: 85vh;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   }
 }
 
