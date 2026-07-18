@@ -30,14 +30,14 @@ The application is built using the **MVVM (Model-View-ViewModel)** architectural
 - **ViewModel:** Custom hooks managing state, presentation logic, and interactions.
 - **Model:** Data entities and service integrations (e.g., Firebase).
 
-For a detailed breakdown of the architecture, refer to the [Software Design Descriptions (SDD)](./docs/sdd/).
+For a detailed breakdown of the architecture, refer to the [System Architecture](./docs/architecture.md).
 
 ## 📜 Documentation
-All technical documentation, including our structured Software Design Descriptions (SDD) aligned with the Kiro methodology, can be found in the `docs/sdd/` directory. 
-- [System Architecture](./docs/sdd/architecture.md)
-- [Project Structure](./docs/sdd/project-structure.md)
-- [Database Schema](./docs/sdd/database-schema.md)
-- [Testing Strategy](./docs/sdd/testing-strategy.md)
+All technical documentation, including our structured Software Design Descriptions (SDD) aligned with the Kiro methodology, can be found in the `docs/` directory. 
+- [System Architecture](./docs/architecture.md)
+- [Project Structure](./docs/project-structure.md)
+- [Database Schema](./docs/database-schema.md)
+- [Testing Strategy](./docs/testing-strategy.md)
 - [Kiro Workflow & Templates](./docs/sdd/kiro-workflow.md)
 - Feature specifications can be found inside `docs/sdd/features/`.
 
