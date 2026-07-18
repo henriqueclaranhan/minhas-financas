@@ -52,7 +52,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
   if (!isOpen) return null;
 
   return createPortal(
-    <div className="modal-overlay animate-fade-in" onClick={onClose} aria-hidden="true">
+    <div className="modal-overlay animate-fade-in" onClick={onClose}>
       <div 
         className="modal-content" 
         onClick={e => e.stopPropagation()} 
