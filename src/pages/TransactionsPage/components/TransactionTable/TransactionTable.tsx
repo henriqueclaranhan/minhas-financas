@@ -50,7 +50,7 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
         <table className="data-table">
           <thead>
             <tr>
-              <th className="col-date">{translate('common.date')}</th><th className="col-desc">{translate('common.description')}</th><th className="col-method">{translate('common.paymentMethod')}</th><th className="col-amount">{translate('common.amount')}</th><th className="col-actions">{translate('common.actions')}</th>
+              <th className="col-date">{translate('common.date')}</th><th className="col-desc">{translate('common.description')}</th><th className="col-category">{translate('form.category')}</th><th className="col-method">{translate('common.paymentMethod')}</th><th className="col-amount">{translate('common.amount')}</th><th className="col-actions">{translate('common.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -70,6 +70,9 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
                       {t.installments}x
                     </span>
                   ) : null}
+                </td>
+                <td className="td-secondary">
+                  {t.category ? translate(`categories.${t.category}`) : '-'}
                 </td>
                 <td className="td-secondary">{t.paymentMethod}</td>
                 <td className={t.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>

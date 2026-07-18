@@ -190,6 +190,18 @@ const ptBR: Record<string, string> = {
 	"onboarding.startJourney": "Começar Jornada",
 	"onboarding.skip": "Pular por enquanto",
 	"onboarding.continue": "Continuar",
+	"form.category": "Categoria",
+	"categories.food": "Alimentação",
+	"categories.transport": "Transporte",
+	"categories.housing": "Moradia",
+	"categories.health": "Saúde",
+	"categories.education": "Educação",
+	"categories.entertainment": "Lazer",
+	"categories.shopping": "Compras",
+	"categories.others": "Outros",
+	"categories.salary": "Salário",
+	"categories.investment": "Investimento",
+	"categories.gift": "Presente",
 };
 
 const enUS: Record<string, string> = {
@@ -381,6 +393,18 @@ const enUS: Record<string, string> = {
 	"onboarding.startJourney": "Start Journey",
 	"onboarding.skip": "Skip for now",
 	"onboarding.continue": "Continue",
+	"form.category": "Category",
+	"categories.food": "Food",
+	"categories.transport": "Transport",
+	"categories.housing": "Housing",
+	"categories.health": "Health",
+	"categories.education": "Education",
+	"categories.entertainment": "Entertainment",
+	"categories.shopping": "Shopping",
+	"categories.others": "Others",
+	"categories.salary": "Salary",
+	"categories.investment": "Investment",
+	"categories.gift": "Gift",
 };
 
 export const translations: Record<SupportedLocale, Record<string, string>> = { "pt-BR": ptBR, "en-US": enUS };

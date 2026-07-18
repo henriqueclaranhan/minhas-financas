@@ -32,7 +32,7 @@ describe('PlannedExpensesPage UI', () => {
 
   const mockState = {
     pendingExpenses: [
-      { id: '1', description: 'Aluguel', amount: 1500, type: 'expense', dueDate: '2026-05-10', paymentMethod: 'Pix' }
+      { id: '1', description: 'Aluguel', amount: 1500, type: 'expense', dueDate: '2026-05-10', paymentMethod: 'Pix', category: 'housing' }
     ],
     totalIncome: 0,
     totalExpense: 1500,

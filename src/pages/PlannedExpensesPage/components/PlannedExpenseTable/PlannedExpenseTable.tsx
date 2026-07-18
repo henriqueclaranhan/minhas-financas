@@ -54,6 +54,7 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
             <tr>
               <th className="col-date">{t('common.dueDate')}</th>
               <th className="col-desc">{t('common.description')}</th>
+              <th className="col-category">{t('form.category')}</th>
               <th className="col-method">{t('common.paymentMethod')}</th>
               <th className="col-amount">{t('common.amount')}</th>
               <th className="col-actions">{t('common.actions')}</th>
@@ -92,6 +93,9 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                         <RefreshCw size={12} />
                       </span>
                     )}
+                  </td>
+                  <td className="td-secondary">
+                    {p.category ? t(`categories.${p.category}`) : '-'}
                   </td>
                   <td className="td-secondary">
                     {p.paymentMethod || '-'}

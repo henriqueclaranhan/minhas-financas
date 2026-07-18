@@ -3,6 +3,7 @@ import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { useLocale } from '../../store/LocaleContext';
 import type { PlannedExpense } from '../../types';
+import { ExpenseCategory, IncomeCategory } from '../../enums/FinanceEnums';
 import '../../styles/FormStyles.css';
 
 interface PlannedExpenseFormProps {
@@ -21,6 +22,10 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
   const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || 'Crédito');
   const [installments, setInstallments] = useState(initialData?.installments || 1);
+  const [category, setCategory] = useState(initialData?.category || '');
+
+  const categories = type === 'expense' ? Object.values(ExpenseCategory) : Object.values(IncomeCategory);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +41,8 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
       status: 'pending',
       type,
       paymentMethod,
-      installments: paymentMethod.toLowerCase().includes('crédito') ? installments : 1
+      installments: paymentMethod.toLowerCase().includes('crédito') ? installments : 1,
+      category: category || undefined
     });
     
     // Reset
@@ -46,10 +52,12 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
     setIsRecurring(false);
     setPaymentMethod('Crédito');
     setInstallments(1);
+    setCategory('');
   };
 
   const handleTypeChange = (newType: 'income' | 'expense') => {
     setType(newType);
+    setCategory('');
     if (newType === 'income' && (paymentMethod === 'Crédito' || paymentMethod === 'Débito')) {
       setPaymentMethod('Pix');
     }
@@ -75,6 +83,20 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
           required
           className="form-input"
         />
+      </div>
+
+      <div className="form-group">
+        <label className="form-label">{t('form.category')}</label>
+        <select
+          value={category}
+          onChange={e => setCategory(e.target.value)}
+          className="form-select"
+        >
+          <option value="">Selecione uma categoria</option>
+          {categories.map(cat => (
+            <option key={cat} value={cat}>{t(`categories.${cat}`)}</option>
+          ))}
+        </select>
       </div>
       
       <div className="form-row">

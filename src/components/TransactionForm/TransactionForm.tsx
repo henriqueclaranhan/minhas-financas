@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, DollarSign, CreditCard, AlignLeft, Layers } from 'lucide-react';
+import { Calendar, DollarSign, CreditCard, AlignLeft, Layers, Tag } from 'lucide-react';
 import type { Transaction } from '../../types';
+import { ExpenseCategory, IncomeCategory } from '../../enums/FinanceEnums';
 import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { getLocalDateString } from '../../utils/dateUtils';
@@ -21,7 +22,12 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
   const [installments, setInstallments] = useState(initialData?.installments || 1);
   const [date, setDate] = useState(initialData?.date || getLocalDateString());
 
+  const [category, setCategory] = useState(initialData?.category || '');
+
   const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
+
+  const categories = type === 'expense' ? Object.values(ExpenseCategory) : Object.values(IncomeCategory);
+
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,7 +40,8 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
       paymentMethod,
       installments: paymentMethod.toLowerCase().includes('crédito') ? installments : 1,
       date,
-      type
+      type,
+      category: category || undefined
     });
     
     setDescription('');
@@ -42,10 +49,12 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
     setPaymentMethod('Crédito');
     setInstallments(1);
     setDate(getLocalDateString());
+    setCategory('');
   };
 
   const handleTypeChange = (newType: 'income' | 'expense') => {
     setType(newType);
+    setCategory(''); // reset category on type change
     if (newType === 'income' && (paymentMethod === 'Crédito' || paymentMethod === 'Débito')) {
       setPaymentMethod('Pix');
     }
@@ -72,6 +81,21 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
             required
             className="form-input"
           />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="category-input" className="form-label"><Tag size={16} aria-hidden="true" /> {t('form.category')}</label>
+          <select
+            id="category-input"
+            value={category}
+            onChange={e => setCategory(e.target.value)}
+            className="form-select"
+          >
+            <option value="">Selecione uma categoria</option>
+            {categories.map(cat => (
+              <option key={cat} value={cat}>{t(`categories.${cat}`)}</option>
+            ))}
+          </select>
         </div>
 
         <div className="form-row">

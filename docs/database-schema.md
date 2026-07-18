@@ -22,6 +22,7 @@ interface Transaction {
   installments: number;      // 1 for single payment
   date: string;              // ISO format: YYYY-MM-DD
   type?: 'income' | 'expense';
+  category?: string;         // E.g., 'food', 'transport', 'salary'
   plannedExpenseId?: string; // (Optional) Link to the planned expense that generated this
 }
 ```
@@ -41,6 +42,7 @@ interface PlannedExpense {
   recurrenceInterval: number;// in months (e.g., 1 for every month)
   status: 'pending' | 'paid';
   type?: 'income' | 'expense';
+  category?: string;
   paymentMethod?: string;
   installments?: number;
 }

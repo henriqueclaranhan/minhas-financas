@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleTouchStart, handleTouchEnd }: Props) {
-  const { formatCurrency, locale } = useLocale();
+  const { formatCurrency, locale, t: translate } = useLocale();
   const pDate = parseISO(p.dueDate);
   const currentDate = new Date();
   const isDueOrPast = pDate.getUTCFullYear() < currentDate.getFullYear() || 
@@ -48,6 +48,7 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
           </h3>
           <p className="mobile-card-subtitle" style={{ color: dateColor, fontWeight: isDueOrPast ? 500 : 400 }}>
             {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(pDate)}
+            {p.category && ` • ${translate(`categories.${p.category}`)}`}
           </p>
         </div>
         <button 

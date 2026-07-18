@@ -38,7 +38,7 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
             ) : null}
           </h3>
           <p className="mobile-card-subtitle" style={{ color: 'var(--clr-text-secondary)' }}>
-            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(parseISO(t.date))} • {t.paymentMethod}
+            {new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: '2-digit' }).format(parseISO(t.date))} • {t.paymentMethod}{t.category && ` • ${translate(`categories.${t.category}`)}`}
           </p>
         </div>
         <button 

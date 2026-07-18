@@ -9,6 +9,7 @@ export interface Transaction {
   date: string; // ISO format: YYYY-MM-DD
   type?: TransactionType;
   plannedExpenseId?: string;
+  category?: string;
 }
 
 export interface PlannedExpense {
@@ -23,4 +24,5 @@ export interface PlannedExpense {
   type?: TransactionType;
   paymentMethod?: PaymentMethod | string;
   installments?: number;
+  category?: string;
 }
