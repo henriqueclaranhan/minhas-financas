@@ -1,6 +1,6 @@
 import { parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
-import { ExpenseStatus, PaymentMethod, TransactionType } from '../../../../enums/FinanceEnums';
+import { PaymentMethod, TransactionType } from '../../../../enums/FinanceEnums';
 import type { PlannedExpense } from '../../../../types';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
