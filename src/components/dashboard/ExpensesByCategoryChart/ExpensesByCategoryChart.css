@@ -3,6 +3,13 @@
   align-items: center;
   justify-content: center;
   width: 100%;
+  gap: var(--spacing-lg);
+}
+
+.pie-chart-graphic,
+.pie-legend-wrapper {
+  flex: 1;
+  min-width: 0;
 }
 
 .pie-tooltip {
@@ -32,8 +39,6 @@
   list-style: none;
   padding: 0;
   margin: 0;
-  max-height: 200px;
-  overflow-y: auto;
 }
 
 .pie-legend-item {
@@ -67,7 +72,16 @@
 }
 
 @media (max-width: 768px) {
+  .pie-chart-container {
+    flex-direction: column;
+  }
+  
+  .pie-chart-graphic,
+  .pie-legend-wrapper {
+    width: 100%;
+  }
+
   .pie-legend-text {
-    max-width: 80px;
+    max-width: none;
   }
 }

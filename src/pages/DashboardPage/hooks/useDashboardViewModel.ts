@@ -4,6 +4,7 @@ import { useAuth } from '../../../store/AuthContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
 import { TransactionType } from '../../../enums/FinanceEnums';
+import { parseISO, isSameMonth, addMonths } from 'date-fns';
 
 export function useDashboardViewModel() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
@@ -42,16 +43,30 @@ export function useDashboardViewModel() {
   const userName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário';
 
   const expensesByCategory = useMemo(() => {
-    const currentMonth = new Date().toISOString().slice(0, 7); // YYYY-MM
+    const currentDate = new Date();
     const categoryTotals: Record<string, number> = {};
     
     let totalExpense = 0;
     transactions.forEach(t => {
       const type = t.type || TransactionType.EXPENSE;
-      if (type === TransactionType.EXPENSE && t.date.startsWith(currentMonth)) {
+      if (type === TransactionType.EXPENSE) {
+        const txDate = parseISO(t.date);
+        const isCredit = t.paymentMethod?.toLowerCase().includes('crédito');
         const cat = t.category || 'others';
-        categoryTotals[cat] = (categoryTotals[cat] || 0) + t.amount;
-        totalExpense += t.amount;
+        
+        if (isCredit) {
+          const numInstallments = t.installments || 1;
+          const instAmount = t.amount / numInstallments;
+          for (let i = 1; i <= numInstallments; i++) {
+            if (isSameMonth(addMonths(txDate, i), currentDate)) {
+              categoryTotals[cat] = (categoryTotals[cat] || 0) + instAmount;
+              totalExpense += instAmount;
+            }
+          }
+        } else if (isSameMonth(txDate, currentDate)) {
+          categoryTotals[cat] = (categoryTotals[cat] || 0) + t.amount;
+          totalExpense += t.amount;
+        }
       }
     });
 
