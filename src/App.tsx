@@ -30,6 +30,8 @@ const router = createBrowserRouter([
   }
 ]);
 
+import { ThemeProvider } from './store/ThemeContext';
+
 function AppContent() {
   const { user } = useAuth();
 
@@ -38,12 +40,14 @@ function AppContent() {
   }
 
   return (
-    <LocaleProvider>
-      <FinanceProvider>
-        <OnboardingWizard />
-        <RouterProvider router={router} />
-      </FinanceProvider>
-    </LocaleProvider>
+    <ThemeProvider>
+      <LocaleProvider>
+        <FinanceProvider>
+          <OnboardingWizard />
+          <RouterProvider router={router} />
+        </FinanceProvider>
+      </LocaleProvider>
+    </ThemeProvider>
   );
 }
 

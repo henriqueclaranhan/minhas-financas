@@ -3,8 +3,8 @@ import { createRoot } from 'react-dom/client'
 import './styles/index.css'
 import App from './App.tsx'
 
-const savedTheme = localStorage.getItem('@financas:theme');
-if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+const savedTheme = localStorage.getItem('@financas:theme') || 'system';
+if (savedTheme === 'dark' || (savedTheme === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
   document.documentElement.setAttribute('data-theme', 'dark');
 } else {
   document.documentElement.setAttribute('data-theme', 'light');

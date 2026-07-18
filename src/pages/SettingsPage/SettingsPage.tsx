@@ -1,5 +1,5 @@
 
-import { ThemeToggle } from './components/ThemeToggle';
+
 import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
@@ -8,11 +8,14 @@ import { useNavigate } from 'react-router-dom';
 import { CURRENCY_LABELS, LOCALE_LABELS, useLocale } from '../../store/LocaleContext';
 import './SettingsPage.css';
 
+import { useTheme } from '../../store/ThemeContext';
+
 export function SettingsPage() {
 
   const { state, actions } = useSettingsViewModel();
   const navigate = useNavigate();
   const { currency, locale, setCurrency, setLocale, t } = useLocale();
+  const { theme, setTheme } = useTheme();
 
   return (
     <div className="animate-fade-in">
@@ -29,14 +32,28 @@ export function SettingsPage() {
 
         <div className="glass-panel p-0 settings-panel">
           
-          <div className="flex items-center justify-between settings-item-header">
-            <div className="flex items-center gap-md">
-              <div className="settings-icon-wrapper alt">
-                <Moon size={20} color="var(--clr-text-primary)" />
+          <div className="settings-item settings-preferences-item">
+            <div className="settings-preference-copy">
+              <div className="flex items-center gap-md">
+                <div className="settings-icon-wrapper alt">
+                  <Moon size={20} color="var(--clr-text-primary)" />
+                </div>
+                <div>
+                  <div className="font-medium settings-item-title">{t('settings.appearance')}</div>
+                  <div className="settings-item-desc text-secondary">{t('settings.themeDescription')}</div>
+                </div>
               </div>
-              <span className="font-medium settings-item-title">{t('settings.appearance')}</span>
             </div>
-            <ThemeToggle />
+            <CustomSelect
+              className="settings-select"
+              value={theme}
+              onChange={(val) => setTheme(val as any)}
+              options={[
+                { value: 'light', label: t('settings.themeLight') },
+                { value: 'dark', label: t('settings.themeDark') },
+                { value: 'system', label: t('settings.themeSystem') },
+              ]}
+            />
           </div>
 
           <div className="settings-item settings-preferences-item">
