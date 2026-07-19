@@ -418,6 +418,15 @@ p {
 
 .data-table tbody tr {
   border-bottom: 1px solid var(--clr-border);
+  transition: background-color var(--transition-fast);
+}
+
+.data-table tbody tr:nth-child(even) {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+.data-table tbody tr:hover {
+  background-color: rgba(128, 128, 128, 0.12);
 }
 
 .data-table th {
