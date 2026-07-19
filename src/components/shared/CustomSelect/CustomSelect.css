@@ -60,6 +60,8 @@
   background: var(--glass-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
+  transform: translateZ(0); /* Force GPU layer for Chrome on Windows */
+  will-change: transform, backdrop-filter; /* Optimize and prevent flattening */
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   box-shadow: var(--glass-shadow);
