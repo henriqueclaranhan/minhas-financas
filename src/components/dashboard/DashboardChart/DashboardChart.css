@@ -88,3 +88,9 @@
   border-color: var(--clr-text-secondary);
   transform: translateY(-1px);
 }
+
+@media (max-width: 768px) {
+  .chart-table-wrapper {
+    margin-inline: calc(-1 * var(--spacing-xl));
+  }
+}
