@@ -1,5 +1,6 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useLocale } from '../../../store/LocaleContext';
+import { getCategoryIcon } from '../../../utils/categoryIcons';
 import './ExpensesByCategoryChart.css';
 
 interface CategoryExpense {
@@ -17,6 +18,7 @@ interface ExpensesByCategoryChartProps {
 export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCategoryChartProps) {
   const { t } = useLocale();
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const getCategoryKey = (translationKey: string) => translationKey.replace('categories.', '');
 
   const renderCustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {
@@ -24,7 +26,9 @@ export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCate
       return (
         <div className="pie-tooltip glass-panel">
           <div className="flex items-center" style={{ gap: '6px', marginBottom: '4px' }}>
-            <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: data.color }} />
+            <span className="pie-category-icon" style={{ color: data.color }}>
+              {getCategoryIcon(getCategoryKey(data.name))}
+            </span>
             <p className="pie-tooltip-label" style={{ margin: 0 }}>{t(data.name)}</p>
           </div>
           <p className="pie-tooltip-value text-danger">{formatCurrency(data.value)}</p>
@@ -86,7 +90,9 @@ export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCate
           <ul className="pie-legend">
             {data.map((entry, index) => (
               <li key={`item-${index}`} className="pie-legend-item">
-                <span className="pie-legend-color" style={{ backgroundColor: entry.color }} />
+                <span className="pie-category-icon" style={{ color: entry.color }}>
+                  {getCategoryIcon(getCategoryKey(entry.name))}
+                </span>
                 <span className="pie-legend-text" title={t(entry.name)}>{t(entry.name)}</span>
                 <span className="pie-legend-value">{formatCurrency(entry.value)}</span>
               </li>

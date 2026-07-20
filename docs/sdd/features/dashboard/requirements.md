@@ -10,4 +10,5 @@ A main dashboard providing a snapshot of the user's financial status.
 ## Acceptance Criteria
 - [x] Dashboard displays total balance, income, and expenses cards.
 - [x] Displays a chart grouping expenses by category.
+- [x] Displays each category icon in the expense chart legend and tooltip.
 - [x] Shows a list of recent transactions.\n

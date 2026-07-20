@@ -6,7 +6,7 @@
 
 ## 2. Architecture (MVVM)
 ### 2.1 View (`DashboardPage.tsx`)
-- **Components:** Summary Cards (Income, Expense, Balance), Recent Transactions List, Expense by Category Chart.
+- **Components:** Summary Cards (Income, Expense, Balance), Recent Transactions List, Expense by Category Chart with category icons in its legend and tooltip.
 - **Layout:** Grid layout with widgets.
 
 ### 2.2 ViewModel (`useDashboardViewModel.ts`)

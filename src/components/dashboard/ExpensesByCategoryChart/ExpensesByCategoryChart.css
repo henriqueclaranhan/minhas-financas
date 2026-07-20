@@ -44,16 +44,27 @@
 .pie-legend-item {
   display: flex;
   align-items: center;
-  margin-bottom: var(--spacing-sm);
+  margin-bottom: calc(var(--spacing-sm) + var(--spacing-xs));
   font-size: 0.875rem;
 }
 
-.pie-legend-color {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
+.pie-category-icon {
+  width: 18px;
+  height: 18px;
   margin-right: var(--spacing-sm);
   flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pie-category-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.pie-tooltip .pie-category-icon {
+  margin-right: 0;
 }
 
 .pie-legend-text {

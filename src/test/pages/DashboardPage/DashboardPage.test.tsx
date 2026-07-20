@@ -64,4 +64,21 @@ describe('DashboardPage UI', () => {
     expect(mockActions.setIsModalOpen).toHaveBeenCalledWith(true);
     expect(mockActions.setActionType).toHaveBeenCalledWith('none');
   });
+
+  it('renders category icons in the expenses legend', () => {
+    vi.mocked(useDashboardViewModel).mockReturnValue({
+      state: {
+        ...mockState,
+        expensesByCategory: [
+          { name: 'categories.food', value: 150, color: '#6366f1', percentage: 100 }
+        ]
+      },
+      actions: mockActions
+    } as any);
+
+    const { container } = renderWithRouter(<DashboardPage />);
+
+    expect(screen.getByText('Alimentação')).toBeInTheDocument();
+    expect(container.querySelector('.pie-legend-item .lucide-utensils')).toBeInTheDocument();
+  });
 });

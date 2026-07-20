@@ -14,6 +14,7 @@ Users need the ability to categorize their expenses and incomes to better track 
 - [ ] The available categories in the dropdown should depend on whether the transaction is an income or an expense.
 - [ ] Categories must be translated using the i18n system.
 - [ ] The transaction list/table should display the category of the transaction.
+- [x] Category-based dashboard summaries should reuse the category icons.
 
 ## Edge Cases / Constraints
 - Existing transactions without a category should not break the UI.
