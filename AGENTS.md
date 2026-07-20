@@ -17,11 +17,16 @@ This document outlines the architecture, UX, and implementation rules for the AI
 - Focus on the specific task. Avoid touching unrelated files or sections.
 - When creating specs or documentation, follow the SDD (Software Design Description) guidelines found in `docs/sdd/`.
 
-## 4. Documentation
+## 4. UI Patterns
+- Before creating or changing UI, read `docs/sdd/standards/ui-patterns.md`.
+- Treat it as the source of truth for page structure, navigation, responsive behavior, and shared component usage.
+- Update it whenever an implementation introduces or changes a reusable UI convention.
+
+## 5. Documentation
 - All internal documentation and architectural rules must be written in English.
 - **Database Schema:** Whenever there is a change to the data models or firestore structure (e.g. adding a new field or collection), you MUST update the `docs/database-schema.md` file to reflect the new structure.
 
-## 5. Business Rules
+## 6. Business Rules
 - **Installments Logic:** 
   - `PaymentMethod.CREDIT`: The first installment of a credit card purchase ALWAYS applies to the **next month** (offset `i`).
   - `PaymentMethod.BOLETO`: The first installment of a parceled Boleto ALWAYS applies to the **current month** (offset `i - 1`).

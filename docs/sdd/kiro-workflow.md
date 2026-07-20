@@ -22,7 +22,8 @@ Every new feature or complex bug fix must pass through these three documents bef
 
 ## How to use
 When starting a new feature:
-1. Copy the templates from `docs/sdd/templates/`.
-2. Fill out the `requirements.md` and get agreement.
-3. Translate requirements into `design.md`.
-4. Break it down in `tasks.md` and start coding step-by-step.
+1. Review the applicable cross-cutting standards in `docs/sdd/standards/`. UI work must follow `docs/sdd/standards/ui-patterns.md`.
+2. Copy the templates from `docs/sdd/templates/`.
+3. Fill out the `requirements.md` and get agreement.
+4. Translate requirements into `design.md`.
+5. Break it down in `tasks.md` and start coding step-by-step.
