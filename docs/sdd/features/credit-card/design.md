@@ -7,7 +7,7 @@
 ## 2. Architecture (MVVM)
 ### 2.1 View (`CreditCardPage.tsx`)
 - **Components:** Credit Card List/Grid, Card Details Modal, Add/Edit Card Form.
-- **Layout:** Grid of cards or list, showing current bill and available limit.
+- **Layout:** Grid of cards or list, showing current bill and available limit. Invoice details remain inside the standard glass panel on every breakpoint.
 
 ### 2.2 ViewModel (`useCreditCardViewModel.ts`)
 - **State:** List of cards, selected card for details, modal states, loading status.

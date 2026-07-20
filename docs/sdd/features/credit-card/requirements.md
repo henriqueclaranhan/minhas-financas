@@ -10,4 +10,5 @@ Manage credit cards and their respective invoices.
 ## Acceptance Criteria
 - [x] Allow creation of credit cards.
 - [x] Show credit card limits and current invoice status.
-- [x] Ability to pay invoices.\n
+- [x] Ability to pay invoices.
+- [x] Keep the invoice details table inside a glass panel with its border and shadow on mobile and desktop.

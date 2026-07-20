@@ -588,10 +588,6 @@ p {
     width: 16px;
     height: 16px;
   }
-  .invoice-details-panel {
-    border: none;
-    box-shadow: none;
-  }
   .invoice-header-panel {
     padding: var(--spacing-md);
   }
@@ -599,4 +595,3 @@ p {
     padding: var(--spacing-sm) 0;
   }
 }
-
