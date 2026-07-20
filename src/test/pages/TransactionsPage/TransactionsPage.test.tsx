@@ -16,6 +16,7 @@ describe('TransactionsPage UI', () => {
     setIsModalOpen: vi.fn(),
     setIsFilterModalOpen: vi.fn(),
     setTempMethodFilter: vi.fn(),
+    setTempCategoryFilter: vi.fn(),
     setTempSelectedMonth: vi.fn(),
     setTempSelectedYear: vi.fn(),
     setTransactionToDelete: vi.fn(),
@@ -40,6 +41,11 @@ describe('TransactionsPage UI', () => {
     selectedMonth: 4,
     selectedYear: 2026,
     methodFilter: 'all',
+    categoryFilter: 'all',
+    tempMethodFilter: 'all',
+    tempCategoryFilter: 'all',
+    tempSelectedMonth: 4,
+    tempSelectedYear: 2026,
     filterLabel: 'Maio de 2026',
     defaultYear: 2026
   };
@@ -81,5 +87,17 @@ describe('TransactionsPage UI', () => {
     }
     
     expect(mockActions.openNewModal).toHaveBeenCalled();
+  });
+
+  it('renders the category filter in the filters modal', () => {
+    vi.mocked(useTransactionsViewModel).mockReturnValue({
+      state: { ...mockState, isFilterModalOpen: true },
+      actions: mockActions
+    } as any);
+
+    renderWithRouter(<TransactionsPage />);
+
+    expect(screen.getByText('Categoria', { selector: 'label' })).toBeInTheDocument();
+    expect(screen.getByText('Todas as categorias')).toBeInTheDocument();
   });
 });

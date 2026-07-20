@@ -14,6 +14,7 @@ describe('PlannedExpensesPage UI', () => {
     setIsFilterModalOpen: vi.fn(),
     setTempSelectedMonth: vi.fn(),
     setTempSelectedYear: vi.fn(),
+    setTempCategoryFilter: vi.fn(),
     setExpenseToDelete: vi.fn(),
     setExpenseToConfirm: vi.fn(),
     setEditingExpense: vi.fn(),
@@ -42,8 +43,10 @@ describe('PlannedExpensesPage UI', () => {
     searchQuery: '',
     selectedMonth: 4,
     selectedYear: 2026,
+    categoryFilter: 'all',
     tempSelectedMonth: 4,
     tempSelectedYear: 2026,
+    tempCategoryFilter: 'all',
     editingExpense: null,
     expenseToDelete: null,
     expenseToConfirm: null,
@@ -87,5 +90,17 @@ describe('PlannedExpensesPage UI', () => {
     }
     
     expect(mockActions.openNewModal).toHaveBeenCalled();
+  });
+
+  it('renders the category filter in the filters modal', () => {
+    vi.mocked(usePlannedExpensesViewModel).mockReturnValue({
+      state: { ...mockState, isFilterModalOpen: true },
+      actions: mockActions
+    } as any);
+
+    renderWithRouter(<PlannedExpensesPage />);
+
+    expect(screen.getByText('Categoria', { selector: 'label' })).toBeInTheDocument();
+    expect(screen.getByText('Todas as categorias')).toBeInTheDocument();
   });
 });

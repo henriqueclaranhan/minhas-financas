@@ -5,9 +5,9 @@ import { TransactionForm } from '../../components/TransactionForm';
 import { Modal } from '../../components/Modal';
 import { Plus } from 'lucide-react';
 import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
-import { getPaymentMethodIcon } from '../../utils/categoryIcons';
+import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons';
 import type { Transaction } from '../../types';
-import { PaymentMethod } from '../../enums/FinanceEnums';
+import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../../enums/FinanceEnums';
 import { useTransactionsViewModel } from './hooks/useTransactionsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
@@ -18,6 +18,7 @@ export function TransactionsPage() {
   // Force HMR update
   const { state, actions } = useTransactionsViewModel();
   const { locale, t } = useLocale();
+  const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];
 
   return (
     <div className="animate-fade-in">
@@ -44,6 +45,7 @@ export function TransactionsPage() {
         onOpenFilters={actions.handleOpenFilters}
         activeDateLabel={state.filterLabel}
         activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
+        activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
       />
       
       <div className="glass-panel panel-no-padding">
@@ -87,6 +89,22 @@ export function TransactionsPage() {
       </Modal>
 
       <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title={t('filters.title')}>
+        <div className="form-group">
+            <label className="form-label">{t('form.category')}</label>
+            <CustomSelect
+              value={state.tempCategoryFilter}
+              onChange={actions.setTempCategoryFilter}
+              options={[
+                { value: 'all', label: t('filters.allCategories') },
+                ...categoryOptions.map(category => ({
+                  value: category,
+                  label: t(`categories.${category}`),
+                  icon: getCategoryIcon(category)
+                }))
+              ]}
+            />
+        </div>
+
         <div className="form-group">
             <label className="form-label">{t('common.paymentMethod')}</label>
             <CustomSelect

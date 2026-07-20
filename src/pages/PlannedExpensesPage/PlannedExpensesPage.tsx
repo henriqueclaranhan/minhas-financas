@@ -4,18 +4,20 @@ import { Modal } from '../../components/Modal';
 import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { TransactionForm } from '../../components/TransactionForm';
 import type { PlannedExpense } from '../../types';
-import { FilterType, TransactionType } from '../../enums/FinanceEnums';
+import { ExpenseCategory, FilterType, IncomeCategory, TransactionType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
 import { PlannedExpenseTable } from './components/PlannedExpenseTable';
 import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
+import { getCategoryIcon } from '../../utils/categoryIcons';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
   const { state, actions } = usePlannedExpensesViewModel();
   const { locale, t } = useLocale();
+  const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];
 
   return (
     <div className="animate-fade-in">
@@ -41,6 +43,7 @@ export function PlannedExpensesPage() {
         setSearchQuery={actions.setSearchQuery}
         onOpenFilters={actions.handleOpenFilters}
         activeDateLabel={state.filterLabel}
+        activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
       />
 
       <div className="glass-panel panel-no-padding">
@@ -99,6 +102,22 @@ export function PlannedExpensesPage() {
       </Modal>
 
       <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title={t('filters.title')}>
+        <div className="form-group">
+          <label className="form-label">{t('form.category')}</label>
+          <CustomSelect
+            value={state.tempCategoryFilter}
+            onChange={actions.setTempCategoryFilter}
+            options={[
+              { value: 'all', label: t('filters.allCategories') },
+              ...categoryOptions.map(category => ({
+                value: category,
+                label: t(`categories.${category}`),
+                icon: getCategoryIcon(category)
+              }))
+            ]}
+          />
+        </div>
+
         <div className="form-row">
           <div className="form-group">
             <label className="form-label">{t('filters.month')}</label>

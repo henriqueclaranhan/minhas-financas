@@ -24,9 +24,11 @@ export function usePlannedExpensesViewModel() {
 
   const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(defaultMonth);
   const [selectedYear, setSelectedYear] = useState(defaultYear);
+  const [categoryFilter, setCategoryFilter] = useState('all');
 
   const [tempSelectedMonth, setTempSelectedMonth] = useState<number | 'all'>(defaultMonth);
   const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
+  const [tempCategoryFilter, setTempCategoryFilter] = useState('all');
 
   const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
@@ -44,11 +46,12 @@ export function usePlannedExpensesViewModel() {
       const matchesMonth = selectedMonth === 'all' || pMonth === selectedMonth;
       const matchesYear = pYear === selectedYear;
       const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
 
-      return isPending && matchesFilter && matchesMonth && matchesYear && matchesSearch;
+      return isPending && matchesFilter && matchesMonth && matchesYear && matchesSearch && matchesCategory;
     })
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()), 
-    [expandedPlannedExpenses, filter, selectedMonth, selectedYear, searchQuery]
+    [expandedPlannedExpenses, filter, selectedMonth, selectedYear, searchQuery, categoryFilter]
   );
 
   const totalIncome = useMemo(() => pendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0), [pendingExpenses]);
@@ -87,21 +90,25 @@ export function usePlannedExpensesViewModel() {
   const handleOpenFilters = () => {
     setTempSelectedMonth(selectedMonth);
     setTempSelectedYear(selectedYear);
+    setTempCategoryFilter(categoryFilter);
     setIsFilterModalOpen(true);
   };
 
   const handleApplyFilters = () => {
     setSelectedMonth(tempSelectedMonth);
     setSelectedYear(tempSelectedYear);
+    setCategoryFilter(tempCategoryFilter);
     setIsFilterModalOpen(false);
   };
 
   const handleResetFilters = () => {
     setSelectedMonth(defaultMonth);
     setSelectedYear(defaultYear);
+    setCategoryFilter('all');
     
     setTempSelectedMonth(defaultMonth);
     setTempSelectedYear(defaultYear);
+    setTempCategoryFilter('all');
     
     setIsFilterModalOpen(false);
   };
@@ -162,8 +169,10 @@ export function usePlannedExpensesViewModel() {
       searchQuery,
       selectedMonth,
       selectedYear,
+      categoryFilter,
       tempSelectedMonth,
       tempSelectedYear,
+      tempCategoryFilter,
       editingExpense,
       expenseToDelete,
       expenseToConfirm,
@@ -177,6 +186,7 @@ export function usePlannedExpensesViewModel() {
       setIsFilterModalOpen,
       setTempSelectedMonth,
       setTempSelectedYear,
+      setTempCategoryFilter,
       setExpenseToDelete,
       setExpenseToConfirm,
       setEditingExpense,

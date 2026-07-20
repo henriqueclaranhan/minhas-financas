@@ -28,11 +28,13 @@ export function useTransactionsViewModel() {
 
   // Active filters
   const [methodFilter, setMethodFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(defaultMonth);
   const [selectedYear, setSelectedYear] = useState(defaultYear);
 
   // Temporary filters for modal
   const [tempMethodFilter, setTempMethodFilter] = useState('all');
+  const [tempCategoryFilter, setTempCategoryFilter] = useState('all');
   const [tempSelectedMonth, setTempSelectedMonth] = useState<number | 'all'>(defaultMonth);
   const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
 
@@ -51,9 +53,10 @@ export function useTransactionsViewModel() {
     
     const matchesSearch = !searchQuery || t.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMethod = methodFilter === 'all' || t.paymentMethod === methodFilter;
+    const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
 
-    return matchesFilter && matchesMonth && matchesYear && matchesSearch && matchesMethod;
-  }), [expandedTransactions, filter, selectedMonth, selectedYear, searchQuery, methodFilter]);
+    return matchesFilter && matchesMonth && matchesYear && matchesSearch && matchesMethod && matchesCategory;
+  }), [expandedTransactions, filter, selectedMonth, selectedYear, searchQuery, methodFilter, categoryFilter]);
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [filtered]);
 
@@ -107,6 +110,7 @@ export function useTransactionsViewModel() {
 
   const handleOpenFilters = () => {
     setTempMethodFilter(methodFilter);
+    setTempCategoryFilter(categoryFilter);
     setTempSelectedMonth(selectedMonth);
     setTempSelectedYear(selectedYear);
     setIsFilterModalOpen(true);
@@ -114,6 +118,7 @@ export function useTransactionsViewModel() {
 
   const handleApplyFilters = () => {
     setMethodFilter(tempMethodFilter);
+    setCategoryFilter(tempCategoryFilter);
     setSelectedMonth(tempSelectedMonth);
     setSelectedYear(tempSelectedYear);
     setIsFilterModalOpen(false);
@@ -121,10 +126,12 @@ export function useTransactionsViewModel() {
 
   const handleResetFilters = () => {
     setMethodFilter('all');
+    setCategoryFilter('all');
     setSelectedMonth(defaultMonth);
     setSelectedYear(defaultYear);
 
     setTempMethodFilter('all');
+    setTempCategoryFilter('all');
     setTempSelectedMonth(defaultMonth);
     setTempSelectedYear(defaultYear);
     
@@ -147,7 +154,9 @@ export function useTransactionsViewModel() {
       selectedMonth,
       selectedYear,
       methodFilter,
+      categoryFilter,
       tempMethodFilter,
+      tempCategoryFilter,
       tempSelectedMonth,
       tempSelectedYear,
       editingTransaction,
@@ -161,6 +170,7 @@ export function useTransactionsViewModel() {
       setIsModalOpen,
       setIsFilterModalOpen,
       setTempMethodFilter,
+      setTempCategoryFilter,
       setTempSelectedMonth,
       setTempSelectedYear,
       setTransactionToDelete,

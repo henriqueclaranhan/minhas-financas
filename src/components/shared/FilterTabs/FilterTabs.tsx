@@ -1,5 +1,5 @@
 import { FilterType } from '../../../enums/FinanceEnums';
-import { List, ArrowUpCircle, ArrowDownCircle, Filter, CalendarDays, CreditCard } from 'lucide-react';
+import { List, ArrowUpCircle, ArrowDownCircle, Filter, CalendarDays, CreditCard, Tags } from 'lucide-react';
 import './FilterTabs.css';
 import { useLocale } from '../../../store/LocaleContext';
 
@@ -11,9 +11,10 @@ interface FilterTabsProps {
   onOpenFilters: () => void;
   activeDateLabel?: string;
   activeMethodLabel?: string;
+  activeCategoryLabel?: string;
 }
 
-export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onOpenFilters, activeDateLabel, activeMethodLabel }: FilterTabsProps) {
+export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onOpenFilters, activeDateLabel, activeMethodLabel, activeCategoryLabel }: FilterTabsProps) {
   const { t } = useLocale();
   return (
     <div className="glass-panel filter-tabs-panel">
@@ -38,7 +39,7 @@ export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onO
         </button>
       </div>
 
-      {(activeDateLabel || activeMethodLabel) && (
+      {(activeDateLabel || activeMethodLabel || activeCategoryLabel) && (
         <div className="filter-active-labels">
           {activeDateLabel && (
             <div className="filter-active-label">
@@ -48,6 +49,11 @@ export function FilterTabs({ filter, setFilter, searchQuery, setSearchQuery, onO
           {activeMethodLabel && (
             <div className="filter-active-label">
               <CreditCard size={14} /> {activeMethodLabel}
+            </div>
+          )}
+          {activeCategoryLabel && (
+            <div className="filter-active-label">
+              <Tags size={14} /> {activeCategoryLabel}
             </div>
           )}
         </div>
