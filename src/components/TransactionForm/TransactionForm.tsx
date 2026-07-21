@@ -12,7 +12,7 @@ import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons
 import '../../styles/FormStyles.css';
 
 interface TransactionFormProps {
-  onSubmit: (transaction: Omit<Transaction, 'id'>) => void;
+  onSubmit: (transaction: Omit<Transaction, 'id'>) => void | Promise<void>;
   initialData?: Partial<Transaction>;
   defaultType?: TransactionType;
 }
@@ -27,6 +27,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = Transacti
   const [date, setDate] = useState(initialData?.date || getLocalDateString());
   const [category, setCategory] = useState(initialData?.category || '');
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const [type, setType] = useState<TransactionType>(initialData?.type || defaultType);
 
@@ -52,7 +53,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = Transacti
     icon: getCategoryIcon(cat)
   }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isMobile && currentStep === 1) {
       setCurrentStep(2);
@@ -62,23 +63,30 @@ export function TransactionForm({ onSubmit, initialData, defaultType = Transacti
     const trimmedDesc = description.trim();
     if (!trimmedDesc || !amount || !date) return;
     
-    onSubmit({
-      description: trimmedDesc,
-      amount: Number(amount),
-      paymentMethod,
-      installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
-      date,
-      type,
-      category: category || undefined
-    });
-    
-    setDescription('');
-    setAmount('');
-    setPaymentMethod(PaymentMethod.CREDIT);
-    setInstallments(1);
-    setDate(getLocalDateString());
-    setCategory('');
-    setCurrentStep(1);
+    setIsSubmitting(true);
+    try {
+      await onSubmit({
+        description: trimmedDesc,
+        amount: Number(amount),
+        paymentMethod,
+        installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
+        date,
+        type,
+        category: category || undefined
+      });
+
+      setDescription('');
+      setAmount('');
+      setPaymentMethod(PaymentMethod.CREDIT);
+      setInstallments(1);
+      setDate(getLocalDateString());
+      setCategory('');
+      setCurrentStep(1);
+    } catch {
+      // Operation-level feedback is emitted by the mutation layer; keep form values intact.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleTypeChange = (newType: TransactionType) => {
@@ -215,8 +223,8 @@ export function TransactionForm({ onSubmit, initialData, defaultType = Transacti
               {t('form.back')}
             </button>
           )}
-          <button type="submit" className="btn btn-primary hover-glow flex-1">
-            {(isMobile && currentStep === 1) ? t('form.next') : (initialData ? t('common.saveChanges') : t('form.addTransaction'))}
+          <button type="submit" className="btn btn-primary hover-glow flex-1" disabled={isSubmitting}>
+            {isSubmitting ? t('common.saving') : (isMobile && currentStep === 1) ? t('form.next') : (initialData ? t('common.saveChanges') : t('form.addTransaction'))}
           </button>
         </div>
       </form>

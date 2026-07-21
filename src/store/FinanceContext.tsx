@@ -5,6 +5,8 @@ import { TransactionService } from '../services/TransactionService';
 import { PlannedExpenseService } from '../services/PlannedExpenseService';
 import { UserService } from '../services/UserService';
 import { DataSyncService } from '../services/DataSyncService';
+import { useLocale } from './LocaleContext';
+import { useToast } from './ToastContext';
 
 interface FinanceContextData {
   initialBalance: number | null;
@@ -42,6 +44,8 @@ const FinanceContext = createContext<FinanceContextData>({} as FinanceContextDat
 
 export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
+  const { t } = useLocale();
+  const toast = useToast();
   const uid = user?.uid || '';
 
   const [initialBalance, setInitialBalanceState] = useState<number | null>(null);
@@ -56,6 +60,21 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [plannedExpenseLimit, setPlannedExpenseLimit] = useState(PAGE_SIZE);
   const [hasMoreTransactions, setHasMoreTransactions] = useState(false);
   const [hasMorePlannedExpenses, setHasMorePlannedExpenses] = useState(false);
+
+  const runMutation = useCallback(async <T,>(
+    operation: () => Promise<T>,
+    successKey: string,
+    errorKey: string,
+  ): Promise<T> => {
+    try {
+      const result = await operation();
+      toast.success(t(successKey));
+      return result;
+    } catch (mutationError) {
+      toast.error(t(errorKey));
+      throw mutationError;
+    }
+  }, [t, toast]);
 
   useEffect(() => {
     if (!uid) {
@@ -114,43 +133,75 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
 
   const addTransaction = useCallback(async (t: Omit<Transaction, 'id'>) => {
     if (!uid) return;
-    await TransactionService.addTransaction(uid, t);
-  }, [uid]);
+    await runMutation(
+      () => TransactionService.addTransaction(uid, t),
+      'notifications.transactionCreated',
+      'notifications.saveFailed',
+    );
+  }, [runMutation, uid]);
 
   const updateTransaction = useCallback(async (id: string, updatedData: Partial<Transaction>) => {
     if (!uid) return;
-    await TransactionService.updateTransaction(uid, id, updatedData);
-  }, [uid]);
+    await runMutation(
+      () => TransactionService.updateTransaction(uid, id, updatedData),
+      'notifications.transactionUpdated',
+      'notifications.saveFailed',
+    );
+  }, [runMutation, uid]);
 
   const deleteTransaction = useCallback(async (id: string) => {
     if (!uid) return;
-    await TransactionService.deleteTransaction(uid, id);
-  }, [uid]);
+    await runMutation(
+      () => TransactionService.deleteTransaction(uid, id),
+      'notifications.transactionDeleted',
+      'notifications.deleteFailed',
+    );
+  }, [runMutation, uid]);
 
   const addPlannedExpense = useCallback(async (pe: Omit<PlannedExpense, 'id'>) => {
     if (!uid) return;
-    await PlannedExpenseService.addPlannedExpense(uid, pe);
-  }, [uid]);
+    await runMutation(
+      () => PlannedExpenseService.addPlannedExpense(uid, pe),
+      'notifications.planningCreated',
+      'notifications.saveFailed',
+    );
+  }, [runMutation, uid]);
 
   const updatePlannedExpense = useCallback(async (id: string, updatedData: Partial<PlannedExpense>) => {
     if (!uid) return;
-    await PlannedExpenseService.updatePlannedExpense(uid, id, updatedData);
-  }, [uid]);
+    await runMutation(
+      () => PlannedExpenseService.updatePlannedExpense(uid, id, updatedData),
+      'notifications.planningUpdated',
+      'notifications.saveFailed',
+    );
+  }, [runMutation, uid]);
 
   const confirmPlannedExpense = useCallback(async (id: string, transactionData: Omit<Transaction, 'id'>) => {
     if (!uid) return;
-    await PlannedExpenseService.confirmPlannedExpense(uid, id, transactionData);
-  }, [uid]);
+    await runMutation(
+      () => PlannedExpenseService.confirmPlannedExpense(uid, id, transactionData),
+      'notifications.planningConfirmed',
+      'notifications.confirmFailed',
+    );
+  }, [runMutation, uid]);
 
   const rejectPlannedExpense = useCallback(async (id: string) => {
     if (!uid) return;
-    await PlannedExpenseService.rejectPlannedExpense(uid, id);
-  }, [uid]);
+    await runMutation(
+      () => PlannedExpenseService.rejectPlannedExpense(uid, id),
+      'notifications.planningCancelled',
+      'notifications.confirmFailed',
+    );
+  }, [runMutation, uid]);
 
   const deletePlannedExpense = useCallback(async (id: string) => {
     if (!uid) return;
-    await PlannedExpenseService.deletePlannedExpense(uid, id);
-  }, [uid]);
+    await runMutation(
+      () => PlannedExpenseService.deletePlannedExpense(uid, id),
+      'notifications.planningDeleted',
+      'notifications.deleteFailed',
+    );
+  }, [runMutation, uid]);
 
   const exportData = useCallback(() => {
     DataSyncService.exportData(initialBalance, transactions, plannedExpenses);

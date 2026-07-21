@@ -137,6 +137,15 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Do not communicate financial status by color alone; pair color with text, sign, label, or icon.
 - Motion SHOULD be brief and purposeful. New non-essential motion MUST respect reduced-motion preferences.
 
+### 12.1 Temporary notifications
+
+- Completed asynchronous create, update, confirm, delete, and import actions SHOULD use the shared global toast system when the result is not otherwise unmistakable.
+- Toast copy MUST name the completed action, such as “Transaction created,” instead of using a generic “Saved successfully.”
+- Desktop toasts appear at the top right. Mobile toasts appear centered at the top below the safe area so they do not conflict with bottom navigation, FABs, or the keyboard.
+- Success toasts dismiss automatically after approximately three seconds. Error toasts remain longer and MUST provide a dismiss action.
+- Toasts MUST pair semantic iconography with text, expose appropriate live-region semantics, show one queued message at a time, and respect reduced-motion preferences.
+- Failed modal submissions MUST keep the modal open. Field-specific failures remain inline; a toast may summarize an operation-level failure.
+
 ## 13. Review checklist
 
 Before completing a UI change, verify:

@@ -16,6 +16,7 @@ import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage/PrivacyPolicyPage';
 import { CategoryExpensesPage } from './pages/CategoryExpensesPage';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
 import { SeoManager } from './components/SeoManager';
+import { ToastProvider } from './store/ToastContext';
 import './App.css';
 
 const router = createBrowserRouter([
@@ -52,8 +53,10 @@ function AppContent() {
     return (
       <ThemeProvider>
         <LocaleProvider>
-          <SeoManager isAuthenticated={false} />
-          <RouterProvider router={unauthRouter} />
+          <ToastProvider>
+            <SeoManager isAuthenticated={false} />
+            <RouterProvider router={unauthRouter} />
+          </ToastProvider>
         </LocaleProvider>
       </ThemeProvider>
     );
@@ -62,11 +65,13 @@ function AppContent() {
   return (
     <ThemeProvider>
       <LocaleProvider>
-        <SeoManager isAuthenticated={true} />
-        <FinanceProvider>
-          <OnboardingWizard />
-          <RouterProvider router={router} />
-        </FinanceProvider>
+        <ToastProvider>
+          <SeoManager isAuthenticated={true} />
+          <FinanceProvider>
+            <OnboardingWizard />
+            <RouterProvider router={router} />
+          </FinanceProvider>
+        </ToastProvider>
       </LocaleProvider>
     </ThemeProvider>
   );

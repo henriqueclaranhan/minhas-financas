@@ -44,23 +44,15 @@ export function useCreditCardViewModel() {
   const isCurrentInvoice = selectedMonthData?.key === currentInvoiceKey;
 
   const handleTransactionAdd = useCallback(async (data: Omit<Transaction, 'id'>) => {
-    try {
-      await addTransaction(data);
-      setIsModalOpen(false);
-      setTimeout(() => setActionType(FinanceEntryMode.NONE), 300);
-    } catch (error) {
-      console.error('Failed to add transaction:', error);
-    }
+    await addTransaction(data);
+    setIsModalOpen(false);
+    setTimeout(() => setActionType(FinanceEntryMode.NONE), 300);
   }, [addTransaction]);
 
   const handlePlanningAdd = useCallback(async (data: Omit<PlannedExpense, 'id'>) => {
-    try {
-      await addPlannedExpense(data);
-      setIsModalOpen(false);
-      setTimeout(() => setActionType(FinanceEntryMode.NONE), 300);
-    } catch (error) {
-      console.error('Failed to add planned expense:', error);
-    }
+    await addPlannedExpense(data);
+    setIsModalOpen(false);
+    setTimeout(() => setActionType(FinanceEntryMode.NONE), 300);
   }, [addPlannedExpense]);
 
   return {

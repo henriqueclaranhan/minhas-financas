@@ -11,7 +11,7 @@ import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons
 import '../../styles/FormStyles.css';
 
 interface PlannedExpenseFormProps {
-  onSubmit: (data: Omit<PlannedExpense, 'id'>) => void;
+  onSubmit: (data: Omit<PlannedExpense, 'id'>) => void | Promise<void>;
   initialData?: Partial<PlannedExpense>;
   defaultType?: TransactionType;
 }
@@ -29,6 +29,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = Transa
   const [installments, setInstallments] = useState(initialData?.installments || 1);
   const [category, setCategory] = useState(initialData?.category || '');
   const [currentStep, setCurrentStep] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = type === 'expense' ? Object.values(ExpenseCategory) : Object.values(IncomeCategory);
 
@@ -52,7 +53,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = Transa
     icon: getCategoryIcon(cat)
   }));
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isMobile && currentStep === 1) {
       setCurrentStep(2);
@@ -62,28 +63,34 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = Transa
     const trimmedDesc = description.trim();
     if (!trimmedDesc || !amount || !dueDate) return;
     
-    onSubmit({
-      description: trimmedDesc,
-      amount: Number(amount),
-      dueDate,
-      isRecurring,
-      recurrenceInterval: parseInt(recurrenceInterval) || 1,
-      status: ExpenseStatus.PENDING,
-      type,
-      paymentMethod,
-      installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
-      category: category || undefined
-    });
-    
-    // Reset
-    setDescription('');
-    setAmount('');
-    setDueDate('');
-    setIsRecurring(false);
-    setPaymentMethod(PaymentMethod.CREDIT);
-    setInstallments(1);
-    setCategory('');
-    setCurrentStep(1);
+    setIsSubmitting(true);
+    try {
+      await onSubmit({
+        description: trimmedDesc,
+        amount: Number(amount),
+        dueDate,
+        isRecurring,
+        recurrenceInterval: parseInt(recurrenceInterval) || 1,
+        status: ExpenseStatus.PENDING,
+        type,
+        paymentMethod,
+        installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
+        category: category || undefined
+      });
+
+      setDescription('');
+      setAmount('');
+      setDueDate('');
+      setIsRecurring(false);
+      setPaymentMethod(PaymentMethod.CREDIT);
+      setInstallments(1);
+      setCategory('');
+      setCurrentStep(1);
+    } catch {
+      // Operation-level feedback is emitted by the mutation layer; keep form values intact.
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleTypeChange = (newType: TransactionType) => {
@@ -239,8 +246,8 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = Transa
             {t('form.back')}
           </button>
         )}
-        <button type="submit" className="btn btn-primary hover-glow flex-1">
-          {(isMobile && currentStep === 1) ? t('form.next') : (initialData ? t('common.saveChanges') : t('form.savePlanning'))}
+        <button type="submit" className="btn btn-primary hover-glow flex-1" disabled={isSubmitting}>
+          {isSubmitting ? t('common.saving') : (isMobile && currentStep === 1) ? t('form.next') : (initialData ? t('common.saveChanges') : t('form.savePlanning'))}
         </button>
       </div>
     </form>

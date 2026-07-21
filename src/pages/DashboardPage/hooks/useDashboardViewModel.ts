@@ -36,14 +36,14 @@ export function useDashboardViewModel() {
     return bills[4]?.data.total || 0; // Index 4 is the next month (which acts as the current open invoice for the user)
   }, [transactions, locale]);
 
-  const handleTransactionAdd = (data: Omit<Transaction, 'id'>) => {
-    addTransaction(data);
+  const handleTransactionAdd = async (data: Omit<Transaction, 'id'>) => {
+    await addTransaction(data);
     setIsModalOpen(false);
     setActionType(FinanceEntryMode.NONE);
   };
 
-  const handlePlanningAdd = (data: Omit<PlannedExpense, 'id'>) => {
-    addPlannedExpense(data);
+  const handlePlanningAdd = async (data: Omit<PlannedExpense, 'id'>) => {
+    await addPlannedExpense(data);
     setIsModalOpen(false);
     setActionType(FinanceEntryMode.NONE);
   };
