@@ -16,3 +16,5 @@ Manage future and recurring financial commitments.
 - [x] The planning list loads pending source documents in cursor-based pages as the user scrolls.
 - [x] Processed plans do not remain in the global realtime working set.
 - [x] Period totals remain exact and independent from the pages currently rendered.
+- [x] Planning can be filtered by payment method, with all methods selected by default.
+- [x] Payment method combines with period, type, search, and category filters; Apply and Reset control the active URL-persisted selection.

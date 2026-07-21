@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { addMonths, endOfMonth, endOfYear, format, parseISO, startOfMonth, startOfYear } from 'date-fns';
-import { FilterType, TransactionType, ExpenseStatus, ExpenseCategory, IncomeCategory } from '../../../enums/FinanceEnums';
+import { FilterType, TransactionType, ExpenseStatus, ExpenseCategory, IncomeCategory, PaymentMethod } from '../../../enums/FinanceEnums';
 import type { PlannedExpense, Transaction } from '../../../types';
 import { expandPlannedExpenses } from '../../../utils/financeUtils';
 import type { ExpandedPlannedExpense } from '../../../utils/financeUtils';
@@ -10,10 +10,12 @@ import { TemporalFilterMode } from '../../../enums/UIEnums';
 import { useQueryParamState } from '../../../hooks/useQueryParamState';
 import { useAuth } from '../../../store/AuthContext';
 import { PlannedExpenseService } from '../../../services/PlannedExpenseService';
+import { useSearchParams } from 'react-router-dom';
 
 export function usePlannedExpensesViewModel() {
   const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense, isLoading } = useFinance();
   const { user } = useAuth();
+  const [, setSearchParams] = useSearchParams();
   const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
   const { matchesDate } = temporal.actions;
   
@@ -26,13 +28,19 @@ export function usePlannedExpensesViewModel() {
   );
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [categoryFilter, setCategoryFilter] = useQueryParamState(
+  const [categoryFilter] = useQueryParamState(
     'category',
     'all',
     value => value && [...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)].includes(value as ExpenseCategory) ? value : undefined,
   );
+  const [methodFilter] = useQueryParamState(
+    'method',
+    'all',
+    value => value && Object.values(PaymentMethod).includes(value as PaymentMethod) ? value : undefined,
+  );
 
   const [tempCategoryFilter, setTempCategoryFilter] = useState('all');
+  const [tempMethodFilter, setTempMethodFilter] = useState('all');
 
   const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
@@ -116,11 +124,12 @@ export function usePlannedExpensesViewModel() {
       const matchesPeriod = matchesDate(p.dueDate);
       const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
+      const matchesMethod = methodFilter === 'all' || p.paymentMethod === methodFilter;
 
-      return isPending && matchesPeriod && matchesSearch && matchesCategory;
+      return isPending && matchesPeriod && matchesSearch && matchesCategory && matchesMethod;
     })
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()), 
-    [expandedHistory, matchesDate, searchQuery, categoryFilter]
+    [expandedHistory, matchesDate, searchQuery, categoryFilter, methodFilter]
   );
 
   const aggregatePeriodExpenses = useMemo(() => aggregateExpandedExpenses.filter(p => {
@@ -128,8 +137,9 @@ export function usePlannedExpensesViewModel() {
     const matchesPeriod = matchesDate(p.dueDate);
     const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
-    return isPending && matchesPeriod && matchesSearch && matchesCategory;
-  }), [aggregateExpandedExpenses, categoryFilter, matchesDate, searchQuery]);
+    const matchesMethod = methodFilter === 'all' || p.paymentMethod === methodFilter;
+    return isPending && matchesPeriod && matchesSearch && matchesCategory && matchesMethod;
+  }), [aggregateExpandedExpenses, categoryFilter, matchesDate, methodFilter, searchQuery]);
 
   const filteredPendingExpenses = useMemo(
     () => periodPendingExpenses.filter(p => filter === FilterType.ALL || p.type === filter || (!p.type && filter === FilterType.EXPENSE)),
@@ -165,18 +175,32 @@ export function usePlannedExpensesViewModel() {
 
   const handleOpenFilters = () => {
     setTempCategoryFilter(categoryFilter);
+    setTempMethodFilter(methodFilter);
     setIsFilterModalOpen(true);
   };
 
   const handleApplyFilters = () => {
-    setCategoryFilter(tempCategoryFilter);
+    setSearchParams(current => {
+      const next = new URLSearchParams(current);
+      if (tempCategoryFilter === 'all') next.delete('category');
+      else next.set('category', tempCategoryFilter);
+      if (tempMethodFilter === 'all') next.delete('method');
+      else next.set('method', tempMethodFilter);
+      return next;
+    }, { replace: true });
     setIsFilterModalOpen(false);
   };
 
   const handleResetFilters = () => {
-    setCategoryFilter('all');
+    setSearchParams(current => {
+      const next = new URLSearchParams(current);
+      next.delete('category');
+      next.delete('method');
+      return next;
+    }, { replace: true });
     
     setTempCategoryFilter('all');
+    setTempMethodFilter('all');
     
     setIsFilterModalOpen(false);
   };
@@ -223,7 +247,9 @@ export function usePlannedExpensesViewModel() {
       filter,
       searchQuery,
       categoryFilter,
+      methodFilter,
       tempCategoryFilter,
+      tempMethodFilter,
       editingExpense,
       expenseToDelete,
       expenseToConfirm,
@@ -240,6 +266,7 @@ export function usePlannedExpensesViewModel() {
       setIsModalOpen,
       setIsFilterModalOpen,
       setTempCategoryFilter,
+      setTempMethodFilter,
       setExpenseToDelete,
       setExpenseToConfirm,
       setEditingExpense,

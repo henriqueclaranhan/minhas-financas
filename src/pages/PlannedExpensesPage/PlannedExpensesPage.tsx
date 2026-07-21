@@ -11,7 +11,7 @@ import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
-import { getCategoryIcon } from '../../utils/categoryIcons';
+import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons';
 import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
@@ -60,6 +60,7 @@ export function PlannedExpensesPage() {
         searchQuery={state.searchQuery}
         setSearchQuery={actions.setSearchQuery}
         onOpenFilters={actions.handleOpenFilters}
+        activeMethodLabel={state.methodFilter !== 'all' ? t(`form.${state.methodFilter}`) : undefined}
         activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
       />
 
@@ -126,6 +127,22 @@ export function PlannedExpensesPage() {
       </Modal>
 
       <Modal isOpen={state.isFilterModalOpen} onClose={() => actions.setIsFilterModalOpen(false)} title={t('filters.title')}>
+        <div className="form-group">
+          <label className="form-label">{t('common.paymentMethod')}</label>
+          <CustomSelect
+            value={state.tempMethodFilter}
+            onChange={actions.setTempMethodFilter}
+            options={[
+              { value: 'all', label: t('filters.allMethods') },
+              ...Object.values(PaymentMethod).map(method => ({
+                value: method,
+                label: t(`form.${method}`),
+                icon: getPaymentMethodIcon(method),
+              })),
+            ]}
+          />
+        </div>
+
         <div className="form-group">
           <label className="form-label">{t('form.category')}</label>
           <CustomSelect

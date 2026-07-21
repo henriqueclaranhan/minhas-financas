@@ -138,4 +138,35 @@ describe('category filters in list view models', () => {
     expect(result.current.state.pendingExpenses).toHaveLength(2);
     expect(result.current.state.categoryFilter).toBe('all');
   });
+
+  it('applies and resets the planned expense payment-method filter', () => {
+    const plannedExpenses = [
+      { id: 'pix', description: 'Rent', amount: 900, type: 'expense', dueDate: `${currentYear}-08-15`, status: 'pending', paymentMethod: 'pix' },
+      { id: 'credit', description: 'Subscription', amount: 100, type: 'expense', dueDate: `${currentYear}-08-15`, status: 'pending', paymentMethod: 'credit' }
+    ];
+
+    vi.mocked(useFinance).mockReturnValue({
+      transactions: [],
+      plannedExpenses,
+      addPlannedExpense: noop,
+      updatePlannedExpense: noop,
+      confirmPlannedExpense: noop,
+      rejectPlannedExpense: noop,
+      deletePlannedExpense: noop
+    } as any);
+
+    const { result } = renderHook(() => usePlannedExpensesViewModel(), { wrapper });
+
+    act(() => result.current.actions.setTempMethodFilter('pix'));
+    act(() => result.current.actions.handleApplyFilters());
+
+    expect(result.current.state.pendingExpenses.map(item => item.id)).toEqual(['pix']);
+    expect(result.current.state.methodFilter).toBe('pix');
+    expect(result.current.state.totalExpense).toBe(900);
+
+    act(() => result.current.actions.handleResetFilters());
+
+    expect(result.current.state.pendingExpenses).toHaveLength(2);
+    expect(result.current.state.methodFilter).toBe('all');
+  });
 });

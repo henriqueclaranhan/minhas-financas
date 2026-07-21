@@ -3,3 +3,4 @@
 - [x] 3. Replace client-only slicing with Firestore-backed lazy loading.
 - [x] 4. Preserve exact summary totals independently from loaded pages.
 - [x] 5. Add regression coverage and complete verification.
+- [x] 6. Add a URL-persisted payment-method filter to the planning detail filters and aggregate summaries.
