@@ -73,3 +73,13 @@
     width: 100%;
   }
 }
+.settings-import-progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+  color: var(--clr-text-secondary);
+  font-size: var(--text-sm);
+}
+.settings-import-progress-copy { display: flex; justify-content: space-between; gap: var(--spacing-md); }
+.settings-import-progress progress { width: 100%; accent-color: var(--clr-primary); }

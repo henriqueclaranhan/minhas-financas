@@ -2,6 +2,7 @@ import { useState, useRef } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { useAuth } from '../../../store/AuthContext';
 import { useLocale } from '../../../store/LocaleContext';
+import type { ImportProgress } from '../../../services/DataSyncService';
 
 export function useSettingsViewModel() {
   const { exportData, importData, clearData } = useFinance();
@@ -9,6 +10,7 @@ export function useSettingsViewModel() {
   const { t } = useLocale();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importStatus, setImportStatus] = useState<string>('');
+  const [importProgress, setImportProgress] = useState<ImportProgress | null>(null);
 
   const handleImportClick = () => {
     fileInputRef.current?.click();
@@ -22,7 +24,7 @@ export function useSettingsViewModel() {
     reader.onload = async (event) => {
       const content = event.target?.result as string;
       try {
-        const imported = await importData(content);
+        const imported = await importData(content, setImportProgress);
         if (!imported) throw new Error('Import validation failed');
         setImportStatus(t('settings.importSuccess'));
         setTimeout(() => setImportStatus(''), 3000);
@@ -39,6 +41,7 @@ export function useSettingsViewModel() {
   return {
     state: {
       importStatus,
+      importProgress,
       fileInputRef
     },
     actions: {

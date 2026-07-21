@@ -29,6 +29,15 @@ export function SettingsPage() {
             {state.importStatus}
           </div>
         )}
+        {state.importProgress && state.importProgress.status !== 'completed' && (
+          <div className="settings-import-progress" aria-live="polite">
+            <div className="settings-import-progress-copy">
+              <span>{t('settings.importProgress')}</span>
+              <strong>{state.importProgress.processed} / {state.importProgress.total}</strong>
+            </div>
+            <progress value={state.importProgress.processed} max={Math.max(state.importProgress.total, 1)} />
+          </div>
+        )}
 
         <div className="glass-panel p-0 settings-panel">
           
