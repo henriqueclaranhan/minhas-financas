@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp, Tags } from 'lucide-react';
 import { useAuth } from '../../store/AuthContext';
@@ -7,10 +7,21 @@ import './Layout.css';
 
 export function Layout() {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const mainContentRef = useRef<HTMLElement>(null);
   const { user } = useAuth();
   const { t } = useLocale();
   const userName = user?.displayName || user?.email?.split('@')[0] || t('app.name');
   const location = useLocation();
+
+  useEffect(() => {
+    const isMobile = typeof window.matchMedia === 'function'
+      ? window.matchMedia('(max-width: 768px)').matches
+      : window.innerWidth <= 768;
+    if (!isMobile) return;
+
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    if (mainContentRef.current) mainContentRef.current.scrollTop = 0;
+  }, [location.pathname]);
   
   const navItems = [
     { to: '/', icon: <LayoutDashboard size={22} />, label: t('nav.dashboard'), isMain: true },
@@ -123,7 +134,7 @@ export function Layout() {
       </aside>
 
       {/* Main Content Area */}
-      <main className="main-content">
+      <main className="main-content" ref={mainContentRef}>
         <Outlet />
       </main>
 
