@@ -1,29 +1,33 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PlannedExpenseService } from '../../services/PlannedExpenseService';
-import { addDoc, updateDoc, deleteDoc, writeBatch, getDoc, onSnapshot } from 'firebase/firestore';
+import { addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { TransactionType, ExpenseStatus, PaymentMethod } from '../../enums/FinanceEnums';
+
+const { transactionMock } = vi.hoisted(() => ({
+  transactionMock: {
+    get: vi.fn(),
+    update: vi.fn(),
+    set: vi.fn(),
+  },
+}));
 
 vi.mock('../../config/firebase', () => ({
   db: {}
 }));
 
 vi.mock('firebase/firestore', () => {
-  const batchMock = {
-    update: vi.fn(),
-    set: vi.fn(),
-    delete: vi.fn(),
-    commit: vi.fn().mockResolvedValue(undefined)
-  };
   return {
     collection: vi.fn(),
     doc: vi.fn(),
     addDoc: vi.fn(),
     updateDoc: vi.fn(),
     deleteDoc: vi.fn(),
-    getDoc: vi.fn(),
-    writeBatch: vi.fn(() => batchMock),
+    query: vi.fn(ref => ref),
+    orderBy: vi.fn(),
+    limit: vi.fn(),
+    runTransaction: vi.fn(async (_db, callback) => callback(transactionMock)),
     onSnapshot: vi.fn((_ref, callback) => {
-      callback({ forEach: vi.fn() });
+      callback({ forEach: vi.fn(), size: 0 });
       return vi.fn();
     })
   };
@@ -32,6 +36,7 @@ vi.mock('firebase/firestore', () => {
 describe('PlannedExpenseService', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    transactionMock.get.mockResolvedValue({ exists: () => true, data: () => mockExpense });
   });
 
   const mockUid = 'user123';
@@ -68,17 +73,12 @@ describe('PlannedExpenseService', () => {
 
   it('subscribes to planned expenses', () => {
     const onUpdate = vi.fn();
-    const unsub = PlannedExpenseService.subscribeToPlannedExpenses('user1', onUpdate);
+    const unsub = PlannedExpenseService.subscribeToPlannedExpenses('user1', 250, onUpdate, vi.fn());
     expect(onSnapshot).toHaveBeenCalled();
     expect(typeof unsub).toBe('function');
   });
 
   it('should confirm a planned expense and create recurrence if applicable', async () => {
-    (getDoc as any).mockResolvedValueOnce({
-      exists: () => true,
-      data: () => mockExpense
-    });
-
     const mockTransactionData = {
       description: 'Rent',
       amount: 1000,
@@ -90,25 +90,17 @@ describe('PlannedExpenseService', () => {
 
     await PlannedExpenseService.confirmPlannedExpense(mockUid, 'pe123', mockTransactionData);
     
-    expect(getDoc).toHaveBeenCalled();
-    const batch = writeBatch({} as any);
-    expect((batch.update as ReturnType<typeof vi.fn>).mock.calls[0][1]).toEqual({ status: ExpenseStatus.CONFIRMED });
-    expect(batch.set).toHaveBeenCalledTimes(2); // One for new transaction, one for recurring plan
-    expect(batch.commit).toHaveBeenCalled();
+    expect(transactionMock.get).toHaveBeenCalled();
+    expect(transactionMock.update.mock.calls[0][1]).toEqual({ status: ExpenseStatus.CONFIRMED });
+    expect(transactionMock.set).toHaveBeenCalledTimes(2);
+    expect(transactionMock.set.mock.calls[0][1]).toMatchObject({ sourceKey: 'plannedExpense:pe123:confirmation' });
   });
 
   it('should reject a planned expense and create recurrence if applicable', async () => {
-    (getDoc as any).mockResolvedValueOnce({
-      exists: () => true,
-      data: () => mockExpense
-    });
-
     await PlannedExpenseService.rejectPlannedExpense(mockUid, 'pe123');
     
-    expect(getDoc).toHaveBeenCalled();
-    const batch = writeBatch({} as any);
-    expect((batch.update as ReturnType<typeof vi.fn>).mock.calls[0][1]).toEqual({ status: ExpenseStatus.CANCELLED });
-    expect(batch.set).toHaveBeenCalledTimes(1); // One for recurring plan
-    expect(batch.commit).toHaveBeenCalled();
+    expect(transactionMock.get).toHaveBeenCalled();
+    expect(transactionMock.update.mock.calls[0][1]).toEqual({ status: ExpenseStatus.CANCELLED });
+    expect(transactionMock.set).toHaveBeenCalledTimes(1);
   });
 });

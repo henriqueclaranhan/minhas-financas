@@ -1,17 +1,27 @@
-import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch, getDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, limit, onSnapshot, orderBy, query, runTransaction } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { PlannedExpense, Transaction } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
 import { ExpenseStatus } from '../enums/FinanceEnums';
 
 export class PlannedExpenseService {
-  static subscribeToPlannedExpenses(uid: string, onUpdate: (plans: PlannedExpense[]) => void): () => void {
+  static subscribeToPlannedExpenses(
+    uid: string,
+    pageSize: number,
+    onUpdate: (plans: PlannedExpense[], hasMore: boolean) => void,
+    onError: (error: Error) => void,
+  ): () => void {
     if (!uid) throw new Error("User ID is required");
-    const unsub = onSnapshot(collection(db, 'users', uid, 'plannedExpenses'), (snapshot: any) => {
+    const plannedExpenseQuery = query(
+      collection(db, 'users', uid, 'plannedExpenses'),
+      orderBy('dueDate', 'desc'),
+      limit(pageSize),
+    );
+    const unsub = onSnapshot(plannedExpenseQuery, (snapshot: any) => {
       const plans: PlannedExpense[] = [];
       snapshot.forEach((d: any) => plans.push({ ...d.data(), id: d.id } as PlannedExpense));
-      onUpdate(plans);
-    });
+      onUpdate(plans, snapshot.size === pageSize);
+    }, onError);
     return unsub;
   }
   static async addPlannedExpense(uid: string, pe: Omit<PlannedExpense, 'id'>): Promise<string> {
@@ -33,44 +43,64 @@ export class PlannedExpenseService {
   static async confirmPlannedExpense(uid: string, id: string, transactionData: Omit<Transaction, 'id'>): Promise<void> {
     if (!uid || !id) throw new Error("User ID and Expense ID are required");
     
-    const docRef = doc(db, 'users', uid, 'plannedExpenses', id);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) throw new Error("Planned expense not found");
-    
-    const expense = docSnap.data() as PlannedExpense;
-    const batch = writeBatch(db);
-    
-    batch.update(docRef, { status: ExpenseStatus.CONFIRMED });
-    
-    const newTxRef = doc(collection(db, 'users', uid, 'transactions'));
-    batch.set(newTxRef, { ...transactionData, plannedExpenseId: id });
+    const expenseRef = doc(db, 'users', uid, 'plannedExpenses', id);
+    const sourceKey = `plannedExpense:${id}:confirmation`;
+    const transactionRef = doc(db, 'users', uid, 'transactions', `planned-expense-${id}-confirmation`);
+    const nextPlanRef = doc(db, 'users', uid, 'plannedExpenses', `planned-expense-${id}-next`);
 
-    if (expense.isRecurring) {
-      const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
-      const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
-      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: ExpenseStatus.PENDING });
-    }
+    await runTransaction(db, async firestoreTransaction => {
+      const expenseSnapshot = await firestoreTransaction.get(expenseRef);
+      if (!expenseSnapshot.exists()) throw new Error("Planned expense not found");
 
-    await batch.commit();
+      const expense = expenseSnapshot.data() as PlannedExpense;
+      if (expense.status !== ExpenseStatus.PENDING) {
+        throw new Error("Planned expense already processed");
+      }
+
+      firestoreTransaction.update(expenseRef, { status: ExpenseStatus.CONFIRMED });
+      firestoreTransaction.set(transactionRef, { ...transactionData, plannedExpenseId: id, sourceKey });
+
+      if (expense.isRecurring) {
+        const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
+        const { id: _ignoredId, ...nextExpense } = expense;
+        void _ignoredId;
+        firestoreTransaction.set(nextPlanRef, {
+          ...nextExpense,
+          dueDate: format(nextDate, 'yyyy-MM-dd'),
+          status: ExpenseStatus.PENDING,
+          sourcePlannedExpenseId: id,
+        });
+      }
+    });
   }
 
   static async rejectPlannedExpense(uid: string, id: string): Promise<void> {
     if (!uid || !id) throw new Error("User ID and Expense ID are required");
     
-    const docRef = doc(db, 'users', uid, 'plannedExpenses', id);
-    const docSnap = await getDoc(docRef);
-    if (!docSnap.exists()) throw new Error("Planned expense not found");
-    
-    const expense = docSnap.data() as PlannedExpense;
-    const batch = writeBatch(db);
-    batch.update(docRef, { status: ExpenseStatus.CANCELLED });
+    const expenseRef = doc(db, 'users', uid, 'plannedExpenses', id);
+    const nextPlanRef = doc(db, 'users', uid, 'plannedExpenses', `planned-expense-${id}-next`);
 
-    if (expense.isRecurring) {
-      const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
-      const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
-      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: ExpenseStatus.PENDING });
-    }
+    await runTransaction(db, async firestoreTransaction => {
+      const expenseSnapshot = await firestoreTransaction.get(expenseRef);
+      if (!expenseSnapshot.exists()) throw new Error("Planned expense not found");
 
-    await batch.commit();
+      const expense = expenseSnapshot.data() as PlannedExpense;
+      if (expense.status !== ExpenseStatus.PENDING) {
+        throw new Error("Planned expense already processed");
+      }
+
+      firestoreTransaction.update(expenseRef, { status: ExpenseStatus.CANCELLED });
+      if (expense.isRecurring) {
+        const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
+        const { id: _ignoredId, ...nextExpense } = expense;
+        void _ignoredId;
+        firestoreTransaction.set(nextPlanRef, {
+          ...nextExpense,
+          dueDate: format(nextDate, 'yyyy-MM-dd'),
+          status: ExpenseStatus.PENDING,
+          sourcePlannedExpenseId: id,
+        });
+      }
+    });
   }
 }

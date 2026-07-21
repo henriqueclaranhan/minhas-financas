@@ -9,7 +9,9 @@ export interface Transaction {
   date: string; // ISO format: YYYY-MM-DD
   type?: TransactionType;
   plannedExpenseId?: string;
+  sourceKey?: string;
   category?: string;
+  sourcePlannedExpenseId?: string;
 }
 
 export interface PlannedExpense {
