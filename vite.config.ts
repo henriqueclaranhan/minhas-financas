@@ -18,6 +18,8 @@ export default defineConfig({
         lang: 'pt-BR',
         theme_color: '#34c759',
         background_color: '#ffffff',
+        start_url: '/',
+        scope: '/',
         display: 'standalone',
         orientation: 'portrait',
         icons: [
@@ -42,6 +44,36 @@ export default defineConfig({
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
+          }
+        ],
+        shortcuts: [
+          {
+            name: 'Início',
+            short_name: 'Início',
+            description: 'Abrir o resumo das suas finanças',
+            url: '/',
+            icons: [{ src: 'shortcut-home-192x192.png', sizes: '192x192', type: 'image/png' }]
+          },
+          {
+            name: 'Transações',
+            short_name: 'Transações',
+            description: 'Abrir o histórico de transações',
+            url: '/transactions',
+            icons: [{ src: 'shortcut-transactions-192x192.png', sizes: '192x192', type: 'image/png' }]
+          },
+          {
+            name: 'Planejamento',
+            short_name: 'Planejamento',
+            description: 'Abrir receitas e despesas planejadas',
+            url: '/planned',
+            icons: [{ src: 'shortcut-planning-192x192.png', sizes: '192x192', type: 'image/png' }]
+          },
+          {
+            name: 'Faturas',
+            short_name: 'Faturas',
+            description: 'Abrir faturas e compras no crédito',
+            url: '/credit',
+            icons: [{ src: 'shortcut-invoices-192x192.png', sizes: '192x192', type: 'image/png' }]
           }
         ]
       },
