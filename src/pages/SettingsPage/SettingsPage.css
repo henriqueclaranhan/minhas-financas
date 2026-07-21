@@ -12,10 +12,6 @@
 .settings-panel {
   overflow: hidden;
 }
-.settings-item-header {
-  border-bottom: 1px solid var(--clr-border);
-  padding: var(--spacing-md) var(--spacing-sm);
-}
 .settings-item {
   border-bottom: 1px solid var(--clr-border);
   cursor: pointer;
@@ -36,7 +32,7 @@
   max-width: 148px;
 }
 @media (min-width: 769px) {
-  .settings-item-header, .settings-item {
+  .settings-item {
     padding: var(--spacing-md) var(--spacing-lg);
   }
 }
@@ -73,13 +69,3 @@
     width: 100%;
   }
 }
-.settings-import-progress {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
-  margin-bottom: var(--spacing-lg);
-  color: var(--clr-text-secondary);
-  font-size: var(--text-sm);
-}
-.settings-import-progress-copy { display: flex; justify-content: space-between; gap: var(--spacing-md); }
-.settings-import-progress progress { width: 100%; accent-color: var(--clr-primary); }

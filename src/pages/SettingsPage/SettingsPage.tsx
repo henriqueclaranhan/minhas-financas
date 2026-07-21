@@ -1,6 +1,6 @@
 
 
-import { Download, Upload, Trash2, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote, Shield } from 'lucide-react';
+import { Database, Moon, LogOut, User as UserIcon, ChevronRight, Languages, Banknote, Shield } from 'lucide-react';
 import { useSettingsViewModel } from './hooks/useSettingsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
@@ -12,7 +12,7 @@ import { useTheme } from '../../store/ThemeContext';
 
 export function SettingsPage() {
 
-  const { state, actions } = useSettingsViewModel();
+  const { actions } = useSettingsViewModel();
   const navigate = useNavigate();
   const { currency, locale, setCurrency, setLocale, t } = useLocale();
   const { theme, setTheme } = useTheme();
@@ -24,21 +24,6 @@ export function SettingsPage() {
         showBackButton={true}
       />
         
-        {state.importStatus && (
-          <div className={`p-md mb-lg settings-status ${state.importStatus === t('settings.importError') ? 'error' : 'success'}`}>
-            {state.importStatus}
-          </div>
-        )}
-        {state.importProgress && state.importProgress.status !== 'completed' && (
-          <div className="settings-import-progress" aria-live="polite">
-            <div className="settings-import-progress-copy">
-              <span>{t('settings.importProgress')}</span>
-              <strong>{state.importProgress.processed} / {state.importProgress.total}</strong>
-            </div>
-            <progress value={state.importProgress.processed} max={Math.max(state.importProgress.total, 1)} />
-          </div>
-        )}
-
         <div className="glass-panel p-0 settings-panel">
           
           <div className="settings-item settings-preferences-item">
@@ -124,55 +109,21 @@ export function SettingsPage() {
             </div>
           </div>
 
-          <div 
+          <div
             className="settings-item"
-            onClick={actions.exportData}
+            onClick={() => navigate('/settings/data')}
           >
-            <div className="flex items-center gap-md">
-              <div className="settings-icon-wrapper primary">
-                <Download size={20} color="var(--clr-primary)" />
+            <div className="flex items-center justify-between" style={{ width: '100%' }}>
+              <div className="flex items-center gap-md">
+                <div className="settings-icon-wrapper primary">
+                  <Database size={20} color="var(--clr-primary)" />
+                </div>
+                <div>
+                  <div className="font-medium settings-item-title">{t('settings.data')}</div>
+                  <div className="settings-item-desc text-secondary">{t('settings.dataDescription')}</div>
+                </div>
               </div>
-              <div>
-                <div className="font-medium settings-item-title text-primary">{t('settings.export')}</div>
-                <div className="settings-item-desc text-secondary">{t('settings.exportDescription')}</div>
-              </div>
-            </div>
-          </div>
-
-          <div 
-            className="settings-item"
-            onClick={actions.handleImportClick}
-          >
-            <div className="flex items-center gap-md">
-              <div className="settings-icon-wrapper success">
-                <Upload size={20} color="#fff" />
-              </div>
-              <div>
-                <div className="font-medium settings-item-title">{t('settings.import')}</div>
-                <div className="settings-item-desc text-secondary">{t('settings.importDescription')}</div>
-              </div>
-            </div>
-          </div>
-          <input 
-            type="file" 
-            accept=".json"
-            ref={state.fileInputRef}
-            style={{ display: 'none' }}
-            onChange={actions.handleFileChange}
-          />
-
-          <div 
-            className="settings-item"
-            onClick={actions.clearData}
-          >
-            <div className="flex items-center gap-md">
-              <div className="settings-icon-wrapper danger">
-                <Trash2 size={20} color="#fff" />
-              </div>
-              <div>
-                <div className="font-medium settings-item-title text-danger">{t('settings.clear')}</div>
-                <div className="settings-item-desc text-secondary">{t('settings.clearDescription')}</div>
-              </div>
+              <ChevronRight size={20} color="var(--clr-text-secondary)" />
             </div>
           </div>
 

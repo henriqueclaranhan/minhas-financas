@@ -61,7 +61,8 @@ describe('SettingsPage UI', () => {
       'settings.title': 'Ajustes', 'settings.appearance': 'Aparência', 'settings.language': 'Idioma e região',
       'settings.languageDescription': 'Define o idioma da interface e da formatação', 'settings.currency': 'Moeda',
       'settings.currencyDescription': 'Todos os valores passam a usar esta moeda', 'settings.profile': 'Meu perfil',
-      'settings.profileDescription': 'Atualizar nome, e-mail e senha', 'settings.export': 'Exportar dados',
+      'settings.profileDescription': 'Atualizar nome, e-mail e senha', 'settings.data': 'Dados',
+      'settings.dataDescription': 'Backup, restauração e exclusão de dados', 'settings.export': 'Exportar dados',
       'settings.exportDescription': 'Salvar backup no dispositivo', 'settings.import': 'Importar dados',
       'settings.importDescription': 'Restaurar de um backup', 'settings.clear': 'Apagar todos os dados',
       'settings.clearDescription': 'Limpar histórico e saldo', 'settings.logout': 'Sair da conta',
@@ -70,6 +71,7 @@ describe('SettingsPage UI', () => {
   };
 
   beforeEach(() => {
+    window.history.replaceState({}, '', '/');
     vi.mocked(useSettingsViewModel).mockReturnValue({
       state: mockState,
       actions: mockActions
@@ -85,9 +87,9 @@ describe('SettingsPage UI', () => {
     renderWithRouter(<SettingsPage />);
     
     expect(screen.getByText('Ajustes')).toBeInTheDocument();
-    expect(screen.getByText('Exportar dados')).toBeInTheDocument();
-    expect(screen.getByText('Importar dados')).toBeInTheDocument();
-    expect(screen.getByText('Apagar todos os dados')).toBeInTheDocument();
+    expect(screen.getByText('Dados')).toBeInTheDocument();
+    expect(screen.getByText('Backup, restauração e exclusão de dados')).toBeInTheDocument();
+    expect(screen.queryByText('Exportar dados')).not.toBeInTheDocument();
     expect(screen.getByText('Sair da conta')).toBeInTheDocument();
     expect(screen.getByLabelText('Idioma e região')).toHaveValue('pt-BR');
     expect(screen.getByLabelText('Moeda')).toHaveValue('BRL');
@@ -103,18 +105,10 @@ describe('SettingsPage UI', () => {
     expect(mockLocale.setCurrency).toHaveBeenCalledWith('USD');
   });
 
-  it('calls exportData when clicking Exportar Dados', () => {
+  it('opens the nested data settings screen', () => {
     renderWithRouter(<SettingsPage />);
-    const exportBtn = screen.getByText('Exportar dados');
-    fireEvent.click(exportBtn);
-    expect(mockActions.exportData).toHaveBeenCalled();
-  });
-
-  it('calls clearData when clicking Apagar Todos os Dados', () => {
-    renderWithRouter(<SettingsPage />);
-    const clearBtn = screen.getByText('Apagar todos os dados');
-    fireEvent.click(clearBtn);
-    expect(mockActions.clearData).toHaveBeenCalled();
+    fireEvent.click(screen.getByText('Dados'));
+    expect(window.location.pathname).toBe('/settings/data');
   });
 
   it('calls logout when clicking Sair da Conta', () => {

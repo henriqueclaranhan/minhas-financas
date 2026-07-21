@@ -8,6 +8,7 @@ import { DashboardPage } from './pages/DashboardPage';
 import { PlannedExpensesPage } from './pages/PlannedExpensesPage';
 import { CreditCardPage } from './pages/CreditCardPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { DataSettingsPage } from './pages/DataSettingsPage/DataSettingsPage';
 import { AuthPage } from './pages/AuthPage';
 import { ForecastPage } from './pages/ForecastPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage/ProfileSettingsPage';
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
       { path: "/categories", element: <CategoryExpensesPage /> },
       { path: "/expenses/breakdown", element: <ExpenseBreakdownPage /> },
       { path: "/settings", element: <SettingsPage /> },
+      { path: "/settings/data", element: <DataSettingsPage /> },
       { path: "/settings/profile", element: <ProfileSettingsPage /> },
       { path: "/privacidade", element: <PrivacyPolicyPage /> },
       { path: "*", element: <NotFoundPage /> },
