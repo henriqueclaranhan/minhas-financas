@@ -1,17 +1,14 @@
 import { useState, useMemo } from 'react';
 import { parseISO } from 'date-fns';
 import { FilterType, TransactionType, ExpenseStatus } from '../../../enums/FinanceEnums';
-import type { PlannedExpense } from '../../../types';
+import type { PlannedExpense, Transaction } from '../../../types';
 import { expandPlannedExpenses } from '../../../utils/financeUtils';
 import type { ExpandedPlannedExpense } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
-import { PlannedExpenseService } from '../../../services/PlannedExpenseService';
-import { useAuth } from '../../../store/AuthContext';
 import { useLocale } from '../../../store/LocaleContext';
 
 export function usePlannedExpensesViewModel() {
   const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense } = useFinance();
-  const { user } = useAuth();
   const { locale, t } = useLocale();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -57,19 +54,11 @@ export function usePlannedExpensesViewModel() {
   const totalIncome = useMemo(() => pendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0), [pendingExpenses]);
   const totalExpense = useMemo(() => pendingExpenses.filter(p => p.type === TransactionType.EXPENSE || !p.type).reduce((acc, p) => acc + p.amount, 0), [pendingExpenses]);
 
-  const handleAddOrUpdate = async (data: any) => {
-    if (user?.uid) {
-      if (editingExpense && editingExpense.id) {
-        await PlannedExpenseService.updatePlannedExpense(user.uid, editingExpense.id, data);
-      } else {
-        await PlannedExpenseService.addPlannedExpense(user.uid, data);
-      }
+  const handleAddOrUpdate = async (data: Omit<PlannedExpense, 'id'>) => {
+    if (editingExpense?.id) {
+      await updatePlannedExpense(editingExpense.id, data);
     } else {
-      if (editingExpense) {
-        updatePlannedExpense(editingExpense.id!, data);
-      } else {
-        addPlannedExpense(data);
-      }
+      await addPlannedExpense(data);
     }
     
     setIsModalOpen(false);
@@ -119,33 +108,21 @@ export function usePlannedExpensesViewModel() {
 
   const confirmDelete = async () => {
     if (expenseToDelete) {
-      if (user?.uid) {
-        await PlannedExpenseService.deletePlannedExpense(user.uid, expenseToDelete);
-      } else {
-        deletePlannedExpense(expenseToDelete);
-      }
+      await deletePlannedExpense(expenseToDelete);
       setExpenseToDelete(null);
     }
   };
 
-  const confirmAction = async (data: any) => {
+  const confirmAction = async (data: Omit<Transaction, 'id'>) => {
     if (expenseToConfirm && expenseToConfirm.id) {
-      if (user?.uid) {
-        await PlannedExpenseService.confirmPlannedExpense(user.uid, expenseToConfirm.id, data);
-      } else {
-        confirmPlannedExpense(expenseToConfirm.id, data);
-      }
+      await confirmPlannedExpense(expenseToConfirm.id, data);
       setExpenseToConfirm(null);
     }
   };
 
   const rejectAction = async (id: string) => {
     const originalId = pendingExpenses.find(px => px.id === id)?.originalId || id;
-    if (user?.uid) {
-      await PlannedExpenseService.rejectPlannedExpense(user.uid, originalId);
-    } else {
-      rejectPlannedExpense(originalId);
-    }
+    await rejectPlannedExpense(originalId);
   };
 
   const handleConfirmPrompt = (id: string) => {

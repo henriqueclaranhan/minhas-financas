@@ -6,9 +6,9 @@
 - [x] 2. Remove verified dead files, assets, exports, functions, and test-only helpers.
   - [x] Remove orphan Firebase service, dashboard barrel, and starter assets.
   - [x] Remove unused transaction fetch and date-paste helpers with obsolete tests.
-- [ ] 3. Route page mutations exclusively through `FinanceContext`.
-  - [ ] Remove direct service and unauthenticated fallback branches from ViewModels.
-  - [ ] Replace mutation payload `any` types with domain types.
+- [x] 3. Route page mutations exclusively through `FinanceContext`.
+  - [x] Remove direct service and unauthenticated fallback branches from ViewModels.
+  - [x] Replace mutation payload `any` types with domain types.
 - [ ] 4. Extract repeated UI and interaction behavior.
   - [ ] Share finance-entry modal and form fields.
   - [ ] Share month/year filter fields.

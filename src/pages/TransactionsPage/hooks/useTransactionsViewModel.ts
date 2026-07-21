@@ -6,13 +6,10 @@ import type { Transaction } from '../../../types';
 import { expandTransactions } from '../../../utils/financeUtils';
 import type { ExpandedTransaction } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
-import { TransactionService } from '../../../services/TransactionService';
-import { useAuth } from '../../../store/AuthContext';
 import { useLocale } from '../../../store/LocaleContext';
 
 export function useTransactionsViewModel() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
-  const { user } = useAuth();
   const { locale, t } = useLocale();
   
   const location = useLocation();
@@ -63,23 +60,11 @@ export function useTransactionsViewModel() {
   const totalIncome = useMemo(() => filtered.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0), [filtered]);
   const totalExpense = useMemo(() => filtered.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0), [filtered]);
 
-  const handleAddOrUpdate = async (t: any) => {
-    if (user?.uid) {
-      if (editingTransaction && editingTransaction.id) {
-        await TransactionService.updateTransaction(user.uid, editingTransaction.id, t);
-        // We still call Context to trigger any needed global side effects if we haven't decoupled fully, 
-        // or just let context's real-time listener pick it up!
-        // Actually, since Context has a real-time listener, TransactionService mutation is enough!
-      } else {
-        await TransactionService.addTransaction(user.uid, t);
-      }
+  const handleAddOrUpdate = async (transaction: Omit<Transaction, 'id'>) => {
+    if (editingTransaction?.id) {
+      await updateTransaction(editingTransaction.id, transaction);
     } else {
-      // Fallback to context for now if not using real-time
-      if (editingTransaction) {
-        updateTransaction(editingTransaction.id!, t);
-      } else {
-        addTransaction(t);
-      }
+      await addTransaction(transaction);
     }
     
     setIsModalOpen(false);
@@ -99,11 +84,7 @@ export function useTransactionsViewModel() {
 
   const confirmDelete = async () => {
     if (transactionToDelete) {
-      if (user?.uid) {
-        await TransactionService.deleteTransaction(user.uid, transactionToDelete);
-      } else {
-        deleteTransaction(transactionToDelete);
-      }
+      await deleteTransaction(transactionToDelete);
       setTransactionToDelete(null);
     }
   };

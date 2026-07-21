@@ -2,6 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
 import { useLocale } from '../../../store/LocaleContext';
+import type { PlannedExpense, Transaction } from '../../../types';
 
 export function useCreditCardViewModel() {
   const { transactions, addTransaction, addPlannedExpense } = useFinance();
@@ -17,7 +18,7 @@ export function useCreditCardViewModel() {
   const selectedMonthData = nextMonths[selectedMonthIndex];
   const isCurrentInvoice = selectedMonthIndex === 4; 
 
-  const handleTransactionAdd = useCallback(async (data: any) => {
+  const handleTransactionAdd = useCallback(async (data: Omit<Transaction, 'id'>) => {
     try {
       await addTransaction(data);
       setIsModalOpen(false);
@@ -27,7 +28,7 @@ export function useCreditCardViewModel() {
     }
   }, [addTransaction]);
 
-  const handlePlanningAdd = useCallback(async (data: any) => {
+  const handlePlanningAdd = useCallback(async (data: Omit<PlannedExpense, 'id'>) => {
     try {
       await addPlannedExpense(data);
       setIsModalOpen(false);

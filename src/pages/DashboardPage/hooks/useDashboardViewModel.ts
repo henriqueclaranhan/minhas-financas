@@ -6,6 +6,7 @@ import { useLocale } from '../../../store/LocaleContext';
 import { addMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
 import { calculateExpensesByCategory } from '../../../utils/categoryExpenseUtils';
+import type { PlannedExpense, Transaction } from '../../../types';
 
 export function useDashboardViewModel() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
@@ -34,13 +35,13 @@ export function useDashboardViewModel() {
     return bills[4]?.data.total || 0; // Index 4 is the next month (which acts as the current open invoice for the user)
   }, [transactions, locale]);
 
-  const handleTransactionAdd = (data: any) => {
+  const handleTransactionAdd = (data: Omit<Transaction, 'id'>) => {
     addTransaction(data);
     setIsModalOpen(false);
     setActionType('none');
   };
 
-  const handlePlanningAdd = (data: any) => {
+  const handlePlanningAdd = (data: Omit<PlannedExpense, 'id'>) => {
     addPlannedExpense(data);
     setIsModalOpen(false);
     setActionType('none');

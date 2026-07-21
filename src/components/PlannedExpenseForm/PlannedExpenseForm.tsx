@@ -11,7 +11,7 @@ import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons
 import '../../styles/FormStyles.css';
 
 interface PlannedExpenseFormProps {
-  onSubmit: (data: any) => void;
+  onSubmit: (data: Omit<PlannedExpense, 'id'>) => void;
   initialData?: Partial<PlannedExpense>;
   defaultType?: TransactionType;
 }
