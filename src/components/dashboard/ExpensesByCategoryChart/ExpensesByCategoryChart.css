@@ -26,6 +26,14 @@
   margin-bottom: 0;
 }
 
+.pie-chart-header {
+  gap: var(--spacing-md);
+}
+
+.pie-chart-header .chart-header-title {
+  min-width: 0;
+}
+
 .pie-chart-header-meta {
   display: flex;
   align-items: center;

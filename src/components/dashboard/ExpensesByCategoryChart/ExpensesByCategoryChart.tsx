@@ -49,7 +49,7 @@ export function ExpensesByCategoryChart({
   if (data.length === 0) {
     return (
       <div className={panelClassName} style={{ height: '100%' }}>
-        <div className="flex justify-between items-center mb-lg">
+        <div className="pie-chart-header flex justify-between items-center mb-lg">
           <h3 className="chart-header-title m-0">{t('dashboard.expensesByCategory')}</h3>
           {headerAction && <div className="pie-chart-header-meta">{headerAction}</div>}
         </div>
@@ -62,7 +62,7 @@ export function ExpensesByCategoryChart({
 
   return (
     <div className={panelClassName} style={{ height: '100%' }}>
-      <div className="flex justify-between items-center mb-lg">
+      <div className="pie-chart-header flex justify-between items-center mb-lg">
         <h3 className="chart-header-title m-0">{t('dashboard.expensesByCategory')}</h3>
         {(showTotal || headerAction) && (
           <div className="pie-chart-header-meta">
