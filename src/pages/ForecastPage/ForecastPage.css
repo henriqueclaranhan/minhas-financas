@@ -4,7 +4,6 @@
 .forecast-content {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
 }
 
 .forecast-checkbox-label {
