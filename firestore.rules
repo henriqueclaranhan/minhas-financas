@@ -1,8 +1,80 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    function validDate(value) {
+      return value is string && value.matches('^\\d{4}-\\d{2}-\\d{2}$');
+    }
+
+    function validOptionalString(data, field, maxLength) {
+      return !(field in data) || (data[field] is string && data[field].size() > 0 && data[field].size() <= maxLength);
+    }
+
+    function validTransaction(data) {
+      return data.keys().hasAll(['description', 'amount', 'paymentMethod', 'installments', 'date'])
+        && data.keys().hasOnly([
+          'description', 'amount', 'paymentMethod', 'installments', 'date', 'type',
+          'plannedExpenseId', 'category', 'sourceKey'
+        ])
+        && data.description is string && data.description.size() > 0 && data.description.size() <= 200
+        && data.amount is number && data.amount > 0
+        && data.paymentMethod in ['credit', 'debit', 'pix', 'cash', 'transfer', 'boleto']
+        && data.installments is int && data.installments >= 1 && data.installments <= 360
+        && validDate(data.date)
+        && (!('type' in data) || data.type in ['income', 'expense'])
+        && validOptionalString(data, 'plannedExpenseId', 128)
+        && validOptionalString(data, 'category', 100)
+        && validOptionalString(data, 'sourceKey', 300);
+    }
+
+    function validPlannedExpense(data) {
+      return data.keys().hasAll([
+          'description', 'amount', 'dueDate', 'isRecurring', 'recurrenceInterval', 'status'
+        ])
+        && data.keys().hasOnly([
+          'description', 'amount', 'dueDate', 'isRecurring', 'recurrenceInterval', 'status',
+          'userId', 'type', 'paymentMethod', 'installments', 'category', 'sourcePlannedExpenseId'
+        ])
+        && data.description is string && data.description.size() > 0 && data.description.size() <= 200
+        && data.amount is number && data.amount > 0
+        && validDate(data.dueDate)
+        && data.isRecurring is bool
+        && data.recurrenceInterval is int && data.recurrenceInterval >= 1 && data.recurrenceInterval <= 120
+        && data.status in ['pending', 'confirmed', 'cancelled']
+        && (!('type' in data) || data.type in ['income', 'expense'])
+        && (!('paymentMethod' in data) || data.paymentMethod in ['credit', 'debit', 'pix', 'cash', 'transfer', 'boleto'])
+        && (!('installments' in data) || (data.installments is int && data.installments >= 1 && data.installments <= 360))
+        && validOptionalString(data, 'userId', 128)
+        && validOptionalString(data, 'category', 100)
+        && validOptionalString(data, 'sourcePlannedExpenseId', 128);
+    }
+
+    match /users/{userId} {
+      allow read: if isOwner(userId);
+      allow create, update: if isOwner(userId)
+        && request.resource.data.keys().hasOnly(['initialBalance'])
+        && (!('initialBalance' in request.resource.data)
+          || request.resource.data.initialBalance == null
+          || request.resource.data.initialBalance is number);
+      allow delete: if false;
+
+      match /transactions/{transactionId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId) && validTransaction(request.resource.data);
+        allow delete: if isOwner(userId);
+      }
+
+      match /plannedExpenses/{expenseId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && validPlannedExpense(request.resource.data);
+        allow update: if isOwner(userId)
+          && validPlannedExpense(request.resource.data)
+          && (resource.data.status == 'pending' || request.resource.data.status == resource.data.status);
+        allow delete: if isOwner(userId);
+      }
     }
   }
 }
