@@ -1,12 +1,34 @@
-import { collection, doc, getDoc, getDocs, limit, query, writeBatch } from 'firebase/firestore';
+import { collection, doc, documentId, getDoc, getDocs, limit, orderBy, query, startAfter, writeBatch } from 'firebase/firestore';
 import { db } from '../config/firebase';
-import type { Transaction, PlannedExpense } from '../types';
+import type { QueryConstraint } from 'firebase/firestore';
 import { validateImportData } from './dataImportValidation';
+import { removeUndefinedFields } from './firestoreData';
 
 const BATCH_SIZE = 400;
 
 export class DataSyncService {
-  static exportData(initialBalance: number | null, transactions: Transaction[], plannedExpenses: PlannedExpense[]) {
+  private static async readCollection(uid: string, collectionName: string): Promise<Array<Record<string, unknown>>> {
+    const documents: Array<Record<string, unknown>> = [];
+    let cursor: unknown;
+
+    while (true) {
+      const constraints: QueryConstraint[] = [orderBy(documentId()), limit(BATCH_SIZE)];
+      if (cursor) constraints.push(startAfter(cursor));
+      const snapshot = await getDocs(query(collection(db, 'users', uid, collectionName), ...constraints));
+      snapshot.docs.forEach(document => documents.push({ ...document.data(), id: document.id }));
+      if (snapshot.docs.length < BATCH_SIZE) break;
+      cursor = snapshot.docs[snapshot.docs.length - 1];
+    }
+
+    return documents;
+  }
+
+  static async exportData(uid: string, initialBalance: number | null): Promise<void> {
+    if (!uid) return;
+    const [transactions, plannedExpenses] = await Promise.all([
+      this.readCollection(uid, 'transactions'),
+      this.readCollection(uid, 'plannedExpenses'),
+    ]);
     const data = { initialBalance, transactions, plannedExpenses };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -37,12 +59,12 @@ export class DataSyncService {
       for (const transaction of data.transactions) {
         const { id, ...storedTransaction } = transaction;
         const ref = id ? doc(db, 'users', uid, 'transactions', id) : doc(collection(db, 'users', uid, 'transactions'));
-        operations.push(batch => batch.set(ref, storedTransaction));
+        operations.push(batch => batch.set(ref, removeUndefinedFields(storedTransaction)));
       }
       for (const plannedExpense of data.plannedExpenses) {
         const { id, ...storedExpense } = plannedExpense;
         const ref = id ? doc(db, 'users', uid, 'plannedExpenses', id) : doc(collection(db, 'users', uid, 'plannedExpenses'));
-        operations.push(batch => batch.set(ref, storedExpense));
+        operations.push(batch => batch.set(ref, removeUndefinedFields(storedExpense)));
       }
 
       for (let start = 0; start < operations.length; start += BATCH_SIZE) {

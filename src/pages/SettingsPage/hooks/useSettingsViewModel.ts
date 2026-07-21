@@ -22,7 +22,8 @@ export function useSettingsViewModel() {
     reader.onload = async (event) => {
       const content = event.target?.result as string;
       try {
-        await importData(content);
+        const imported = await importData(content);
+        if (!imported) throw new Error('Import validation failed');
         setImportStatus(t('settings.importSuccess'));
         setTimeout(() => setImportStatus(''), 3000);
       } catch (err) {

@@ -21,24 +21,18 @@ interface FinanceContextData {
   confirmPlannedExpense: (id: string, transactionData: Omit<Transaction, 'id'>) => Promise<void>;
   rejectPlannedExpense: (id: string) => Promise<void>;
   deletePlannedExpense: (id: string) => Promise<void>;
-  exportData: () => void;
+  exportData: () => Promise<void>;
   importData: (jsonData: string) => Promise<boolean>;
   clearData: () => Promise<void>;
   isLoading: boolean;
   error: FinanceError | null;
   retry: () => void;
-  hasMoreTransactions: boolean;
-  hasMorePlannedExpenses: boolean;
-  loadMoreTransactions: () => void;
-  loadMorePlannedExpenses: () => void;
 }
 
 export interface FinanceError {
   source: 'user' | 'transactions' | 'plannedExpenses';
   message: string;
 }
-
-const PAGE_SIZE = 250;
 
 const FinanceContext = createContext<FinanceContextData>({} as FinanceContextData);
 
@@ -56,10 +50,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [error, setError] = useState<FinanceError | null>(null);
   const [retryGeneration, setRetryGeneration] = useState(0);
-  const [transactionLimit, setTransactionLimit] = useState(PAGE_SIZE);
-  const [plannedExpenseLimit, setPlannedExpenseLimit] = useState(PAGE_SIZE);
-  const [hasMoreTransactions, setHasMoreTransactions] = useState(false);
-  const [hasMorePlannedExpenses, setHasMorePlannedExpenses] = useState(false);
 
   const runMutation = useCallback(async <T,>(
     operation: () => Promise<T>,
@@ -79,52 +69,71 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (!uid) {
       setInitialBalanceState(null);
-      setTransactions([]);
-      setPlannedExpenses([]);
       setLoadingUser(false);
-      setLoadingTransactions(false);
-      setLoadingPlans(false);
-      setError(null);
+      setError(current => current?.source === 'user' ? null : current);
       return;
     }
 
     setLoadingUser(true);
-    setLoadingTransactions(true);
-    setLoadingPlans(true);
-    setError(null);
+    setError(current => current?.source === 'user' ? null : current);
 
     const unsubUser = UserService.subscribeToInitialBalance(uid, (val) => {
       setInitialBalanceState(val);
       setLoadingUser(false);
+      setError(current => current?.source === 'user' ? null : current);
     }, listenerError => {
       setError({ source: 'user', message: listenerError.message });
       setLoadingUser(false);
     });
 
-    const unsubTx = TransactionService.subscribeToTransactions(uid, transactionLimit, (txs, hasMore) => {
-      setTransactions(txs);
-      setHasMoreTransactions(hasMore);
+    return unsubUser;
+  }, [retryGeneration, uid]);
+
+  useEffect(() => {
+    if (!uid) {
+      setTransactions([]);
       setLoadingTransactions(false);
+      setError(current => current?.source === 'transactions' ? null : current);
+      return;
+    }
+
+    setLoadingTransactions(true);
+    setError(current => current?.source === 'transactions' ? null : current);
+
+    const unsubTx = TransactionService.subscribeToTransactions(uid, (txs) => {
+      setTransactions(txs);
+      setLoadingTransactions(false);
+      setError(current => current?.source === 'transactions' ? null : current);
     }, listenerError => {
       setError({ source: 'transactions', message: listenerError.message });
       setLoadingTransactions(false);
     });
 
-    const unsubPlan = PlannedExpenseService.subscribeToPlannedExpenses(uid, plannedExpenseLimit, (plans, hasMore) => {
-      setPlannedExpenses(plans);
-      setHasMorePlannedExpenses(hasMore);
+    return unsubTx;
+  }, [retryGeneration, uid]);
+
+  useEffect(() => {
+    if (!uid) {
+      setPlannedExpenses([]);
       setLoadingPlans(false);
+      setError(current => current?.source === 'plannedExpenses' ? null : current);
+      return;
+    }
+
+    setLoadingPlans(true);
+    setError(current => current?.source === 'plannedExpenses' ? null : current);
+
+    const unsubPlan = PlannedExpenseService.subscribeToPlannedExpenses(uid, (plans) => {
+      setPlannedExpenses(plans);
+      setLoadingPlans(false);
+      setError(current => current?.source === 'plannedExpenses' ? null : current);
     }, listenerError => {
       setError({ source: 'plannedExpenses', message: listenerError.message });
       setLoadingPlans(false);
     });
 
-    return () => {
-      unsubUser();
-      unsubTx();
-      unsubPlan();
-    };
-  }, [plannedExpenseLimit, retryGeneration, transactionLimit, uid]);
+    return unsubPlan;
+  }, [retryGeneration, uid]);
 
   const setInitialBalance = useCallback(async (val: number) => {
     if (!uid) return;
@@ -204,8 +213,8 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   }, [runMutation, uid]);
 
   const exportData = useCallback(() => {
-    DataSyncService.exportData(initialBalance, transactions, plannedExpenses);
-  }, [initialBalance, plannedExpenses, transactions]);
+    return DataSyncService.exportData(uid, initialBalance);
+  }, [initialBalance, uid]);
 
   const importData = useCallback(async (jsonData: string) => {
     if (!uid) return false;
@@ -218,8 +227,6 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   }, [uid]);
 
   const retry = useCallback(() => setRetryGeneration(generation => generation + 1), []);
-  const loadMoreTransactions = useCallback(() => setTransactionLimit(current => current + PAGE_SIZE), []);
-  const loadMorePlannedExpenses = useCallback(() => setPlannedExpenseLimit(current => current + PAGE_SIZE), []);
   const isLoading = loadingUser || loadingTransactions || loadingPlans;
 
   const value = useMemo<FinanceContextData>(() => ({
@@ -227,12 +234,11 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     addTransaction, updateTransaction, deleteTransaction,
     addPlannedExpense, updatePlannedExpense, confirmPlannedExpense,
     rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData,
-    isLoading, error, retry, hasMoreTransactions, hasMorePlannedExpenses,
-    loadMoreTransactions, loadMorePlannedExpenses,
+    isLoading, error, retry,
   }), [
     addPlannedExpense, addTransaction, clearData, confirmPlannedExpense, deletePlannedExpense,
-    deleteTransaction, error, exportData, hasMorePlannedExpenses, hasMoreTransactions, importData,
-    initialBalance, isLoading, loadMorePlannedExpenses, loadMoreTransactions, plannedExpenses,
+    deleteTransaction, error, exportData, importData,
+    initialBalance, isLoading, plannedExpenses,
     rejectPlannedExpense, retry, setInitialBalance, transactions, updatePlannedExpense, updateTransaction,
   ]);
 

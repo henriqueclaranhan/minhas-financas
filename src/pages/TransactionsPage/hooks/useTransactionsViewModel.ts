@@ -10,7 +10,7 @@ import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 export function useTransactionsViewModel() {
-  const { transactions, addTransaction, updateTransaction, deleteTransaction, hasMoreTransactions, loadMoreTransactions } = useFinance();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
   const temporal = useTemporalFilter(TemporalFilterMode.MONTH);
   const { matchesDate } = temporal.actions;
   
@@ -133,7 +133,6 @@ export function useTransactionsViewModel() {
       tempCategoryFilter,
       editingTransaction,
       transactionToDelete,
-      hasMoreTransactions,
       filterLabel: temporal.state.label,
       temporal: temporal.state
     },
@@ -150,7 +149,6 @@ export function useTransactionsViewModel() {
       openNewModal,
       openEditModal,
       confirmDelete,
-      loadMoreTransactions,
       handleOpenFilters,
       handleApplyFilters,
       handleResetFilters,

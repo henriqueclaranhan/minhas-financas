@@ -1,9 +1,10 @@
 # Design: Finance Data Scalability
 
 ## Data Access
-- `TransactionService` and `PlannedExpenseService` own bounded, ordered Firestore queries and structured listener errors.
-- Period queries include source documents whose installment competence can intersect the requested range. Expansion then discards installments outside that range.
+- `TransactionService` and `PlannedExpenseService` own ordered Firestore queries and structured listener errors.
+- A global document cap must not feed aggregates or backups because it silently changes financial results. Strict period queries remain deferred until source documents can be queried by installment competence.
 - Data-sync deletion queries Firestore directly in pages instead of depending on the currently loaded client window.
+- Data export also reads directly from Firestore in deterministic document-ID pages.
 
 ## Concurrency and Idempotency
 - Confirmation runs in `runTransaction` and reads the planned expense before writing.

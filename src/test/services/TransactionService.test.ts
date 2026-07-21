@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { TransactionService } from '../../services/TransactionService';
 import { addDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { TransactionType } from '../../enums/FinanceEnums';
+import { PaymentMethod, TransactionType } from '../../enums/FinanceEnums';
 
 // Mock Firebase config
 vi.mock('../../config/firebase', () => ({
@@ -31,7 +31,7 @@ describe('TransactionService', () => {
     description: 'Test',
     amount: 100,
     date: '2026-01-01',
-    paymentMethod: 'Pix',
+    paymentMethod: PaymentMethod.PIX,
     type: TransactionType.EXPENSE,
     installments: 1
   };
@@ -45,6 +45,14 @@ describe('TransactionService', () => {
     expect(result).toBe('tx123');
   });
 
+  it('removes undefined optional fields before creating a transaction', async () => {
+    (addDoc as any).mockResolvedValueOnce({ id: 'tx123' });
+
+    await TransactionService.addTransaction(mockUid, { ...mockTransaction, category: undefined });
+
+    expect(addDoc).toHaveBeenCalledWith(undefined, mockTransaction);
+  });
+
   it('should throw error if uid is missing when adding', async () => {
     await expect(TransactionService.addTransaction('', mockTransaction)).rejects.toThrow('User ID is required');
   });
@@ -55,6 +63,16 @@ describe('TransactionService', () => {
     await TransactionService.updateTransaction(mockUid, 'tx123', { amount: 200 });
     
     expect(updateDoc).toHaveBeenCalled();
+  });
+
+  it('removes client IDs and undefined fields before updating', async () => {
+    (updateDoc as any).mockResolvedValueOnce(undefined);
+
+    await TransactionService.updateTransaction(mockUid, 'tx123', {
+      id: 'client-only', category: undefined, description: 'Updated',
+    });
+
+    expect(updateDoc).toHaveBeenCalledWith(undefined, { description: 'Updated' });
   });
 
   it('should delete a transaction successfully', async () => {

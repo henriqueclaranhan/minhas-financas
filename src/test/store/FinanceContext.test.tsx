@@ -10,8 +10,8 @@ vi.mock('../../store/LocaleContext', () => ({ useLocale: () => ({ t: (key: strin
 vi.mock('../../store/ToastContext', () => ({ useToast: () => ({ success, error, dismiss: vi.fn() }) }));
 vi.mock('../../services/TransactionService', () => ({
   TransactionService: {
-    subscribeToTransactions: vi.fn((_uid, _limit, onUpdate) => {
-      onUpdate([], false);
+    subscribeToTransactions: vi.fn((_uid, onUpdate) => {
+      onUpdate([]);
       return vi.fn();
     }),
     addTransaction: vi.fn(),
@@ -19,8 +19,8 @@ vi.mock('../../services/TransactionService', () => ({
 }));
 vi.mock('../../services/PlannedExpenseService', () => ({
   PlannedExpenseService: {
-    subscribeToPlannedExpenses: vi.fn((_uid, _limit, onUpdate) => {
-      onUpdate([], false);
+    subscribeToPlannedExpenses: vi.fn((_uid, onUpdate) => {
+      onUpdate([]);
       return vi.fn();
     }),
   },
@@ -41,7 +41,11 @@ function FinanceHarness() {
     description: 'Groceries', amount: 100, paymentMethod: 'pix', installments: 1,
     date: '2026-07-21', type: 'expense',
   }).catch(() => undefined);
-  return <button onClick={submit}>Create transaction</button>;
+  return (
+    <div>
+      <button onClick={submit}>Create transaction</button>
+    </div>
+  );
 }
 
 describe('FinanceContext mutation feedback', () => {
@@ -66,4 +70,5 @@ describe('FinanceContext mutation feedback', () => {
     await waitFor(() => expect(error).toHaveBeenCalledWith('notifications.saveFailed'));
     expect(success).not.toHaveBeenCalled();
   });
+
 });

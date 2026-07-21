@@ -11,7 +11,6 @@ export interface Transaction {
   plannedExpenseId?: string;
   sourceKey?: string;
   category?: string;
-  sourcePlannedExpenseId?: string;
 }
 
 export interface PlannedExpense {
@@ -27,4 +26,5 @@ export interface PlannedExpense {
   paymentMethod?: PaymentMethod | string;
   installments?: number;
   category?: string;
+  sourcePlannedExpenseId?: string;
 }

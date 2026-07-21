@@ -1,6 +1,7 @@
-import { collection, doc, addDoc, updateDoc, deleteDoc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { Transaction } from '../types';
+import { removeUndefinedFields } from './firestoreData';
 
 export class TransactionService {
   /**
@@ -8,7 +9,10 @@ export class TransactionService {
    */
   static async addTransaction(uid: string, t: Omit<Transaction, 'id'>): Promise<string> {
     if (!uid) throw new Error("User ID is required");
-    const docRef = await addDoc(collection(db, 'users', uid, 'transactions'), t);
+    const docRef = await addDoc(
+      collection(db, 'users', uid, 'transactions'),
+      removeUndefinedFields(t),
+    );
     return docRef.id;
   }
 
@@ -17,7 +21,12 @@ export class TransactionService {
    */
   static async updateTransaction(uid: string, transactionId: string, updatedData: Partial<Transaction>): Promise<void> {
     if (!uid || !transactionId) throw new Error("User ID and Transaction ID are required");
-    await updateDoc(doc(db, 'users', uid, 'transactions', transactionId), updatedData);
+    const { id: _clientId, ...storedData } = updatedData;
+    void _clientId;
+    await updateDoc(
+      doc(db, 'users', uid, 'transactions', transactionId),
+      removeUndefinedFields(storedData),
+    );
   }
 
   /**
@@ -33,20 +42,18 @@ export class TransactionService {
    */
   static subscribeToTransactions(
     uid: string,
-    pageSize: number,
-    onUpdate: (txs: Transaction[], hasMore: boolean) => void,
+    onUpdate: (txs: Transaction[]) => void,
     onError: (error: Error) => void,
   ): () => void {
     if (!uid) throw new Error("User ID is required");
     const transactionQuery = query(
       collection(db, 'users', uid, 'transactions'),
       orderBy('date', 'desc'),
-      limit(pageSize),
     );
     const unsub = onSnapshot(transactionQuery, (snapshot: any) => {
       const txs: Transaction[] = [];
       snapshot.forEach((d: any) => txs.push({ ...d.data(), id: d.id } as Transaction));
-      onUpdate(txs, snapshot.size === pageSize);
+      onUpdate(txs);
     }, onError);
     return unsub;
   }

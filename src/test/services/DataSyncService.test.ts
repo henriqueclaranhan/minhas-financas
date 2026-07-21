@@ -13,6 +13,9 @@ vi.mock('firebase/firestore', async (importOriginal) => {
     collection: vi.fn(),
     query: vi.fn(ref => ref),
     limit: vi.fn(),
+    orderBy: vi.fn(),
+    documentId: vi.fn(),
+    startAfter: vi.fn(),
     getDoc: vi.fn().mockResolvedValue({ exists: () => false }),
     getDocs: vi.fn().mockResolvedValue({ empty: true, docs: [] }),
     writeBatch: vi.fn(() => ({
@@ -35,8 +38,8 @@ describe('DataSyncService', () => {
     window.document.createElement = vi.fn(() => mockElement as any);
   });
 
-  it('exports data correctly', () => {
-    DataSyncService.exportData(100, [], []);
+  it('exports data correctly', async () => {
+    await DataSyncService.exportData('user1', 100);
     expect(window.URL.createObjectURL).toHaveBeenCalled();
     expect(window.document.createElement).toHaveBeenCalledWith('a');
   });

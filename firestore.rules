@@ -13,6 +13,10 @@ service cloud.firestore {
       return !(field in data) || (data[field] is string && data[field].size() > 0 && data[field].size() <= maxLength);
     }
 
+    function fieldUnchanged(before, after, field) {
+      return before.get(field, null) == after.get(field, null);
+    }
+
     function validTransaction(data) {
       return data.keys().hasAll(['description', 'amount', 'paymentMethod', 'installments', 'date'])
         && data.keys().hasOnly([
@@ -63,7 +67,11 @@ service cloud.firestore {
 
       match /transactions/{transactionId} {
         allow read: if isOwner(userId);
-        allow create, update: if isOwner(userId) && validTransaction(request.resource.data);
+        allow create: if isOwner(userId) && validTransaction(request.resource.data);
+        allow update: if isOwner(userId)
+          && validTransaction(request.resource.data)
+          && fieldUnchanged(resource.data, request.resource.data, 'plannedExpenseId')
+          && fieldUnchanged(resource.data, request.resource.data, 'sourceKey');
         allow delete: if isOwner(userId);
       }
 
@@ -72,6 +80,7 @@ service cloud.firestore {
         allow create: if isOwner(userId) && validPlannedExpense(request.resource.data);
         allow update: if isOwner(userId)
           && validPlannedExpense(request.resource.data)
+          && fieldUnchanged(resource.data, request.resource.data, 'sourcePlannedExpenseId')
           && (resource.data.status == 'pending' || request.resource.data.status == resource.data.status);
         allow delete: if isOwner(userId);
       }

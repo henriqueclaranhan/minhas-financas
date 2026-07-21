@@ -59,10 +59,28 @@ describe('PlannedExpenseService', () => {
     expect(result).toBe('pe123');
   });
 
+  it('removes undefined optional fields before creating a planned expense', async () => {
+    (addDoc as any).mockResolvedValueOnce({ id: 'pe123' });
+
+    await PlannedExpenseService.addPlannedExpense(mockUid, { ...mockExpense, category: undefined });
+
+    expect(addDoc).toHaveBeenCalledWith(undefined, mockExpense);
+  });
+
   it('should update a planned expense', async () => {
     (updateDoc as any).mockResolvedValueOnce(undefined);
     await PlannedExpenseService.updatePlannedExpense(mockUid, 'pe123', { amount: 1200 });
     expect(updateDoc).toHaveBeenCalled();
+  });
+
+  it('removes client IDs and undefined fields before updating', async () => {
+    (updateDoc as any).mockResolvedValueOnce(undefined);
+
+    await PlannedExpenseService.updatePlannedExpense(mockUid, 'pe123', {
+      id: 'client-only', category: undefined, description: 'Updated',
+    });
+
+    expect(updateDoc).toHaveBeenCalledWith(undefined, { description: 'Updated' });
   });
 
   it('should delete a planned expense', async () => {
@@ -73,19 +91,24 @@ describe('PlannedExpenseService', () => {
 
   it('subscribes to planned expenses', () => {
     const onUpdate = vi.fn();
-    const unsub = PlannedExpenseService.subscribeToPlannedExpenses('user1', 250, onUpdate, vi.fn());
+    const unsub = PlannedExpenseService.subscribeToPlannedExpenses('user1', onUpdate, vi.fn());
     expect(onSnapshot).toHaveBeenCalled();
     expect(typeof unsub).toBe('function');
   });
 
   it('should confirm a planned expense and create recurrence if applicable', async () => {
+    transactionMock.get.mockResolvedValueOnce({
+      exists: () => true,
+      data: () => ({ ...mockExpense, category: undefined }),
+    });
     const mockTransactionData = {
       description: 'Rent',
       amount: 1000,
       date: '2026-05-10',
       paymentMethod: PaymentMethod.PIX,
       type: TransactionType.EXPENSE,
-      installments: 1
+      installments: 1,
+      category: undefined,
     };
 
     await PlannedExpenseService.confirmPlannedExpense(mockUid, 'pe123', mockTransactionData);
@@ -94,6 +117,8 @@ describe('PlannedExpenseService', () => {
     expect(transactionMock.update.mock.calls[0][1]).toEqual({ status: ExpenseStatus.CONFIRMED });
     expect(transactionMock.set).toHaveBeenCalledTimes(2);
     expect(transactionMock.set.mock.calls[0][1]).toMatchObject({ sourceKey: 'plannedExpense:pe123:confirmation' });
+    expect(transactionMock.set.mock.calls[0][1]).not.toHaveProperty('category');
+    expect(transactionMock.set.mock.calls[1][1]).not.toHaveProperty('category');
   });
 
   it('should reject a planned expense and create recurrence if applicable', async () => {

@@ -20,7 +20,7 @@ Keep finance data correct and responsive as a user's transaction history grows a
 - [ ] User, transaction, and planned-expense subscriptions report loading and errors independently.
 - [ ] Finance context callbacks and provider value are memoized.
 - [ ] Period expansion creates only installments that intersect the requested interval.
-- [ ] Firestore subscriptions are ordered and bounded; consumers can request the period they need.
+- [ ] Firestore subscriptions remain complete until period-specific consumer queries can preserve aggregate correctness.
 - [ ] Automated tests cover validation, batching, idempotency, period expansion, and security rules where emulator infrastructure is available.
 
 ## Out of Scope

@@ -63,9 +63,6 @@ export function TransactionsPage() {
           }}
         />
       </div>
-      {state.hasMoreTransactions && (
-        <button className="btn" onClick={actions.loadMoreTransactions}>{t('common.loadMore')}</button>
-      )}
 
       {/* Mobile FAB */}
       <button className="btn btn-primary fab hide-on-desktop" onClick={actions.openNewModal}>

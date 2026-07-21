@@ -255,8 +255,9 @@ The following entities are calculated in memory and must not be treated as Fires
 
 ## Read and Write Behavior
 
-- Transaction listeners order documents by `date` descending and initially limit results to 250 documents.
-- Planned-expense listeners order documents by `dueDate` descending and initially limit results to 250 documents.
-- Each list can increase its active limit in increments of 250.
+- Transaction listeners order documents by `date` descending and currently remain complete because global consumers calculate balances, forecasts, invoices, and onboarding state from them.
+- Planned-expense listeners order documents by `dueDate` descending and currently remain complete for the same aggregate-correctness reason.
+- Strict period queries require installment competence metadata or materialized installment documents before they can safely replace the complete listeners.
+- Exports read both subcollections directly in deterministic pages of 400 documents and never depend on the currently rendered view.
 - Clearing data reads and deletes each finance subcollection in pages of 400 documents, then resets `initialBalance` to zero.
 - All Firestore reads and writes require an authenticated user whose UID matches the `users/{uid}` path.
