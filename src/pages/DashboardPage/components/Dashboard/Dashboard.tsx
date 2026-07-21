@@ -4,14 +4,8 @@ import { SummaryCards } from '../SummaryCards';
 import { DashboardChart } from '../../../../components/dashboard/DashboardChart';
 import { DashboardMetrics } from '../DashboardMetrics';
 import { useLocale } from '../../../../store/LocaleContext';
+import type { CategoryExpenseData } from '../../../../utils/categoryExpenseUtils';
 import './Dashboard.css';
-
-interface CategoryExpense {
-  name: string;
-  value: number;
-  color: string;
-  percentage: number;
-}
 
 interface DashboardProps {
   chartData: {
@@ -20,7 +14,7 @@ interface DashboardProps {
     monthlyIncome: number;
     monthlyExpense: number;
   };
-  expensesByCategory: CategoryExpense[];
+  expensesByCategory: CategoryExpenseData[];
   currentInvoice: number;
 }
 

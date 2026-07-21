@@ -13,6 +13,7 @@ import { ForecastPage } from './pages/ForecastPage';
 import { ProfileSettingsPage } from './pages/ProfileSettingsPage/ProfileSettingsPage';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage/PrivacyPolicyPage';
+import { CategoryExpensesPage } from './pages/CategoryExpensesPage';
 import './App.css';
 
 const router = createBrowserRouter([
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
       { path: "/planned", element: <PlannedExpensesPage /> },
       { path: "/credit", element: <CreditCardPage /> },
       { path: "/forecast", element: <ForecastPage /> },
+      { path: "/categories", element: <CategoryExpensesPage /> },
       { path: "/settings", element: <SettingsPage /> },
       { path: "/settings/profile", element: <ProfileSettingsPage /> },
       { path: "/privacidade", element: <PrivacyPolicyPage /> },

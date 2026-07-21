@@ -6,6 +6,33 @@
   gap: var(--spacing-lg);
 }
 
+.pie-chart-panel-expanded {
+  padding-inline: var(--spacing-lg);
+}
+
+.pie-chart-panel-expanded .pie-chart-container {
+  gap: var(--spacing-xl);
+}
+
+.pie-chart-panel-expanded .pie-chart-graphic {
+  flex: 1.25;
+}
+
+.pie-chart-panel-expanded .pie-legend-item {
+  margin-bottom: var(--spacing-md);
+}
+
+.pie-chart-panel-expanded .pie-legend-item:last-child {
+  margin-bottom: 0;
+}
+
+.pie-chart-header-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-shrink: 0;
+}
+
 .pie-chart-graphic,
 .pie-legend-wrapper {
   flex: 1;
@@ -83,6 +110,10 @@
 }
 
 @media (max-width: 768px) {
+  .pie-chart-panel-expanded {
+    padding-inline: var(--spacing-md);
+  }
+
   .pie-chart-container {
     flex-direction: column;
     gap: 0;

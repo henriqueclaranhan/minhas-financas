@@ -61,3 +61,13 @@
   margin-top: var(--spacing-md);
   opacity: 0.8;
 }
+.category-details-link {
+  color: var(--clr-primary);
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  flex-shrink: 0;
+}

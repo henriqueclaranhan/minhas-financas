@@ -1,17 +1,12 @@
 import { ExpensesByCategoryChart } from '../../../../components/dashboard/ExpensesByCategoryChart';
 import { useLocale } from '../../../../store/LocaleContext';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { ChevronRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import type { CategoryExpenseData } from '../../../../utils/categoryExpenseUtils';
 import './DashboardMetrics.css';
 
-interface CategoryExpense {
-  name: string;
-  value: number;
-  color: string;
-  percentage: number;
-}
-
 interface DashboardMetricsProps {
-  expensesByCategory: CategoryExpense[];
+  expensesByCategory: CategoryExpenseData[];
   formatCurrency: (val: number) => string;
   monthlyIncome: number;
   monthlyExpense: number;
@@ -25,7 +20,16 @@ export function DashboardMetrics({ expensesByCategory, formatCurrency, monthlyIn
 
   return (
     <div className="dashboard-metrics-grid animate-fade-in">
-      <ExpensesByCategoryChart data={expensesByCategory} formatCurrency={formatCurrency} />
+      <ExpensesByCategoryChart
+        data={expensesByCategory}
+        formatCurrency={formatCurrency}
+        headerAction={
+          <Link to="/categories" className="category-details-link">
+            <span className="hide-on-mobile">{t('dashboard.viewAll')}</span>
+            <ChevronRight size={20} aria-hidden="true" />
+          </Link>
+        }
+      />
       
       <div className="glass-panel chart-panel flex flex-col justify-between" style={{ height: '100%' }}>
         <h3 className="chart-header-title mb-lg">{t('dashboard.incomeVsExpense')}</h3>

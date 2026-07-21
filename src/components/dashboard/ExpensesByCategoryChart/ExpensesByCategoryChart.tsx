@@ -1,23 +1,28 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useLocale } from '../../../store/LocaleContext';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
+import type { CategoryExpenseData } from '../../../utils/categoryExpenseUtils';
 import './ExpensesByCategoryChart.css';
 
-interface CategoryExpense {
-  name: string; // The translation key
-  value: number;
-  color: string;
-  percentage: number;
-}
-
 interface ExpensesByCategoryChartProps {
-  data: CategoryExpense[];
+  data: CategoryExpenseData[];
   formatCurrency: (val: number) => string;
+  headerAction?: React.ReactNode;
+  showTotal?: boolean;
+  variant?: 'default' | 'expanded';
 }
 
-export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCategoryChartProps) {
+export function ExpensesByCategoryChart({
+  data,
+  formatCurrency,
+  headerAction,
+  showTotal = true,
+  variant = 'default',
+}: ExpensesByCategoryChartProps) {
   const { t } = useLocale();
   const total = data.reduce((sum, item) => sum + item.value, 0);
+  const isExpanded = variant === 'expanded';
+  const panelClassName = `glass-panel chart-panel pie-chart-panel${isExpanded ? ' pie-chart-panel-expanded' : ''} flex flex-col`;
   const getCategoryKey = (translationKey: string) => translationKey.replace('categories.', '');
 
   const renderCustomTooltip = ({ active, payload }: any) => {
@@ -43,9 +48,12 @@ export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCate
 
   if (data.length === 0) {
     return (
-      <div className="glass-panel chart-panel flex flex-col items-center justify-center py-xxl" style={{ height: '100%' }}>
-        <h3 className="chart-header-title mb-lg">{t('dashboard.expensesByCategory')}</h3>
-        <div className="text-secondary text-center">
+      <div className={panelClassName} style={{ height: '100%' }}>
+        <div className="flex justify-between items-center mb-lg">
+          <h3 className="chart-header-title m-0">{t('dashboard.expensesByCategory')}</h3>
+          {headerAction && <div className="pie-chart-header-meta">{headerAction}</div>}
+        </div>
+        <div className="text-secondary text-center flex-1 flex items-center justify-center py-xxl">
           <p>{t('dashboard.noExpenses')}</p>
         </div>
       </div>
@@ -53,24 +61,31 @@ export function ExpensesByCategoryChart({ data, formatCurrency }: ExpensesByCate
   }
 
   return (
-    <div className="glass-panel chart-panel flex flex-col" style={{ height: '100%' }}>
+    <div className={panelClassName} style={{ height: '100%' }}>
       <div className="flex justify-between items-center mb-lg">
         <h3 className="chart-header-title m-0">{t('dashboard.expensesByCategory')}</h3>
-        <span className="text-secondary font-medium" style={{ fontSize: '0.9rem' }}>
-          {formatCurrency(total)}
-        </span>
+        {(showTotal || headerAction) && (
+          <div className="pie-chart-header-meta">
+            {showTotal && (
+              <span className="text-secondary font-medium" style={{ fontSize: '0.9rem' }}>
+                {formatCurrency(total)}
+              </span>
+            )}
+            {headerAction}
+          </div>
+        )}
       </div>
       
       <div className="pie-chart-container flex-1">
         <div className="pie-chart-graphic">
-          <ResponsiveContainer width="100%" height={240}>
+          <ResponsiveContainer width="100%" height={isExpanded ? 320 : 240}>
             <PieChart>
               <Pie
                 data={data}
                 cx="50%"
                 cy="50%"
-                innerRadius={60}
-                outerRadius={80}
+                innerRadius={isExpanded ? 84 : 60}
+                outerRadius={isExpanded ? 116 : 80}
                 paddingAngle={5}
                 dataKey="value"
                 stroke="none"

@@ -80,5 +80,6 @@ describe('DashboardPage UI', () => {
 
     expect(screen.getByText('Alimentação')).toBeInTheDocument();
     expect(container.querySelector('.pie-legend-item .lucide-utensils')).toBeInTheDocument();
+    expect(container.querySelector('.category-details-link')).toHaveAttribute('href', '/categories');
   });
 });

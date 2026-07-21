@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp, Tags } from 'lucide-react';
 import { useAuth } from '../../store/AuthContext';
 import { useLocale } from '../../store/LocaleContext';
 import './Layout.css';
@@ -18,6 +18,7 @@ export function Layout() {
     { to: '/planned', icon: <CalendarClock size={22} />, label: t('nav.planning'), isMain: true },
     { to: '/credit', icon: <CreditCard size={22} />, label: t('nav.invoices'), isMain: true },
     { to: '/forecast', icon: <TrendingUp size={22} />, label: t('nav.forecast'), isMain: false },
+    { to: '/categories', icon: <Tags size={22} />, label: t('nav.categories'), isMain: false },
   ];
 
   const mainNavItems = navItems.filter(i => i.isMain);
