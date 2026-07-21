@@ -13,7 +13,7 @@ export default defineConfig({
       manifest: {
         id: '/',
         name: 'Minhas Finanças',
-        short_name: 'MinhasFinanças',
+        short_name: 'Minhas Finanças',
         description: 'Gerenciador de finanças pessoais focado em usabilidade e desempenho.',
         lang: 'pt-BR',
         theme_color: '#34c759',
