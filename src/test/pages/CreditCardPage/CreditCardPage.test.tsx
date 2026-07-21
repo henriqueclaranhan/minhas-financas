@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { CreditCardPage } from '../../../pages/CreditCardPage/CreditCardPage';
@@ -65,6 +65,7 @@ describe('CreditCardPage UI', () => {
     
     // Mock scrollRef
     window.HTMLElement.prototype.scrollTo = vi.fn();
+    window.matchMedia = vi.fn().mockReturnValue({ matches: true });
   });
 
   const renderWithRouter = (ui: React.ReactElement) => {
@@ -99,5 +100,21 @@ describe('CreditCardPage UI', () => {
 
     renderWithRouter(<CreditCardPage />);
     expect(screen.getByText('Nenhuma compra no crédito para este mês.')).toBeInTheDocument();
+  });
+
+  it('aligns the current invoice month to the left on mobile', async () => {
+    Object.defineProperty(window.HTMLElement.prototype, 'scrollWidth', {
+      configurable: true,
+      get: () => 600,
+    });
+
+    renderWithRouter(<CreditCardPage />);
+
+    await waitFor(() => {
+      expect(window.HTMLElement.prototype.scrollTo).toHaveBeenCalledWith({
+        left: 480,
+        behavior: 'auto',
+      });
+    });
   });
 });

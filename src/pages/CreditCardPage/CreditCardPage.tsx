@@ -17,10 +17,20 @@ export function CreditCardPage() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTo({ left: 120, behavior: 'smooth' });
-    }
-  }, []);
+    const scrollContainer = scrollRef.current;
+    if (!scrollContainer || state.isLoading || !state.isCurrentInvoice || state.nextMonths.length === 0) return;
+    if (!window.matchMedia('(max-width: 768px)').matches) return;
+
+    const frame = window.requestAnimationFrame(() => {
+      const monthWidth = scrollContainer.scrollWidth / state.nextMonths.length;
+      scrollContainer.scrollTo({
+        left: monthWidth * state.selectedMonthIndex,
+        behavior: 'auto',
+      });
+    });
+
+    return () => window.cancelAnimationFrame(frame);
+  }, [state.isCurrentInvoice, state.isLoading, state.nextMonths.length, state.selectedMonthIndex]);
 
   if (state.isLoading) {
     return (

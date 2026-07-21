@@ -13,3 +13,4 @@ Manage credit cards and their respective invoices.
 - [x] Ability to pay invoices.
 - [x] Keep the invoice details table inside a glass panel with its border and shadow on mobile and desktop.
 - [x] Filter invoices by Month, Year, or custom Period, with the full current year selected by default.
+- [x] On mobile, initially position the current invoice month as far left as the chart allows.
