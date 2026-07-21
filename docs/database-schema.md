@@ -12,7 +12,9 @@ Cloud Firestore
 └── users/{uid}
     ├── initialBalance
     ├── transactions/{transactionId}
-    └── plannedExpenses/{plannedExpenseId}
+    ├── plannedExpenses/{plannedExpenseId}
+    ├── competenceEntries/{transactionId--position}
+    └── importJobs/{fingerprint}
 
 Browser localStorage
 ├── @financas:theme
@@ -88,12 +90,16 @@ Path: `users/{uid}`
 ```typescript
 interface UserFinanceDocument {
   initialBalance?: number | null;
+  financeSchemaVersion?: number;
+  financeMigrationCursor?: string | null;
 }
 ```
 
 | Field | Required | Constraints | Notes |
 |---|---:|---|---|
 | `initialBalance` | No | Firestore number or `null` | Starting balance used by dashboard and forecast calculations. Clearing finance data sets it to `0`. |
+| `financeSchemaVersion` | No | Integer from 1 to 2 | Version 2 indicates that transaction competence entries are fully materialized. |
+| `financeMigrationCursor` | No | Document ID or `null` | Resumable cursor used while backfilling legacy transactions. Cleared after migration. |
 
 The document ID is the authenticated Firebase UID. Security rules allow only the matching user to read or update it, reject unknown fields, and do not allow client deletion of the root user document.
 
@@ -129,12 +135,50 @@ interface TransactionDocument {
 
 The TypeScript `id` property is a client-side projection of `{transactionId}` and is not stored inside the document.
 
-#### Installment competence
+#### Materialized installment competence
 
 - Credit expenses apply their first installment to the month after `date`.
 - Boleto expenses apply their first installment to the same month as `date`.
 - Other payment methods are not expanded into monthly installments by current reporting utilities.
-- Installment documents are not materialized in Firestore; expanded entries exist only in memory.
+- Every transaction write atomically creates deterministic documents in `competenceEntries`. Existing transactions are backfilled before temporal queries become authoritative.
+
+### Competence entry
+
+Path: `users/{uid}/competenceEntries/{transactionId}--{position}`
+
+```typescript
+interface CompetenceEntryDocument {
+  transactionId: string;
+  description: string;
+  amount: number;
+  competenceDate: string;
+  originalDate: string;
+  paymentMethod: PaymentMethod;
+  type: TransactionType;
+  category?: string;
+  installmentNumber: number;
+  totalInstallments: number;
+}
+```
+
+Entries are derived, owner-only documents used by interval queries and shared aggregates. Their IDs and positions are deterministic. Transaction update and deletion modify the source and all affected entries in a Firestore transaction. Derived entries are not exported because they can be rebuilt from source transactions.
+
+### Import job
+
+Path: `users/{uid}/importJobs/import-{fingerprint}`
+
+```typescript
+interface ImportJobDocument {
+  fingerprint: string;
+  status: 'validated' | 'writing' | 'completed' | 'failed';
+  processed: number;
+  total: number;
+  updatedAt: string;
+  error?: string;
+}
+```
+
+The job records the last committed source-item checkpoint. Re-selecting the same backup resumes a failed import from that checkpoint. Each transaction import unit includes its competence entries in the same bounded batch.
 
 ### Planned expense
 
@@ -246,7 +290,7 @@ The locale and currency default from the browser language when the user has no s
 
 The following entities are calculated in memory and must not be treated as Firestore collections:
 
-- `ExpandedTransaction`: a transaction installment intersecting the selected period;
+- `ExpandedTransaction`: a compatibility projection used before or outside authenticated materialized queries;
 - `ExpandedPlannedExpense`: a planned-expense installment intersecting the selected period;
 - credit-card monthly bill and bill items;
 - dashboard and forecast monthly projection points;
@@ -255,9 +299,11 @@ The following entities are calculated in memory and must not be treated as Fires
 
 ## Read and Write Behavior
 
-- Transaction listeners order documents by `date` descending and currently remain complete because global consumers calculate balances, forecasts, invoices, and onboarding state from them.
+- The shared transaction listener is limited to the 50 most recent source documents for recent activity and mutation refreshes.
+- Transaction history uses cursor-based lazy loading ordered by date and document ID.
+- Period totals, breakdowns, invoices, categories, dashboard values, and forecasts query `competenceEntries` by `competenceDate` and reuse the shared one-pass aggregate.
 - Planned-expense listeners order documents by `dueDate` descending and currently remain complete for the same aggregate-correctness reason.
-- Strict period queries require installment competence metadata or materialized installment documents before they can safely replace the complete listeners.
+- Schema version 2 backfill is resumable and completes before competence queries run.
 - Exports read both subcollections directly in deterministic pages of 400 documents and never depend on the currently rendered view.
 - Clearing data reads and deletes each finance subcollection in pages of 400 documents, then resets `initialBalance` to zero.
 - All Firestore reads and writes require an authenticated user whose UID matches the `users/{uid}` path.

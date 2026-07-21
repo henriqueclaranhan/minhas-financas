@@ -10,8 +10,14 @@
 - [x] 8. Update database schema and run test, lint, and build verification.
 
 ## Follow-up
-- [ ] Add Firebase Emulator rule tests when the repository adopts Firebase CLI test infrastructure.
-- [ ] Materialize installment competence metadata/documents before replacing complete global listeners with strict monthly Firestore queries.
+- [x] 9. Add deterministic competence-entry materialization to transaction create, update, delete, confirmation, and import paths.
+- [x] 10. Add versioned resumable backfill and compatibility switching for existing data.
+- [x] 11. Add indexed temporal competence queries and shared one-pass aggregation.
+- [x] 12. Replace transaction-table full history with cursor-based IntersectionObserver lazy loading.
+- [x] 13. Replace duplicate dashboard/report calculations with shared aggregates.
+- [x] 14. Add observable resumable import jobs and translated progress UI.
+- [x] 15. Add Firebase Emulator configuration and security-rule integration tests.
+- [x] 16. Update schema/index documentation and run full verification.
 
 ## Persistence regression audit
 - [x] Sanitize optional values at every finance write boundary.
