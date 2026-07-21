@@ -1,23 +1,19 @@
-import { CreditCard, Tags } from 'lucide-react';
+import { CreditCard, Filter, Tags } from 'lucide-react';
 import './FilterTabs.css';
 import { useLocale } from '../../../store/LocaleContext';
-import { PeriodContext } from '../PeriodContext';
 
 interface FilterTabsProps {
   searchQuery: string;
   setSearchQuery: (s: string) => void;
   onOpenFilters: () => void;
-  activeDateLabel?: string;
   activeMethodLabel?: string;
   activeCategoryLabel?: string;
 }
 
-export function FilterTabs({ searchQuery, setSearchQuery, onOpenFilters, activeDateLabel, activeMethodLabel, activeCategoryLabel }: FilterTabsProps) {
+export function FilterTabs({ searchQuery, setSearchQuery, onOpenFilters, activeMethodLabel, activeCategoryLabel }: FilterTabsProps) {
   const { t } = useLocale();
   return (
     <div className="glass-panel filter-tabs-panel">
-      {activeDateLabel && <PeriodContext label={activeDateLabel} onAdjust={onOpenFilters} />}
-
       {(activeMethodLabel || activeCategoryLabel) && (
         <div className="filter-active-labels">
           {activeMethodLabel && (
@@ -41,6 +37,9 @@ export function FilterTabs({ searchQuery, setSearchQuery, onOpenFilters, activeD
           value={searchQuery}
           onChange={e => setSearchQuery(e.target.value)}
         />
+        <button type="button" className="btn filter-action-btn" onClick={onOpenFilters} title={t('filters.title')} aria-label={t('filters.title')}>
+          <Filter size={20} aria-hidden="true" />
+        </button>
       </div>
     </div>
   );

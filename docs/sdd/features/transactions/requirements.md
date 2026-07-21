@@ -14,3 +14,4 @@ Management of financial transactions (incomes and expenses).
 - [x] Ability to delete a transaction.\n
 - [x] Period totals use the same installment competence rules as the dashboard: credit expenses start in the next month, including single-installment purchases, while boleto expenses start in the current month.
 - [x] Income and expense summary cards show both totals for the active detailed filters regardless of the selected type tab.
+- [x] Date filtering supports Month, Year, and custom Period independently from search, category, and payment method filters.

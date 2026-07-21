@@ -11,6 +11,6 @@
 .delete-modal-text { color: var(--clr-text-primary); }
 .delete-modal-subtext { color: var(--clr-text-secondary); font-size: 0.875rem; margin-top: 8px; }
 .modal-actions { display: flex; gap: 12px; justify-content: flex-end; }
-.modal-actions-filters { display: flex; gap: 12px; margin-top: 16px; }
+.modal-actions-filters { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
 .btn-danger-bg { background: var(--clr-danger) !important; }
 .btn-alt-bg { background: var(--clr-surface-alt) !important; }

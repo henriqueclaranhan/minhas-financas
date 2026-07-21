@@ -7,6 +7,8 @@ import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import './CreditCardPage.css';
 import { FinanceEntryMode } from '../../enums/UIEnums';
+import { PeriodContext } from '../../components/shared/PeriodContext';
+import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 
 export function CreditCardPage() {
   const { state, actions } = useCreditCardViewModel();
@@ -39,6 +41,10 @@ export function CreditCardPage() {
         title={t('invoices.title')}
         description={t('invoices.description')}
       />
+
+      <div className="glass-panel filter-tabs-panel temporal-filter-panel">
+        <PeriodContext label={state.temporal.label} onAdjust={actions.temporal.open} />
+      </div>
 
       <div className="glass-panel p-lg mb-lg">
         <h3 className="credit-card-chart-title mb-md">{t('invoices.chartTitle')}</h3>
@@ -187,6 +193,24 @@ export function CreditCardPage() {
         onModeChange={actions.setActionType}
         onTransactionSubmit={actions.handleTransactionAdd}
         onPlanningSubmit={actions.handlePlanningAdd}
+      />
+
+      <TemporalFilterModal
+        isOpen={state.temporal.isOpen}
+        onClose={() => actions.temporal.setIsOpen(false)}
+        mode={state.temporal.tempMode}
+        setMode={actions.temporal.setTempMode}
+        month={state.temporal.tempMonth}
+        setMonth={actions.temporal.setTempMonth}
+        year={state.temporal.tempYear}
+        setYear={actions.temporal.setTempYear}
+        startDate={state.temporal.tempStartDate}
+        setStartDate={actions.temporal.setTempStartDate}
+        endDate={state.temporal.tempEndDate}
+        setEndDate={actions.temporal.setTempEndDate}
+        defaultYear={state.temporal.defaultYear}
+        onReset={actions.temporal.reset}
+        onApply={actions.temporal.apply}
       />
     </div>
   );

@@ -12,3 +12,4 @@ Manage credit cards and their respective invoices.
 - [x] Show credit card limits and current invoice status.
 - [x] Ability to pay invoices.
 - [x] Keep the invoice details table inside a glass panel with its border and shadow on mobile and desktop.
+- [x] Filter invoices by Month, Year, or custom Period, with the full current year selected by default.

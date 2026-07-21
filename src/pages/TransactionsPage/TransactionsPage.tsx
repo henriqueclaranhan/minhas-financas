@@ -13,11 +13,13 @@ import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
+import { PeriodContext } from '../../components/shared/PeriodContext';
+import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
   const { state, actions } = useTransactionsViewModel();
-  const { locale, t } = useLocale();
+  const { t } = useLocale();
   const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];
 
   return (
@@ -34,21 +36,23 @@ export function TransactionsPage() {
 
       <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
 
-      <FilterTabs
-        searchQuery={state.searchQuery}
-        setSearchQuery={actions.setSearchQuery}
-        onOpenFilters={actions.handleOpenFilters}
-        activeDateLabel={state.filterLabel}
-        activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
-        activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
-      />
+      <div className="glass-panel filter-tabs-panel temporal-filter-panel">
+        <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
+      </div>
 
       <PeriodSummaryCards
         income={state.totalIncome}
         expense={state.totalExpense}
       />
 
-      
+      <FilterTabs
+        searchQuery={state.searchQuery}
+        setSearchQuery={actions.setSearchQuery}
+        onOpenFilters={actions.handleOpenFilters}
+        activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
+        activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
+      />
+
       <div className="glass-panel panel-no-padding">
         <TransactionTable 
           transactions={state.transactions as Transaction[]}
@@ -123,35 +127,6 @@ export function TransactionsPage() {
             />
         </div>
 
-        <div className="form-row">
-          <div className="form-group">
-            <label className="form-label">{t('filters.month')}</label>
-            <CustomSelect
-              value={String(state.tempSelectedMonth)}
-              onChange={(val) => actions.setTempSelectedMonth(val === 'all' ? 'all' : Number(val))}
-              options={[
-                { value: 'all', label: t('filters.fullYear') },
-                ...Array.from({ length: 12 }).map((_, i) => ({
-                  value: String(i),
-                  label: new Date(2000, i, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase())
-                }))
-              ]}
-            />
-          </div>
-          <div className="form-group">
-            <label className="form-label">{t('filters.year')}</label>
-            <CustomSelect
-              value={String(state.tempSelectedYear)}
-              onChange={(val) => actions.setTempSelectedYear(Number(val))}
-              options={[
-                state.defaultYear - 1,
-                state.defaultYear,
-                state.defaultYear + 1
-              ].map(y => ({ value: String(y), label: String(y) }))}
-            />
-          </div>
-        </div>
-
         <div className="modal-actions-filters">
           <button className="btn flex-1 btn-alt-bg" onClick={actions.handleResetFilters}>
             {t('filters.reset')}
@@ -161,6 +136,24 @@ export function TransactionsPage() {
           </button>
         </div>
       </Modal>
+
+      <TemporalFilterModal
+        isOpen={state.temporal.isOpen}
+        onClose={() => actions.temporal.setIsOpen(false)}
+        mode={state.temporal.tempMode}
+        setMode={actions.temporal.setTempMode}
+        month={state.temporal.tempMonth}
+        setMonth={actions.temporal.setTempMonth}
+        year={state.temporal.tempYear}
+        setYear={actions.temporal.setTempYear}
+        startDate={state.temporal.tempStartDate}
+        setStartDate={actions.temporal.setTempStartDate}
+        endDate={state.temporal.tempEndDate}
+        setEndDate={actions.temporal.setTempEndDate}
+        defaultYear={state.temporal.defaultYear}
+        onReset={actions.temporal.reset}
+        onApply={actions.temporal.apply}
+      />
     </div>
   );
 }

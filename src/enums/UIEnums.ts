@@ -6,10 +6,14 @@ export const FinanceEntryMode = {
 export type FinanceEntryMode = (typeof FinanceEntryMode)[keyof typeof FinanceEntryMode];
 
 export const ForecastFilterMode = {
+  MONTH: 'month',
   YEAR: 'year',
   PERIOD: 'period',
 } as const;
 export type ForecastFilterMode = (typeof ForecastFilterMode)[keyof typeof ForecastFilterMode];
+
+export const TemporalFilterMode = ForecastFilterMode;
+export type TemporalFilterMode = ForecastFilterMode;
 
 export const CategoryExpenseFilterMode = {
   MONTH: 'month',

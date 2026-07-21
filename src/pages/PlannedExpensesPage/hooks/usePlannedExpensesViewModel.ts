@@ -1,30 +1,24 @@
 import { useState, useMemo } from 'react';
-import { parseISO } from 'date-fns';
 import { FilterType, TransactionType, ExpenseStatus } from '../../../enums/FinanceEnums';
 import type { PlannedExpense, Transaction } from '../../../types';
 import { expandPlannedExpenses } from '../../../utils/financeUtils';
 import type { ExpandedPlannedExpense } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
-import { useLocale } from '../../../store/LocaleContext';
+import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
+import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 export function usePlannedExpensesViewModel() {
   const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense } = useFinance();
-  const { locale, t } = useLocale();
+  const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
+  const { matchesDate } = temporal.actions;
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const defaultMonth = 'all';
-  const defaultYear = new Date().getFullYear();
-
-  const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(defaultMonth);
-  const [selectedYear, setSelectedYear] = useState(defaultYear);
   const [categoryFilter, setCategoryFilter] = useState('all');
 
-  const [tempSelectedMonth, setTempSelectedMonth] = useState<number | 'all'>(defaultMonth);
-  const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
   const [tempCategoryFilter, setTempCategoryFilter] = useState('all');
 
   const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
@@ -35,19 +29,15 @@ export function usePlannedExpensesViewModel() {
 
   const periodPendingExpenses = useMemo(() => expandedPlannedExpenses
     .filter(p => {
-      const pMonth = parseISO(p.dueDate).getUTCMonth();
-      const pYear = parseISO(p.dueDate).getUTCFullYear();
-      
       const isPending = p.status === ExpenseStatus.PENDING;
-      const matchesMonth = selectedMonth === 'all' || pMonth === selectedMonth;
-      const matchesYear = pYear === selectedYear;
+      const matchesPeriod = matchesDate(p.dueDate);
       const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
 
-      return isPending && matchesMonth && matchesYear && matchesSearch && matchesCategory;
+      return isPending && matchesPeriod && matchesSearch && matchesCategory;
     })
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()), 
-    [expandedPlannedExpenses, selectedMonth, selectedYear, searchQuery, categoryFilter]
+    [expandedPlannedExpenses, matchesDate, searchQuery, categoryFilter]
   );
 
   const pendingExpenses = useMemo(
@@ -81,34 +71,22 @@ export function usePlannedExpensesViewModel() {
   };
 
   const handleOpenFilters = () => {
-    setTempSelectedMonth(selectedMonth);
-    setTempSelectedYear(selectedYear);
     setTempCategoryFilter(categoryFilter);
     setIsFilterModalOpen(true);
   };
 
   const handleApplyFilters = () => {
-    setSelectedMonth(tempSelectedMonth);
-    setSelectedYear(tempSelectedYear);
     setCategoryFilter(tempCategoryFilter);
     setIsFilterModalOpen(false);
   };
 
   const handleResetFilters = () => {
-    setSelectedMonth(defaultMonth);
-    setSelectedYear(defaultYear);
     setCategoryFilter('all');
     
-    setTempSelectedMonth(defaultMonth);
-    setTempSelectedYear(defaultYear);
     setTempCategoryFilter('all');
     
     setIsFilterModalOpen(false);
   };
-
-  const filterLabel = selectedMonth === 'all' 
-    ? t('filters.fullYearOf', { year: selectedYear })
-    : t('filters.monthOfYear', { month: new Date(2000, selectedMonth as number, 1).toLocaleString(locale, { month: 'long' }).replace(/^\w/, c => c.toUpperCase()), year: selectedYear });
 
   const confirmDelete = async () => {
     if (expenseToDelete) {
@@ -148,25 +126,19 @@ export function usePlannedExpensesViewModel() {
       isFilterModalOpen,
       filter,
       searchQuery,
-      selectedMonth,
-      selectedYear,
       categoryFilter,
-      tempSelectedMonth,
-      tempSelectedYear,
       tempCategoryFilter,
       editingExpense,
       expenseToDelete,
       expenseToConfirm,
-      filterLabel,
-      defaultYear
+      filterLabel: temporal.state.label,
+      temporal: temporal.state
     },
     actions: {
       setFilter,
       setSearchQuery,
       setIsModalOpen,
       setIsFilterModalOpen,
-      setTempSelectedMonth,
-      setTempSelectedYear,
       setTempCategoryFilter,
       setExpenseToDelete,
       setExpenseToConfirm,
@@ -181,7 +153,8 @@ export function usePlannedExpensesViewModel() {
       confirmAction,
       rejectAction,
       handleConfirmPrompt,
-      handleDeletePrompt
+      handleDeletePrompt,
+      temporal: temporal.actions
     }
   };
 }

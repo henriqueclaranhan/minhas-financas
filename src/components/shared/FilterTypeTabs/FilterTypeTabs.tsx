@@ -11,7 +11,7 @@ export function FilterTypeTabs({ filter, setFilter }: FilterTypeTabsProps) {
   const { t } = useLocale();
 
   return (
-    <div className="filter-tabs-container">
+    <div className="filter-tabs-container filter-type-tabs">
       <button
         onClick={() => setFilter(FilterType.ALL)}
         className={`btn filter-tab-btn ${filter === FilterType.ALL ? 'filter-tab-btn-active' : 'filter-tab-btn-inactive'}`}

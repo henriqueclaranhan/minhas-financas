@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { CreditCardPage } from '../../../pages/CreditCardPage/CreditCardPage';
 import { useCreditCardViewModel } from '../../../pages/CreditCardPage/hooks/useCreditCardViewModel';
+import { FinanceEntryMode, TemporalFilterMode } from '../../../enums/UIEnums';
 
 vi.mock('../../../pages/CreditCardPage/hooks/useCreditCardViewModel');
 
@@ -16,10 +17,25 @@ window.ResizeObserver = ResizeObserver;
 
 describe('CreditCardPage UI', () => {
   const mockActions = {
-    setSelectedMonthIndex: vi.fn()
+    setSelectedMonthIndex: vi.fn(),
+    setIsModalOpen: vi.fn(),
+    setActionType: vi.fn(),
+    handleTransactionAdd: vi.fn(),
+    handlePlanningAdd: vi.fn(),
+    temporal: {
+      open: vi.fn(), apply: vi.fn(), reset: vi.fn(), matchesDate: vi.fn(), setIsOpen: vi.fn(),
+      setTempMode: vi.fn(), setTempMonth: vi.fn(), setTempYear: vi.fn(), setTempStartDate: vi.fn(), setTempEndDate: vi.fn()
+    }
   };
 
   const mockState = {
+    temporal: {
+      mode: TemporalFilterMode.YEAR, month: 4, year: 2026, startDate: '2026-01-01', endDate: '2026-12-31',
+      tempMode: TemporalFilterMode.YEAR, tempMonth: 4, tempYear: 2026, tempStartDate: '2026-01-01', tempEndDate: '2026-12-31',
+      isOpen: false, label: 'Ano todo, 2026', defaultYear: 2026
+    },
+    isModalOpen: false,
+    actionType: FinanceEntryMode.NONE,
     nextMonths: [
       { key: '2026-05', labelFull: 'Maio 2026', labelShort: 'MAI', data: { total: 0, items: [] }, index: 0 },
       { key: '2026-06', labelFull: 'Junho 2026', labelShort: 'JUN', data: { total: 0, items: [] }, index: 1 },

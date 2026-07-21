@@ -2,33 +2,31 @@ import { useState, useMemo } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
-import { startOfYear, endOfYear } from 'date-fns';
-import { ForecastFilterMode, type ForecastFilterMode as ForecastFilterModeValue } from '../../../enums/UIEnums';
+import { endOfMonth, endOfYear, parseISO, startOfMonth, startOfYear } from 'date-fns';
+import { TemporalFilterMode } from '../../../enums/UIEnums';
+import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 
 export function useForecastViewModel() {
   const { transactions, plannedExpenses, initialBalance } = useFinance();
   const { formatCurrency, locale } = useLocale();
 
-  const currentYear = new Date().getFullYear();
-  const defaultStartDate = startOfYear(new Date());
-  const defaultEndDate = endOfYear(new Date());
+  const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
 
   const [includePlannedIncome, setIncludePlannedIncome] = useState(true);
   const [includePlannedExpense, setIncludePlannedExpense] = useState(true);
   
-  const [filterType, setFilterType] = useState<ForecastFilterModeValue>(ForecastFilterMode.YEAR);
-  const [selectedYear, setSelectedYear] = useState<number>(currentYear);
-  
-  const [startDate, setStartDate] = useState<Date>(defaultStartDate);
-  const [endDate, setEndDate] = useState<Date>(defaultEndDate);
-
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-
-  // Temporary state for the modal
-  const [tempFilterType, setTempFilterType] = useState<ForecastFilterModeValue>(ForecastFilterMode.YEAR);
-  const [tempSelectedYear, setTempSelectedYear] = useState<number>(currentYear);
-  const [tempStartDate, setTempStartDate] = useState<Date>(defaultStartDate);
-  const [tempEndDate, setTempEndDate] = useState<Date>(defaultEndDate);
+  const { mode, month, year, startDate: rangeStart, endDate: rangeEnd } = temporal.state;
+  const { startDate, endDate } = useMemo(() => {
+    if (mode === TemporalFilterMode.MONTH) {
+      const date = new Date(year, month, 1);
+      return { startDate: startOfMonth(date), endDate: endOfMonth(date) };
+    }
+    if (mode === TemporalFilterMode.YEAR) {
+      const date = new Date(year, 0, 1);
+      return { startDate: startOfYear(date), endDate: endOfYear(date) };
+    }
+    return { startDate: parseISO(rangeStart), endDate: parseISO(rangeEnd) };
+  }, [mode, month, rangeEnd, rangeStart, year]);
 
   const resolvedInitialBalance = initialBalance ?? 0;
 
@@ -54,41 +52,6 @@ export function useForecastViewModel() {
     locale,
   ]);
 
-  const handleOpenFilters = () => {
-    setTempFilterType(filterType);
-    setTempSelectedYear(selectedYear);
-    setTempStartDate(startDate);
-    setTempEndDate(endDate);
-    setIsFilterModalOpen(true);
-  };
-
-  const handleApplyFilters = () => {
-    setFilterType(tempFilterType);
-    setSelectedYear(tempSelectedYear);
-    if (tempFilterType === ForecastFilterMode.YEAR) {
-      setStartDate(startOfYear(new Date(tempSelectedYear, 0, 1)));
-      setEndDate(endOfYear(new Date(tempSelectedYear, 11, 1)));
-    } else {
-      setStartDate(tempStartDate);
-      setEndDate(tempEndDate);
-    }
-    setIsFilterModalOpen(false);
-  };
-
-  const handleResetFilters = () => {
-    setTempFilterType(ForecastFilterMode.YEAR);
-    setTempSelectedYear(currentYear);
-    setTempStartDate(defaultStartDate);
-    setTempEndDate(defaultEndDate);
-  };
-
-  const handleSelectYear = (yearStr: string) => {
-    const year = parseInt(yearStr, 10);
-    if (!isNaN(year)) {
-      setTempSelectedYear(year);
-    }
-  };
-
   const totalIncome = useMemo(() => chartData.data.reduce((sum, item) => sum + item.income, 0), [chartData.data]);
   const totalExpense = useMemo(() => chartData.data.reduce((sum, item) => sum + item.expense, 0), [chartData.data]);
 
@@ -100,30 +63,15 @@ export function useForecastViewModel() {
       startDate,
       endDate,
       formatCurrency,
-      isFilterModalOpen,
-      tempFilterType,
-      tempSelectedYear,
-      tempStartDate,
-      tempEndDate,
-      filterType,
-      selectedYear,
+      temporal: temporal.state,
       totalIncome,
       totalExpense,
     },
     actions: {
       setIncludePlannedIncome,
       setIncludePlannedExpense,
-      setIsFilterModalOpen,
-      setTempFilterType,
-      setTempSelectedYear,
-      setTempStartDate,
-      setTempEndDate,
-      handleOpenFilters,
-      handleApplyFilters,
-      handleResetFilters,
-      handleSelectYear,
+      temporal: temporal.actions,
     },
   };
 }
-
 

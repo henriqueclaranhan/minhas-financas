@@ -380,6 +380,16 @@ p {
   margin-bottom: var(--spacing-md);
 }
 
+.filter-type-tabs {
+  margin-bottom: var(--spacing-lg);
+}
+
+.modal-actions-filters {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+}
+
 .filter-tab-btn {
   display: flex;
   align-items: center;

@@ -9,3 +9,4 @@ Predict future financial balance based on planned and recurring expenses.
 ## Acceptance Criteria
 - [x] Chart displaying projected balance over time.
 - [x] Configurable forecast parameters (e.g., how many months ahead).\n
+- [x] Projection dates support Month, Year, and custom Period while planned-value toggles remain next to the chart.

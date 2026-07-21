@@ -3,11 +3,16 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { BrowserRouter } from 'react-router-dom';
 import { PlannedExpensesPage } from '../../../pages/PlannedExpensesPage/PlannedExpensesPage';
 import { usePlannedExpensesViewModel } from '../../../pages/PlannedExpensesPage/hooks/usePlannedExpensesViewModel';
+import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 vi.mock('../../../pages/PlannedExpensesPage/hooks/usePlannedExpensesViewModel');
 
 describe('PlannedExpensesPage UI', () => {
   const mockActions = {
+    temporal: {
+      open: vi.fn(), apply: vi.fn(), reset: vi.fn(), matchesDate: vi.fn(), setIsOpen: vi.fn(),
+      setTempMode: vi.fn(), setTempMonth: vi.fn(), setTempYear: vi.fn(), setTempStartDate: vi.fn(), setTempEndDate: vi.fn()
+    },
     setFilter: vi.fn(),
     setSearchQuery: vi.fn(),
     setIsModalOpen: vi.fn(),
@@ -32,6 +37,11 @@ describe('PlannedExpensesPage UI', () => {
   };
 
   const mockState = {
+    temporal: {
+      mode: TemporalFilterMode.YEAR, month: 4, year: 2026, startDate: '2026-01-01', endDate: '2026-12-31',
+      tempMode: TemporalFilterMode.YEAR, tempMonth: 4, tempYear: 2026, tempStartDate: '2026-01-01', tempEndDate: '2026-12-31',
+      isOpen: false, label: 'Ano todo, 2026', defaultYear: 2026
+    },
     pendingExpenses: [
       { id: '1', description: 'Aluguel', amount: 1500, type: 'expense', dueDate: '2026-05-10', paymentMethod: 'Pix', category: 'housing' }
     ],

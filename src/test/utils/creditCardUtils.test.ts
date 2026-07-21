@@ -38,4 +38,15 @@ describe('creditCardUtils', () => {
     const sepData = result[6].data; // Sep 2026
     expect(sepData.total).toBe(0); // None
   });
+
+  it('should generate invoice months for the selected interval', () => {
+    const result = calculateCreditCardBills([], new Date('2026-06-20T12:00:00Z'), 'pt-BR', {
+      start: new Date(2026, 0, 1),
+      end: new Date(2026, 11, 31),
+    });
+
+    expect(result).toHaveLength(12);
+    expect(result[0].key).toBe('2026-01');
+    expect(result[11].key).toBe('2026-12');
+  });
 });

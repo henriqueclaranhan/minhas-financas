@@ -1,0 +1,1 @@
+- [x] Add the shared temporal filter with full current year as the default invoice range.

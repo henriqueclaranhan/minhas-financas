@@ -1,4 +1,4 @@
-import { parseISO, addMonths, format } from 'date-fns';
+import { parseISO, addMonths, eachMonthOfInterval, format } from 'date-fns';
 import type { SupportedLocale } from '../i18n/translations';
 import type { Transaction } from '../types';
 import { TransactionType, PaymentMethod } from '../enums/FinanceEnums';
@@ -21,7 +21,12 @@ interface MonthData {
   index: number;
 }
 
-export function calculateCreditCardBills(transactions: Transaction[], currentDate = new Date(), locale: SupportedLocale = 'pt-BR'): MonthData[] {
+export function calculateCreditCardBills(
+  transactions: Transaction[],
+  currentDate = new Date(),
+  locale: SupportedLocale = 'pt-BR',
+  interval?: { start: Date; end: Date },
+): MonthData[] {
   const monthlyBills: Record<string, MonthlyBill> = {};
 
   transactions.forEach(t => {
@@ -48,8 +53,11 @@ export function calculateCreditCardBills(transactions: Transaction[], currentDat
     }
   });
 
-  return Array.from({ length: 12 }).map((_, i) => {
-    const date = addMonths(currentDate, i - 3);
+  const months = interval
+    ? eachMonthOfInterval(interval)
+    : Array.from({ length: 12 }, (_, index) => addMonths(currentDate, index - 3));
+
+  return months.map((date, i) => {
     const key = format(date, 'yyyy-MM');
     const labelFull = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(date);
     const labelShort = new Intl.DateTimeFormat(locale, { month: 'short' }).format(date).replace('.', '').toUpperCase();

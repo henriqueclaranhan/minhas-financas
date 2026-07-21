@@ -4,11 +4,16 @@ import { BrowserRouter } from 'react-router-dom';
 import { TransactionsPage } from '../../../pages/TransactionsPage/TransactionsPage';
 import { useTransactionsViewModel } from '../../../pages/TransactionsPage/hooks/useTransactionsViewModel';
 import { PaymentMethod } from '../../../enums/FinanceEnums';
+import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 vi.mock('../../../pages/TransactionsPage/hooks/useTransactionsViewModel');
 
 describe('TransactionsPage UI', () => {
   const mockActions = {
+    temporal: {
+      open: vi.fn(), apply: vi.fn(), reset: vi.fn(), matchesDate: vi.fn(), setIsOpen: vi.fn(),
+      setTempMode: vi.fn(), setTempMonth: vi.fn(), setTempYear: vi.fn(), setTempStartDate: vi.fn(), setTempEndDate: vi.fn()
+    },
     setFilter: vi.fn(),
     setSearchQuery: vi.fn(),
     openNewModal: vi.fn(),
@@ -29,6 +34,11 @@ describe('TransactionsPage UI', () => {
   };
 
   const mockState = {
+    temporal: {
+      mode: TemporalFilterMode.MONTH, month: 4, year: 2026, startDate: '2026-05-01', endDate: '2026-05-31',
+      tempMode: TemporalFilterMode.MONTH, tempMonth: 4, tempYear: 2026, tempStartDate: '2026-05-01', tempEndDate: '2026-05-31',
+      isOpen: false, label: 'Maio de 2026', defaultYear: 2026
+    },
     transactions: [
       { id: '1', description: 'Mercado', amount: 150, type: 'expense', date: '2026-05-10', paymentMethod: PaymentMethod.CREDIT }
     ],

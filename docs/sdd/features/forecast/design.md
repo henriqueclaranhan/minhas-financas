@@ -9,8 +9,8 @@
 - **Components:** Forecast Line Chart, Future Balance Table, Parameters Form (e.g., months ahead).
 - **Layout:** Chart-dominant layout with a data table below.
 - **Spacing:** The content wrapper does not add a flex gap; each panel uses the same component margins applied on other pages.
-- **Projection toggles:** The toggle container does not add bottom margin because it is the final element inside the filter panel.
-- **Filter context:** The projected year or date range uses the shared primary period context above projection toggles.
+- **Projection toggles:** Planned income and expense controls live in a dedicated panel immediately before the projection chart.
+- **Filter context:** The shared temporal panel supports Month, Year, and custom Period independently from projection characteristics.
 - **Summary order:** The forecast filter panel renders before the period summary cards and projection chart.
 - **Summary spacing:** The filter-to-summary and summary-to-chart gaps both use `--spacing-lg`.
 
