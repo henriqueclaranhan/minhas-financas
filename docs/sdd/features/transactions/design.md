@@ -9,7 +9,8 @@
 - **Components:** Transaction List/Table, Filters (Date, Category), Add/Edit Modal (`TransactionForm`).
 - **Layout:** List view with a header containing actions and filters.
 - **Filter context:** The selected period is the primary visual context above type tabs and search; method and category remain secondary badges.
-- **Summary order:** Type tabs render above the summary cards and affect the list only. The period/search filter panel remains below the cards; summary totals retain both transaction types while respecting detailed filters.
+- **Summary order:** Type tabs and the detailed filter panel render above the summary cards. Type tabs affect the list only; summary totals retain both transaction types while respecting detailed filters.
+- **Spacing:** The filter-to-summary and summary-to-table gaps both use `--spacing-lg`.
 
 ### 2.2 ViewModel (`useTransactionsViewModel.ts`)
 - **State:** Transactions list, applied filters, modal visibility, currently editing transaction, loading status.

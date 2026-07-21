@@ -4,6 +4,7 @@
   justify-content: space-between;
   align-items: center;
 }
+.planned-expenses-page .period-summary-cards { margin-bottom: var(--spacing-lg); }
 .mr-sm { margin-right: 8px; }
 .panel-no-padding { padding: 0; overflow: hidden; }
 .delete-modal-content { margin-bottom: 24px; }

@@ -61,11 +61,6 @@ export function ForecastPage() {
         showBackButton={true}
       />
 
-      <PeriodSummaryCards 
-        income={totalIncome} 
-        expense={totalExpense} 
-      />
-
       <div className="forecast-content">
         <div className="glass-panel filter-tabs-panel">
           <PeriodContext
@@ -106,6 +101,11 @@ export function ForecastPage() {
           </div>
 
         </div>
+
+        <PeriodSummaryCards
+          income={totalIncome}
+          expense={totalExpense}
+        />
 
         <div>
           <DashboardChart
@@ -182,5 +182,4 @@ export function ForecastPage() {
     </div>
   );
 }
-
 

@@ -21,7 +21,7 @@ export function TransactionsPage() {
   const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];
 
   return (
-    <div className="animate-fade-in">
+    <div className="animate-fade-in transactions-page">
       <PageHeader 
         title={t('transactions.title')}
         description={t('transactions.description')}
@@ -34,11 +34,6 @@ export function TransactionsPage() {
 
       <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
 
-      <PeriodSummaryCards
-        income={state.totalIncome}
-        expense={state.totalExpense}
-      />
-
       <FilterTabs
         searchQuery={state.searchQuery}
         setSearchQuery={actions.setSearchQuery}
@@ -46,6 +41,11 @@ export function TransactionsPage() {
         activeDateLabel={state.filterLabel}
         activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
         activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
+      />
+
+      <PeriodSummaryCards
+        income={state.totalIncome}
+        expense={state.totalExpense}
       />
 
       

@@ -9,7 +9,10 @@
 - **Components:** Forecast Line Chart, Future Balance Table, Parameters Form (e.g., months ahead).
 - **Layout:** Chart-dominant layout with a data table below.
 - **Spacing:** The content wrapper does not add a flex gap; each panel uses the same component margins applied on other pages.
+- **Projection toggles:** The toggle container does not add bottom margin because it is the final element inside the filter panel.
 - **Filter context:** The projected year or date range uses the shared primary period context above projection toggles.
+- **Summary order:** The forecast filter panel renders before the period summary cards and projection chart.
+- **Summary spacing:** The filter-to-summary and summary-to-chart gaps both use `--spacing-lg`.
 
 ### 2.2 ViewModel (`useForecastViewModel.ts`)
 - **State:** Forecast data points, projection parameters (months), loading status.
