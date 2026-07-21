@@ -56,13 +56,44 @@ service cloud.firestore {
         && validOptionalString(data, 'sourcePlannedExpenseId', 128);
     }
 
+    function validCompetenceEntry(data) {
+      return data.keys().hasAll([
+          'transactionId', 'description', 'amount', 'competenceDate', 'originalDate',
+          'paymentMethod', 'type', 'installmentNumber', 'totalInstallments'
+        ])
+        && data.keys().hasOnly([
+          'transactionId', 'description', 'amount', 'competenceDate', 'originalDate',
+          'paymentMethod', 'type', 'category', 'installmentNumber', 'totalInstallments'
+        ])
+        && data.transactionId is string && data.transactionId.size() > 0 && data.transactionId.size() <= 128
+        && data.description is string && data.description.size() > 0 && data.description.size() <= 200
+        && data.amount is number && data.amount > 0
+        && validDate(data.competenceDate)
+        && validDate(data.originalDate)
+        && data.paymentMethod in ['credit', 'debit', 'pix', 'cash', 'transfer', 'boleto']
+        && data.type in ['income', 'expense']
+        && validOptionalString(data, 'category', 100)
+        && data.installmentNumber is int && data.installmentNumber >= 1 && data.installmentNumber <= 360
+        && data.totalInstallments is int
+        && data.totalInstallments >= data.installmentNumber
+        && data.totalInstallments <= 360;
+    }
+
     match /users/{userId} {
       allow read: if isOwner(userId);
       allow create, update: if isOwner(userId)
-        && request.resource.data.keys().hasOnly(['initialBalance'])
+        && request.resource.data.keys().hasOnly(['initialBalance', 'financeSchemaVersion', 'financeMigrationCursor'])
         && (!('initialBalance' in request.resource.data)
           || request.resource.data.initialBalance == null
-          || request.resource.data.initialBalance is number);
+          || request.resource.data.initialBalance is number)
+        && (!('financeSchemaVersion' in request.resource.data)
+          || (request.resource.data.financeSchemaVersion is int
+            && request.resource.data.financeSchemaVersion >= 1
+            && request.resource.data.financeSchemaVersion <= 2))
+        && (!('financeMigrationCursor' in request.resource.data)
+          || request.resource.data.financeMigrationCursor == null
+          || (request.resource.data.financeMigrationCursor is string
+            && request.resource.data.financeMigrationCursor.size() <= 128));
       allow delete: if false;
 
       match /transactions/{transactionId} {
@@ -82,6 +113,36 @@ service cloud.firestore {
           && validPlannedExpense(request.resource.data)
           && fieldUnchanged(resource.data, request.resource.data, 'sourcePlannedExpenseId')
           && (resource.data.status == 'pending' || request.resource.data.status == resource.data.status);
+        allow delete: if isOwner(userId);
+      }
+
+      match /competenceEntries/{entryId} {
+        allow read: if isOwner(userId);
+        allow create: if isOwner(userId) && validCompetenceEntry(request.resource.data);
+        allow update: if isOwner(userId)
+          && validCompetenceEntry(request.resource.data)
+          && request.resource.data.transactionId == resource.data.transactionId
+          && request.resource.data.installmentNumber == resource.data.installmentNumber;
+        allow delete: if isOwner(userId);
+      }
+
+      match /importJobs/{jobId} {
+        allow read: if isOwner(userId);
+        allow create, update: if isOwner(userId)
+          && request.resource.data.keys().hasAll(['fingerprint', 'status', 'processed', 'total', 'updatedAt'])
+          && request.resource.data.keys().hasOnly(['fingerprint', 'status', 'processed', 'total', 'updatedAt', 'error'])
+          && request.resource.data.fingerprint is string
+          && request.resource.data.fingerprint.size() > 0
+          && request.resource.data.fingerprint.size() <= 100
+          && request.resource.data.status in ['validated', 'writing', 'completed', 'failed']
+          && request.resource.data.processed is int
+          && request.resource.data.processed >= 0
+          && request.resource.data.total is int
+          && request.resource.data.total >= request.resource.data.processed
+          && request.resource.data.total <= 50001
+          && request.resource.data.updatedAt is string
+          && request.resource.data.updatedAt.size() <= 40
+          && validOptionalString(request.resource.data, 'error', 500);
         allow delete: if isOwner(userId);
       }
     }
