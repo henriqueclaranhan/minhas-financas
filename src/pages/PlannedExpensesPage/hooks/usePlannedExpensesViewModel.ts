@@ -1,12 +1,13 @@
 import { useEffect, useState, useMemo } from 'react';
 import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
-import { FilterType, TransactionType, ExpenseStatus } from '../../../enums/FinanceEnums';
+import { FilterType, TransactionType, ExpenseStatus, ExpenseCategory, IncomeCategory } from '../../../enums/FinanceEnums';
 import type { PlannedExpense, Transaction } from '../../../types';
 import { expandPlannedExpenses } from '../../../utils/financeUtils';
 import type { ExpandedPlannedExpense } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
 import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
+import { useQueryParamState } from '../../../hooks/useQueryParamState';
 
 export function usePlannedExpensesViewModel() {
   const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense, isLoading } = useFinance();
@@ -15,10 +16,18 @@ export function usePlannedExpensesViewModel() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filter, setFilter] = useState<FilterType>(FilterType.ALL);
+  const [filter, setFilter] = useQueryParamState(
+    'type',
+    FilterType.ALL,
+    value => Object.values(FilterType).includes(value as FilterType) ? value as FilterType : undefined,
+  );
   const [searchQuery, setSearchQuery] = useState('');
 
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useQueryParamState(
+    'category',
+    'all',
+    value => value && [...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)].includes(value as ExpenseCategory) ? value : undefined,
+  );
 
   const [tempCategoryFilter, setTempCategoryFilter] = useState('all');
 

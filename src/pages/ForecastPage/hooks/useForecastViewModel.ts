@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
@@ -7,6 +7,7 @@ import { TemporalFilterMode } from '../../../enums/UIEnums';
 import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
+import { useQueryParamState } from '../../../hooks/useQueryParamState';
 
 export function useForecastViewModel() {
   const { transactions, plannedExpenses, initialBalance, isLoading: isFinanceLoading } = useFinance();
@@ -14,8 +15,12 @@ export function useForecastViewModel() {
 
   const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
 
-  const [includePlannedIncome, setIncludePlannedIncome] = useState(true);
-  const [includePlannedExpense, setIncludePlannedExpense] = useState(true);
+  const [includePlannedIncome, setIncludePlannedIncome] = useQueryParamState(
+    'plannedIncome', true, value => value === 'false' ? false : value === 'true' ? true : undefined, value => value ? null : 'false',
+  );
+  const [includePlannedExpense, setIncludePlannedExpense] = useQueryParamState(
+    'plannedExpense', true, value => value === 'false' ? false : value === 'true' ? true : undefined, value => value ? null : 'false',
+  );
   
   const { mode, month, year, startDate: rangeStart, endDate: rangeEnd } = temporal.state;
   const { startDate, endDate } = useMemo(() => {

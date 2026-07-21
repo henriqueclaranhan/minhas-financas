@@ -29,7 +29,7 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
         </div>
       </Link>
 
-      <Link to="/transactions" state={{ filter: FilterType.INCOME }} className="glass-panel summary-card summary-card-navigable hover-lift" style={{ textDecoration: 'none' }}>
+      <Link to={`/transactions?type=${FilterType.INCOME}`} className="glass-panel summary-card summary-card-navigable hover-lift" style={{ textDecoration: 'none' }}>
         <ChevronRight className="summary-card-navigation-arrow" size={20} aria-hidden="true" />
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper success">

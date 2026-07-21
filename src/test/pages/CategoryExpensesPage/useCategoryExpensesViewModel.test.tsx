@@ -1,4 +1,6 @@
+import type { ReactNode } from 'react';
 import { act, renderHook } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { PaymentMethod, TransactionType } from '../../../enums/FinanceEnums';
 import { useCategoryExpensesViewModel } from '../../../pages/CategoryExpensesPage/hooks/useCategoryExpensesViewModel';
@@ -15,9 +17,11 @@ const alternateDate = new Date(currentYear, currentMonth - 1, 10);
 const alternateYear = alternateDate.getFullYear();
 const alternateMonth = alternateDate.getMonth();
 const alternateMonthValue = String(alternateMonth + 1).padStart(2, '0');
+const wrapper = ({ children }: { children: ReactNode }) => <MemoryRouter>{children}</MemoryRouter>;
 
 describe('useCategoryExpensesViewModel', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.mocked(useLocale).mockReturnValue({
       locale: 'pt-BR',
       formatCurrency: (value: number) => `R$ ${value.toFixed(2)}`,
@@ -49,7 +53,7 @@ describe('useCategoryExpensesViewModel', () => {
   });
 
   it('defaults to the current month', () => {
-    const { result } = renderHook(() => useCategoryExpensesViewModel());
+    const { result } = renderHook(() => useCategoryExpensesViewModel(), { wrapper });
 
     expect(result.current.state.filterMode).toBe('month');
     expect(result.current.state.selectedMonth).toBe(currentMonth);
@@ -61,7 +65,7 @@ describe('useCategoryExpensesViewModel', () => {
   });
 
   it('applies another month and resets to the current month', () => {
-    const { result } = renderHook(() => useCategoryExpensesViewModel());
+    const { result } = renderHook(() => useCategoryExpensesViewModel(), { wrapper });
 
     act(() => {
       result.current.actions.setTempSelectedMonth(alternateMonth);
@@ -79,7 +83,7 @@ describe('useCategoryExpensesViewModel', () => {
   });
 
   it('applies a valid custom range', () => {
-    const { result } = renderHook(() => useCategoryExpensesViewModel());
+    const { result } = renderHook(() => useCategoryExpensesViewModel(), { wrapper });
 
     act(() => result.current.actions.setTempFilterMode('range'));
     act(() => {
@@ -93,7 +97,7 @@ describe('useCategoryExpensesViewModel', () => {
   });
 
   it('keeps the modal open and reports an invalid range', () => {
-    const { result } = renderHook(() => useCategoryExpensesViewModel());
+    const { result } = renderHook(() => useCategoryExpensesViewModel(), { wrapper });
 
     act(() => result.current.actions.handleOpenFilters());
     act(() => result.current.actions.setTempFilterMode('range'));

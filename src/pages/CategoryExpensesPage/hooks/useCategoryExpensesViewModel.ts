@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { endOfMonth, format, parseISO, startOfMonth } from 'date-fns';
+import { endOfMonth, format, isValid, parseISO, startOfMonth } from 'date-fns';
+import { useSearchParams } from 'react-router-dom';
 import { useFinance } from '../../../store/FinanceContext';
 import { useLocale } from '../../../store/LocaleContext';
 import { calculateCompetenceExpensesByCategory } from '../../../utils/categoryExpenseUtils';
@@ -14,19 +15,34 @@ export function useCategoryExpensesViewModel() {
   const defaultYear = now.getFullYear();
   const defaultStartDate = startOfMonth(now);
   const defaultEndDate = endOfMonth(now);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const queryMode = searchParams.get('mode');
+  const queryMonth = Number(searchParams.get('month'));
+  const queryYear = Number(searchParams.get('year'));
+  const queryStart = searchParams.get('start');
+  const queryEnd = searchParams.get('end');
+  const initialMode = Object.values(CategoryExpenseFilterMode).includes(queryMode as CategoryExpenseFilterModeValue)
+    ? queryMode as CategoryExpenseFilterModeValue
+    : CategoryExpenseFilterMode.MONTH;
+  const initialMonth = Number.isInteger(queryMonth) && queryMonth >= 1 && queryMonth <= 12 ? queryMonth - 1 : defaultMonth;
+  const initialYear = Number.isInteger(queryYear) && queryYear >= 1900 && queryYear <= 9999 ? queryYear : defaultYear;
+  const parsedStart = queryStart ? parseISO(queryStart) : defaultStartDate;
+  const parsedEnd = queryEnd ? parseISO(queryEnd) : defaultEndDate;
+  const initialStart = queryStart && /^\d{4}-\d{2}-\d{2}$/.test(queryStart) && isValid(parsedStart) ? parsedStart : defaultStartDate;
+  const initialEnd = queryEnd && /^\d{4}-\d{2}-\d{2}$/.test(queryEnd) && isValid(parsedEnd) ? parsedEnd : defaultEndDate;
 
-  const [filterMode, setFilterMode] = useState<CategoryExpenseFilterModeValue>(CategoryExpenseFilterMode.MONTH);
-  const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
-  const [selectedYear, setSelectedYear] = useState(defaultYear);
-  const [startDate, setStartDate] = useState(defaultStartDate);
-  const [endDate, setEndDate] = useState(defaultEndDate);
+  const filterMode = initialMode;
+  const selectedMonth = initialMonth;
+  const selectedYear = initialYear;
+  const startDate = filterMode === CategoryExpenseFilterMode.MONTH ? startOfMonth(new Date(selectedYear, selectedMonth, 1)) : initialStart;
+  const endDate = filterMode === CategoryExpenseFilterMode.MONTH ? endOfMonth(new Date(selectedYear, selectedMonth, 1)) : initialEnd;
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  const [tempFilterMode, setTempFilterMode] = useState<CategoryExpenseFilterModeValue>(CategoryExpenseFilterMode.MONTH);
-  const [tempSelectedMonth, setTempSelectedMonth] = useState(defaultMonth);
-  const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
-  const [tempStartDate, setTempStartDate] = useState(defaultStartDate);
-  const [tempEndDate, setTempEndDate] = useState(defaultEndDate);
+  const [tempFilterMode, setTempFilterMode] = useState<CategoryExpenseFilterModeValue>(initialMode);
+  const [tempSelectedMonth, setTempSelectedMonth] = useState(initialMonth);
+  const [tempSelectedYear, setTempSelectedYear] = useState(initialYear);
+  const [tempStartDate, setTempStartDate] = useState(initialStart);
+  const [tempEndDate, setTempEndDate] = useState(initialEnd);
   const [filterErrorKey, setFilterErrorKey] = useState<string | null>(null);
 
   const startDateIso = format(startDate, 'yyyy-MM-dd');
@@ -79,34 +95,29 @@ export function useCategoryExpensesViewModel() {
       return;
     }
 
-    setFilterMode(tempFilterMode);
     setFilterErrorKey(null);
-
-    if (tempFilterMode === CategoryExpenseFilterMode.MONTH) {
-      const monthDate = new Date(tempSelectedYear, tempSelectedMonth, 1);
-      setSelectedMonth(tempSelectedMonth);
-      setSelectedYear(tempSelectedYear);
-      setStartDate(startOfMonth(monthDate));
-      setEndDate(endOfMonth(monthDate));
-    } else {
-      setStartDate(tempStartDate);
-      setEndDate(tempEndDate);
-    }
+    setSearchParams(() => {
+      const next = new URLSearchParams({ mode: tempFilterMode });
+      if (tempFilterMode === CategoryExpenseFilterMode.MONTH) {
+        next.set('month', String(tempSelectedMonth + 1));
+        next.set('year', String(tempSelectedYear));
+      } else {
+        next.set('start', format(tempStartDate, 'yyyy-MM-dd'));
+        next.set('end', format(tempEndDate, 'yyyy-MM-dd'));
+      }
+      return next;
+    }, { replace: true });
 
     setIsFilterModalOpen(false);
   };
 
   const handleResetFilters = () => {
-    setFilterMode(CategoryExpenseFilterMode.MONTH);
-    setSelectedMonth(defaultMonth);
-    setSelectedYear(defaultYear);
-    setStartDate(defaultStartDate);
-    setEndDate(defaultEndDate);
     setTempFilterMode(CategoryExpenseFilterMode.MONTH);
     setTempSelectedMonth(defaultMonth);
     setTempSelectedYear(defaultYear);
     setTempStartDate(defaultStartDate);
     setTempEndDate(defaultEndDate);
+    setSearchParams({}, { replace: true });
     setFilterErrorKey(null);
     setIsFilterModalOpen(false);
   };

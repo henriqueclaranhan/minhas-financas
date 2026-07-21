@@ -25,6 +25,7 @@ const wrapper = ({ children }: { children: ReactNode }) => (
 
 describe('category filters in list view models', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.clearAllMocks();
     vi.mocked(useAuth).mockReturnValue({ user: null } as any);
     vi.mocked(useLocale).mockReturnValue({

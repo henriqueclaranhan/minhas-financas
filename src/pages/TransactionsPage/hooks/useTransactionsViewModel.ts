@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
-import { useLocation } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { FilterType } from '../../../enums/FinanceEnums';
 import type { Transaction } from '../../../types';
 import { useFinance } from '../../../store/FinanceContext';
@@ -10,24 +10,40 @@ import { useAuth } from '../../../store/AuthContext';
 import { TransactionService } from '../../../services/TransactionService';
 import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
+import { useQueryParamState } from '../../../hooks/useQueryParamState';
+import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../../../enums/FinanceEnums';
 
 export function useTransactionsViewModel() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction, isLoading: isFinanceLoading } = useFinance();
   const { user } = useAuth();
+  const [, setSearchParams] = useSearchParams();
   const temporal = useTemporalFilter(TemporalFilterMode.MONTH);
   const { matchesDate } = temporal.actions;
   
-  const location = useLocation();
-  const initialFilter = location.state?.filter === FilterType.INCOME ? FilterType.INCOME : location.state?.filter === FilterType.EXPENSE ? FilterType.EXPENSE : FilterType.ALL;
-  
+  const [queryFilter, setQueryFilter] = useQueryParamState(
+    'type',
+    FilterType.ALL,
+    value => Object.values(FilterType).includes(value as FilterType) ? value as FilterType : undefined,
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  const [filter, setFilter] = useState<FilterType>(initialFilter);
+  const filter = queryFilter;
+  const setFilter = useCallback((value: FilterType) => {
+    setQueryFilter(value);
+  }, [setQueryFilter]);
   const [searchQuery, setSearchQuery] = useState('');
   
   // Active filters
-  const [methodFilter, setMethodFilter] = useState('all');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [methodFilter] = useQueryParamState(
+    'method',
+    'all',
+    value => value && Object.values(PaymentMethod).includes(value as PaymentMethod) ? value : undefined,
+  );
+  const [categoryFilter] = useQueryParamState(
+    'category',
+    'all',
+    value => value && [...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)].includes(value as ExpenseCategory) ? value : undefined,
+  );
 
   // Temporary filters for modal
   const [tempMethodFilter, setTempMethodFilter] = useState('all');
@@ -164,14 +180,24 @@ export function useTransactionsViewModel() {
   };
 
   const handleApplyFilters = () => {
-    setMethodFilter(tempMethodFilter);
-    setCategoryFilter(tempCategoryFilter);
+    setSearchParams(current => {
+      const next = new URLSearchParams(current);
+      if (tempMethodFilter === 'all') next.delete('method');
+      else next.set('method', tempMethodFilter);
+      if (tempCategoryFilter === 'all') next.delete('category');
+      else next.set('category', tempCategoryFilter);
+      return next;
+    }, { replace: true });
     setIsFilterModalOpen(false);
   };
 
   const handleResetFilters = () => {
-    setMethodFilter('all');
-    setCategoryFilter('all');
+    setSearchParams(current => {
+      const next = new URLSearchParams(current);
+      next.delete('method');
+      next.delete('category');
+      return next;
+    }, { replace: true });
     setTempMethodFilter('all');
     setTempCategoryFilter('all');
     

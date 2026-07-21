@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { endOfMonth, format, isWithinInterval, parseISO, startOfMonth } from 'date-fns';
 import { TemporalFilterMode, type TemporalFilterMode as TemporalFilterModeValue } from '../enums/UIEnums';
 import { useLocale } from '../store/LocaleContext';
@@ -11,20 +12,37 @@ export interface TemporalFilterInitialState {
   endDate?: string;
 }
 
+function isIsoDate(value: unknown): value is string {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(parseISO(value).getTime());
+}
+
 export function useTemporalFilter(defaultMode: TemporalFilterModeValue, initialState: TemporalFilterInitialState = {}) {
   const { locale, t } = useLocale();
+  const [searchParams, setSearchParams] = useSearchParams();
   const now = new Date();
-  const defaultMonth = initialState.month ?? now.getMonth();
-  const defaultYear = initialState.year ?? now.getFullYear();
-  const defaultStartDate = initialState.startDate ?? format(startOfMonth(now), 'yyyy-MM-dd');
-  const defaultEndDate = initialState.endDate ?? format(endOfMonth(now), 'yyyy-MM-dd');
-  const initialMode = initialState.mode ?? defaultMode;
+  const fallback = {
+    mode: initialState.mode ?? defaultMode,
+    month: initialState.month ?? now.getMonth(),
+    year: initialState.year ?? now.getFullYear(),
+    startDate: initialState.startDate ?? format(startOfMonth(now), 'yyyy-MM-dd'),
+    endDate: initialState.endDate ?? format(endOfMonth(now), 'yyyy-MM-dd'),
+  };
+  const defaultMonth = fallback.month;
+  const defaultYear = fallback.year;
+  const defaultStartDate = fallback.startDate;
+  const defaultEndDate = fallback.endDate;
+  const initialMode = fallback.mode;
 
-  const [mode, setMode] = useState(initialMode);
-  const [month, setMonth] = useState(defaultMonth);
-  const [year, setYear] = useState(defaultYear);
-  const [startDate, setStartDate] = useState(defaultStartDate);
-  const [endDate, setEndDate] = useState(defaultEndDate);
+  const queryMode = searchParams.get('mode');
+  const queryMonth = Number(searchParams.get('month'));
+  const queryYear = Number(searchParams.get('year'));
+  const queryStartDate = searchParams.get('start');
+  const queryEndDate = searchParams.get('end');
+  const mode = Object.values(TemporalFilterMode).includes(queryMode as TemporalFilterModeValue) ? queryMode as TemporalFilterModeValue : fallback.mode;
+  const month = Number.isInteger(queryMonth) && queryMonth >= 1 && queryMonth <= 12 ? queryMonth - 1 : fallback.month;
+  const year = Number.isInteger(queryYear) && queryYear >= 1900 && queryYear <= 9999 ? queryYear : fallback.year;
+  const startDate = isIsoDate(queryStartDate) ? queryStartDate : fallback.startDate;
+  const endDate = isIsoDate(queryEndDate) ? queryEndDate : fallback.endDate;
   const [tempMode, setTempMode] = useState(initialMode);
   const [tempMonth, setTempMonth] = useState(defaultMonth);
   const [tempYear, setTempYear] = useState(defaultYear);
@@ -42,11 +60,21 @@ export function useTemporalFilter(defaultMode: TemporalFilterModeValue, initialS
   };
 
   const apply = () => {
-    setMode(tempMode);
-    setMonth(tempMonth);
-    setYear(tempYear);
-    setStartDate(tempStartDate);
-    setEndDate(tempEndDate);
+    setSearchParams(current => {
+      const next = new URLSearchParams(current);
+      next.set('mode', tempMode);
+      next.set('year', String(tempYear));
+      if (tempMode === TemporalFilterMode.MONTH) next.set('month', String(tempMonth + 1));
+      else next.delete('month');
+      if (tempMode === TemporalFilterMode.PERIOD) {
+        next.set('start', tempStartDate);
+        next.set('end', tempEndDate);
+      } else {
+        next.delete('start');
+        next.delete('end');
+      }
+      return next;
+    }, { replace: true });
     setIsOpen(false);
   };
 
