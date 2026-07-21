@@ -3,9 +3,9 @@
 - [x] 1. Enforce canonical enum values in forms, onboarding, navigation state, and planned-expense persistence.
   - [x] Replace repeated domain strings with existing constants.
   - [x] Add assertions for persisted planned-expense statuses.
-- [ ] 2. Remove verified dead files, assets, exports, functions, and test-only helpers.
-  - [ ] Remove orphan Firebase service, dashboard barrel, and starter assets.
-  - [ ] Remove unused transaction fetch and date-paste helpers with obsolete tests.
+- [x] 2. Remove verified dead files, assets, exports, functions, and test-only helpers.
+  - [x] Remove orphan Firebase service, dashboard barrel, and starter assets.
+  - [x] Remove unused transaction fetch and date-paste helpers with obsolete tests.
 - [ ] 3. Route page mutations exclusively through `FinanceContext`.
   - [ ] Remove direct service and unauthenticated fallback branches from ViewModels.
   - [ ] Replace mutation payload `any` types with domain types.

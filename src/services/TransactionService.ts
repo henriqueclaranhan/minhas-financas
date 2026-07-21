@@ -1,4 +1,4 @@
-import { collection, doc, addDoc, updateDoc, deleteDoc, getDocs, query, onSnapshot } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { Transaction } from '../types';
 
@@ -26,17 +26,6 @@ export class TransactionService {
   static async deleteTransaction(uid: string, transactionId: string): Promise<void> {
     if (!uid || !transactionId) throw new Error("User ID and Transaction ID are required");
     await deleteDoc(doc(db, 'users', uid, 'transactions', transactionId));
-  }
-
-  /**
-   * Fetches all transactions for a user
-   */
-  static async fetchTransactions(uid: string): Promise<Transaction[]> {
-    if (!uid) throw new Error("User ID is required");
-    const snapshot = await getDocs(query(collection(db, 'users', uid, 'transactions')));
-    const txs: Transaction[] = [];
-    snapshot.forEach(d => txs.push({ ...d.data(), id: d.id } as Transaction));
-    return txs;
   }
 
   /**
