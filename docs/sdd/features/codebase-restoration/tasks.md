@@ -1,0 +1,21 @@
+# Codebase Restoration Tasks
+
+- [x] 1. Enforce canonical enum values in forms, onboarding, navigation state, and planned-expense persistence.
+  - [x] Replace repeated domain strings with existing constants.
+  - [x] Add assertions for persisted planned-expense statuses.
+- [ ] 2. Remove verified dead files, assets, exports, functions, and test-only helpers.
+  - [ ] Remove orphan Firebase service, dashboard barrel, and starter assets.
+  - [ ] Remove unused transaction fetch and date-paste helpers with obsolete tests.
+- [ ] 3. Route page mutations exclusively through `FinanceContext`.
+  - [ ] Remove direct service and unauthenticated fallback branches from ViewModels.
+  - [ ] Replace mutation payload `any` types with domain types.
+- [ ] 4. Extract repeated UI and interaction behavior.
+  - [ ] Share finance-entry modal and form fields.
+  - [ ] Share month/year filter fields.
+  - [ ] Share long-press action behavior.
+- [ ] 5. Narrow public APIs and replace repeated application modes with constants.
+  - [ ] Remove unnecessary exports.
+  - [ ] Introduce shared action/filter constants and remove avoidable casts.
+- [ ] 6. Remove stale comments and resolve lint warnings.
+  - [ ] Fix hook dependencies, empty catches, and regular expressions.
+  - [ ] Split context providers and hooks for Fast Refresh compatibility.

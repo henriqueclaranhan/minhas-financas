@@ -4,7 +4,7 @@ import { Modal } from '../../components/Modal';
 import { PlannedExpenseForm } from '../../components/PlannedExpenseForm';
 import { TransactionForm } from '../../components/TransactionForm';
 import type { PlannedExpense } from '../../types';
-import { ExpenseCategory, FilterType, IncomeCategory, TransactionType } from '../../enums/FinanceEnums';
+import { ExpenseCategory, FilterType, IncomeCategory, PaymentMethod, TransactionType } from '../../enums/FinanceEnums';
 import { FilterTabs } from '../../components/shared/FilterTabs';
 import { PlannedExpenseTable } from './components/PlannedExpenseTable';
 import { usePlannedExpensesViewModel } from './hooks/usePlannedExpensesViewModel';
@@ -68,7 +68,7 @@ export function PlannedExpensesPage() {
         />
       </Modal>
 
-      <Modal isOpen={!!state.expenseToConfirm} onClose={() => actions.setExpenseToConfirm(null)} title={state.expenseToConfirm?.type === 'income' ? t('planning.confirmReceipt') : t('planning.confirmPayment')}>
+      <Modal isOpen={!!state.expenseToConfirm} onClose={() => actions.setExpenseToConfirm(null)} title={state.expenseToConfirm?.type === TransactionType.INCOME ? t('planning.confirmReceipt') : t('planning.confirmPayment')}>
         {state.expenseToConfirm && (
           <TransactionForm 
             onSubmit={actions.confirmAction} 
@@ -76,11 +76,11 @@ export function PlannedExpensesPage() {
               description: state.expenseToConfirm.description,
               amount: state.expenseToConfirm.amount,
               date: state.expenseToConfirm.dueDate,
-              type: state.expenseToConfirm.type || 'expense',
-              paymentMethod: state.expenseToConfirm.type === 'income' ? 'Pix' : 'Pix',
+              type: state.expenseToConfirm.type || TransactionType.EXPENSE,
+              paymentMethod: PaymentMethod.PIX,
               installments: 1
             }}
-            defaultType={state.expenseToConfirm.type || 'expense'}
+            defaultType={state.expenseToConfirm.type || TransactionType.EXPENSE}
           />
         )}
       </Modal>

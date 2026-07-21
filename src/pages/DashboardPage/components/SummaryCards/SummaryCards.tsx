@@ -2,6 +2,7 @@ import { DollarSign, TrendingUp, TrendingDown, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './SummaryCards.css';
 import { useLocale } from '../../../../store/LocaleContext';
+import { FilterType } from '../../../../enums/FinanceEnums';
 
 interface SummaryCardsProps {
   currentBalance: number;
@@ -27,7 +28,7 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
         </div>
       </div>
 
-      <Link to="/transactions" state={{ filter: 'income' }} className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
+      <Link to="/transactions" state={{ filter: FilterType.INCOME }} className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper success">
             <TrendingUp size={20} color="var(--clr-success)" />
@@ -39,7 +40,7 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
         </div>
       </Link>
 
-      <Link to="/transactions" state={{ filter: 'expense' }} className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
+      <Link to="/transactions" state={{ filter: FilterType.EXPENSE }} className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper danger">
             <TrendingDown size={20} color="var(--clr-danger)" />

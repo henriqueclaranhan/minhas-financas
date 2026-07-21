@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, DollarSign, CreditCard, AlignLeft, Layers, Tag } from 'lucide-react';
 import type { Transaction } from '../../types';
-import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../../enums/FinanceEnums';
+import { ExpenseCategory, IncomeCategory, PaymentMethod, TransactionType } from '../../enums/FinanceEnums';
 import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { getLocalDateString } from '../../utils/dateUtils';
@@ -14,10 +14,10 @@ import '../../styles/FormStyles.css';
 interface TransactionFormProps {
   onSubmit: (transaction: Omit<Transaction, 'id'>) => void;
   initialData?: Partial<Transaction>;
-  defaultType?: 'income' | 'expense';
+  defaultType?: TransactionType;
 }
 
-export function TransactionForm({ onSubmit, initialData, defaultType = 'expense' }: TransactionFormProps) {
+export function TransactionForm({ onSubmit, initialData, defaultType = TransactionType.EXPENSE }: TransactionFormProps) {
   const isMobile = useIsMobile();
   const { t, formatCurrency, locale } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
@@ -28,7 +28,7 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
   const [category, setCategory] = useState(initialData?.category || '');
   const [currentStep, setCurrentStep] = useState(1);
 
-  const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
+  const [type, setType] = useState<TransactionType>(initialData?.type || defaultType);
 
   const categories = type === 'expense' ? Object.values(ExpenseCategory) : Object.values(IncomeCategory);
 
@@ -81,11 +81,11 @@ export function TransactionForm({ onSubmit, initialData, defaultType = 'expense'
     setCurrentStep(1);
   };
 
-  const handleTypeChange = (newType: 'income' | 'expense') => {
+  const handleTypeChange = (newType: TransactionType) => {
     setType(newType);
     setCategory(''); // reset category on type change
     if (newType === 'income' && (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.DEBIT)) {
-      setPaymentMethod('Pix');
+      setPaymentMethod(PaymentMethod.PIX);
     }
   };
 

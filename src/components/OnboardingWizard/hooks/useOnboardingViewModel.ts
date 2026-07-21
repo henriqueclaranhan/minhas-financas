@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { useLocale } from '../../../store/LocaleContext';
+import { PaymentMethod, TransactionType } from '../../../enums/FinanceEnums';
 
 export function useOnboardingViewModel() {
   const { initialBalance, setInitialBalance, addTransaction, transactions, plannedExpenses, isLoading } = useFinance();
@@ -48,8 +49,8 @@ export function useOnboardingViewModel() {
         description: 'Saldo Inicial',
         amount: Math.abs(amount),
         date: new Date().toISOString().split('T')[0],
-        type: amount > 0 ? 'income' : 'expense',
-        paymentMethod: 'Dinheiro',
+        type: amount > 0 ? TransactionType.INCOME : TransactionType.EXPENSE,
+        paymentMethod: PaymentMethod.CASH,
         installments: 1
       });
     }

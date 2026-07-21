@@ -2,6 +2,7 @@ import { collection, doc, addDoc, updateDoc, deleteDoc, writeBatch, getDoc, onSn
 import { db } from '../config/firebase';
 import type { PlannedExpense, Transaction } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
+import { ExpenseStatus } from '../enums/FinanceEnums';
 
 export class PlannedExpenseService {
   static subscribeToPlannedExpenses(uid: string, onUpdate: (plans: PlannedExpense[]) => void): () => void {
@@ -39,7 +40,7 @@ export class PlannedExpenseService {
     const expense = docSnap.data() as PlannedExpense;
     const batch = writeBatch(db);
     
-    batch.update(docRef, { status: 'confirmed' });
+    batch.update(docRef, { status: ExpenseStatus.CONFIRMED });
     
     const newTxRef = doc(collection(db, 'users', uid, 'transactions'));
     batch.set(newTxRef, { ...transactionData, plannedExpenseId: id });
@@ -47,7 +48,7 @@ export class PlannedExpenseService {
     if (expense.isRecurring) {
       const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
       const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
-      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: 'pending' });
+      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: ExpenseStatus.PENDING });
     }
 
     await batch.commit();
@@ -62,12 +63,12 @@ export class PlannedExpenseService {
     
     const expense = docSnap.data() as PlannedExpense;
     const batch = writeBatch(db);
-    batch.update(docRef, { status: 'cancelled' });
+    batch.update(docRef, { status: ExpenseStatus.CANCELLED });
 
     if (expense.isRecurring) {
       const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
       const newPlanRef = doc(collection(db, 'users', uid, 'plannedExpenses'));
-      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: 'pending' });
+      batch.set(newPlanRef, { ...expense, dueDate: format(nextDate, 'yyyy-MM-dd'), status: ExpenseStatus.PENDING });
     }
 
     await batch.commit();

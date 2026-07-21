@@ -4,7 +4,7 @@ import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
 import { useLocale } from '../../store/LocaleContext';
 import type { PlannedExpense } from '../../types';
-import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../../enums/FinanceEnums';
+import { ExpenseCategory, ExpenseStatus, IncomeCategory, PaymentMethod, TransactionType } from '../../enums/FinanceEnums';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { CustomSelect } from '../shared/CustomSelect/CustomSelect';
 import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons';
@@ -13,10 +13,10 @@ import '../../styles/FormStyles.css';
 interface PlannedExpenseFormProps {
   onSubmit: (data: any) => void;
   initialData?: Partial<PlannedExpense>;
-  defaultType?: 'income' | 'expense';
+  defaultType?: TransactionType;
 }
 
-export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expense' }: PlannedExpenseFormProps) {
+export function PlannedExpenseForm({ onSubmit, initialData, defaultType = TransactionType.EXPENSE }: PlannedExpenseFormProps) {
   const isMobile = useIsMobile();
   const { t, formatCurrency, locale } = useLocale();
   const [description, setDescription] = useState(initialData?.description || '');
@@ -24,7 +24,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
   const [dueDate, setDueDate] = useState(initialData?.dueDate || '');
   const [isRecurring, setIsRecurring] = useState(initialData?.isRecurring || false);
   const [recurrenceInterval, setRecurrenceInterval] = useState(initialData?.recurrenceInterval?.toString() || '1');
-  const [type, setType] = useState<'income' | 'expense'>(initialData?.type || defaultType);
+  const [type, setType] = useState<TransactionType>(initialData?.type || defaultType);
   const [paymentMethod, setPaymentMethod] = useState(initialData?.paymentMethod || PaymentMethod.CREDIT);
   const [installments, setInstallments] = useState(initialData?.installments || 1);
   const [category, setCategory] = useState(initialData?.category || '');
@@ -68,7 +68,7 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
       dueDate,
       isRecurring,
       recurrenceInterval: parseInt(recurrenceInterval) || 1,
-      status: 'pending',
+      status: ExpenseStatus.PENDING,
       type,
       paymentMethod,
       installments: (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.BOLETO) ? installments : 1,
@@ -86,11 +86,11 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = 'expen
     setCurrentStep(1);
   };
 
-  const handleTypeChange = (newType: 'income' | 'expense') => {
+  const handleTypeChange = (newType: TransactionType) => {
     setType(newType);
     setCategory('');
     if (newType === 'income' && (paymentMethod === PaymentMethod.CREDIT || paymentMethod === PaymentMethod.DEBIT)) {
-      setPaymentMethod('Pix');
+      setPaymentMethod(PaymentMethod.PIX);
     }
   };
 

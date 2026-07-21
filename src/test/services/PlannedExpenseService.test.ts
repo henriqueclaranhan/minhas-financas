@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PlannedExpenseService } from '../../services/PlannedExpenseService';
 import { addDoc, updateDoc, deleteDoc, writeBatch, getDoc, onSnapshot } from 'firebase/firestore';
-import { TransactionType, ExpenseStatus } from '../../enums/FinanceEnums';
+import { TransactionType, ExpenseStatus, PaymentMethod } from '../../enums/FinanceEnums';
 
 vi.mock('../../config/firebase', () => ({
   db: {}
@@ -39,7 +39,7 @@ describe('PlannedExpenseService', () => {
     description: 'Rent',
     amount: 1000,
     dueDate: '2026-05-10',
-    paymentMethod: 'Pix',
+    paymentMethod: PaymentMethod.PIX,
     type: TransactionType.EXPENSE,
     status: ExpenseStatus.PENDING,
     installments: 1,
@@ -83,7 +83,7 @@ describe('PlannedExpenseService', () => {
       description: 'Rent',
       amount: 1000,
       date: '2026-05-10',
-      paymentMethod: 'Pix',
+      paymentMethod: PaymentMethod.PIX,
       type: TransactionType.EXPENSE,
       installments: 1
     };
@@ -92,7 +92,7 @@ describe('PlannedExpenseService', () => {
     
     expect(getDoc).toHaveBeenCalled();
     const batch = writeBatch({} as any);
-    expect(batch.update).toHaveBeenCalled();
+    expect((batch.update as ReturnType<typeof vi.fn>).mock.calls[0][1]).toEqual({ status: ExpenseStatus.CONFIRMED });
     expect(batch.set).toHaveBeenCalledTimes(2); // One for new transaction, one for recurring plan
     expect(batch.commit).toHaveBeenCalled();
   });
@@ -107,7 +107,7 @@ describe('PlannedExpenseService', () => {
     
     expect(getDoc).toHaveBeenCalled();
     const batch = writeBatch({} as any);
-    expect(batch.update).toHaveBeenCalled();
+    expect((batch.update as ReturnType<typeof vi.fn>).mock.calls[0][1]).toEqual({ status: ExpenseStatus.CANCELLED });
     expect(batch.set).toHaveBeenCalledTimes(1); // One for recurring plan
     expect(batch.commit).toHaveBeenCalled();
   });

@@ -16,7 +16,7 @@ export function useTransactionsViewModel() {
   const { locale, t } = useLocale();
   
   const location = useLocation();
-  const initialFilter = location.state?.filter === 'income' ? FilterType.INCOME : location.state?.filter === 'expense' ? FilterType.EXPENSE : FilterType.ALL;
+  const initialFilter = location.state?.filter === FilterType.INCOME ? FilterType.INCOME : location.state?.filter === FilterType.EXPENSE ? FilterType.EXPENSE : FilterType.ALL;
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
