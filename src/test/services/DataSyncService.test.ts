@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { DataSyncService } from '../../services/DataSyncService';
 import { writeBatch } from 'firebase/firestore';
-import type { Transaction, PlannedExpense } from '../../types';
 
 vi.mock('firebase/firestore', async (importOriginal) => {
   const actual = await importOriginal<typeof import('firebase/firestore')>();
@@ -12,10 +11,14 @@ vi.mock('firebase/firestore', async (importOriginal) => {
       return { id };
     }),
     collection: vi.fn(),
+    query: vi.fn(ref => ref),
+    limit: vi.fn(),
+    getDoc: vi.fn().mockResolvedValue({ exists: () => false }),
+    getDocs: vi.fn().mockResolvedValue({ empty: true, docs: [] }),
     writeBatch: vi.fn(() => ({
       set: vi.fn(),
       delete: vi.fn(),
-      commit: vi.fn()
+      commit: vi.fn().mockResolvedValue(undefined)
     }))
   };
 });
@@ -41,8 +44,8 @@ describe('DataSyncService', () => {
   it('imports data correctly', async () => {
     const json = JSON.stringify({
       initialBalance: 50,
-      transactions: [{ description: 't1', amount: 10, date: '2026-01-01', paymentMethod: 'Pix', type: 'expense', installments: 1 }],
-      plannedExpenses: [{ description: 'p1', amount: 20, dueDate: '2026-01-01', status: 'pending', type: 'expense', paymentMethod: 'Pix', installments: 1, isRecurring: false, recurrenceInterval: 1 }]
+      transactions: [{ description: 't1', amount: 10, date: '2026-01-01', paymentMethod: 'pix', type: 'expense', installments: 1 }],
+      plannedExpenses: [{ description: 'p1', amount: 20, dueDate: '2026-01-01', status: 'pending', type: 'expense', paymentMethod: 'pix', installments: 1, isRecurring: false, recurrenceInterval: 1 }]
     });
 
     const success = await DataSyncService.importData('user1', json);
@@ -52,10 +55,7 @@ describe('DataSyncService', () => {
 
   it('clears data correctly', async () => {
     window.confirm = vi.fn(() => true);
-    const txs: Transaction[] = [{ id: 'tx1', description: 't1', amount: 10, date: '2026-01-01', paymentMethod: 'Pix', type: 'expense', installments: 1 }];
-    const plans: PlannedExpense[] = [{ id: 'p1', description: 'p1', amount: 20, dueDate: '2026-01-01', status: 'pending', type: 'expense', paymentMethod: 'Pix', installments: 1, isRecurring: false, recurrenceInterval: 1 }];
-
-    await DataSyncService.clearData('user1', txs, plans);
+    await DataSyncService.clearData('user1');
     expect(window.confirm).toHaveBeenCalled();
     expect(writeBatch).toHaveBeenCalled();
   });

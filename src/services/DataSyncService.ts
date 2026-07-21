@@ -1,6 +1,9 @@
-import { doc, writeBatch, collection } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, limit, query, writeBatch } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { Transaction, PlannedExpense } from '../types';
+import { validateImportData } from './dataImportValidation';
+
+const BATCH_SIZE = 400;
 
 export class DataSyncService {
   static exportData(initialBalance: number | null, transactions: Transaction[], plannedExpenses: PlannedExpense[]) {
@@ -17,30 +20,36 @@ export class DataSyncService {
   static async importData(uid: string, jsonData: string): Promise<boolean> {
     if (!uid) return false;
     try {
-      const data = JSON.parse(jsonData);
-      const batch = writeBatch(db);
+      const data = validateImportData(jsonData);
+      const suppliedRefs = [
+        ...data.transactions.filter(item => item.id).map(item => doc(db, 'users', uid, 'transactions', item.id!)),
+        ...data.plannedExpenses.filter(item => item.id).map(item => doc(db, 'users', uid, 'plannedExpenses', item.id!)),
+      ];
+      for (let start = 0; start < suppliedRefs.length; start += 100) {
+        const existing = await Promise.all(suppliedRefs.slice(start, start + 100).map(ref => getDoc(ref)));
+        if (existing.some(snapshot => snapshot.exists())) throw new Error('Import would overwrite existing documents');
+      }
 
+      const operations: Array<(batch: ReturnType<typeof writeBatch>) => void> = [];
       if (data.initialBalance !== undefined) {
-        batch.set(doc(db, 'users', uid), { initialBalance: data.initialBalance }, { merge: true });
+        operations.push(batch => batch.set(doc(db, 'users', uid), { initialBalance: data.initialBalance }, { merge: true }));
+      }
+      for (const transaction of data.transactions) {
+        const { id, ...storedTransaction } = transaction;
+        const ref = id ? doc(db, 'users', uid, 'transactions', id) : doc(collection(db, 'users', uid, 'transactions'));
+        operations.push(batch => batch.set(ref, storedTransaction));
+      }
+      for (const plannedExpense of data.plannedExpenses) {
+        const { id, ...storedExpense } = plannedExpense;
+        const ref = id ? doc(db, 'users', uid, 'plannedExpenses', id) : doc(collection(db, 'users', uid, 'plannedExpenses'));
+        operations.push(batch => batch.set(ref, storedExpense));
       }
 
-      if (data.transactions && Array.isArray(data.transactions)) {
-        for (const t of data.transactions) {
-          const { id, ...rest } = t;
-          const ref = id ? doc(db, 'users', uid, 'transactions', id) : doc(collection(db, 'users', uid, 'transactions'));
-          batch.set(ref, rest);
-        }
+      for (let start = 0; start < operations.length; start += BATCH_SIZE) {
+        const batch = writeBatch(db);
+        operations.slice(start, start + BATCH_SIZE).forEach(operation => operation(batch));
+        await batch.commit();
       }
-
-      if (data.plannedExpenses && Array.isArray(data.plannedExpenses)) {
-        for (const p of data.plannedExpenses) {
-          const { id, ...rest } = p;
-          const ref = id ? doc(db, 'users', uid, 'plannedExpenses', id) : doc(collection(db, 'users', uid, 'plannedExpenses'));
-          batch.set(ref, rest);
-        }
-      }
-      
-      await batch.commit();
       return true;
     } catch (e) {
       console.error("Failed to import data", e);
@@ -48,20 +57,21 @@ export class DataSyncService {
     }
   }
 
-  static async clearData(uid: string, transactions: Transaction[], plannedExpenses: PlannedExpense[]): Promise<void> {
+  static async clearData(uid: string): Promise<void> {
     if (!uid) return;
     if (window.confirm('Tem certeza que deseja apagar todos os seus dados da nuvem? Esta ação não pode ser desfeita.')) {
-      const batch = writeBatch(db);
-      
-      batch.set(doc(db, 'users', uid), { initialBalance: 0 }, { merge: true });
-      transactions.forEach(t => {
-        if (t.id) batch.delete(doc(db, 'users', uid, 'transactions', t.id));
-      });
-      plannedExpenses.forEach(p => {
-        if (p.id) batch.delete(doc(db, 'users', uid, 'plannedExpenses', p.id));
-      });
-      
-      await batch.commit();
+      for (const collectionName of ['transactions', 'plannedExpenses']) {
+        while (true) {
+          const snapshot = await getDocs(query(collection(db, 'users', uid, collectionName), limit(BATCH_SIZE)));
+          if (snapshot.empty) break;
+          const batch = writeBatch(db);
+          snapshot.docs.forEach(document => batch.delete(document.ref));
+          await batch.commit();
+        }
+      }
+      const userBatch = writeBatch(db);
+      userBatch.set(doc(db, 'users', uid), { initialBalance: 0 }, { merge: true });
+      await userBatch.commit();
     }
   }
 }
