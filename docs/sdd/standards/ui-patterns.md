@@ -44,6 +44,7 @@ A nested page is opened from another page and is not directly represented in the
 - It MUST show a back button on both mobile and desktop.
 - With the current `PageHeader` API, use both `showBackButton={true}` and `forceShowBackButtonOnDesktop={true}`.
 - Back navigation MUST return to the logical parent or previous location. If browser history is not reliable for a flow, navigate explicitly to the parent route.
+- Shared back navigation MUST only traverse browser history when React Router identifies a prior in-app entry. Otherwise, it MUST replace the current entry with the configured logical fallback, defaulting to Home (`/`), so direct or externally referred visits do not leave the application.
 
 ## 4. Standard page anatomy
 
@@ -159,3 +160,11 @@ Before completing a UI change, verify:
 - Tables, filters, modals, empty states, and destructive actions follow their relevant sections.
 - Keyboard focus, accessible labels, semantic colors, and safe areas remain correct.
 - A reusable new convention is documented here rather than duplicated across page styles.
+
+## 14. Explainable financial aggregates
+
+- A summary card MAY link to a nested breakdown page when the aggregate requires reconciliation.
+- The breakdown MUST reuse the exact projection that calculates the source aggregate; it must not reproduce the business rule independently.
+- Breakdown pages explain composition and MUST NOT present themselves as an alternative transaction history.
+- The originating temporal context SHOULD be preserved in URL parameters so navigation, refresh, and sharing retain the same result.
+- Groups MUST expose subtotals, and their rendered entries MUST reconcile exactly with the displayed aggregate.

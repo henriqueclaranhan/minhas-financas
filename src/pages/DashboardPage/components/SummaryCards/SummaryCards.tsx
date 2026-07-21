@@ -1,4 +1,4 @@
-import { DollarSign, TrendingUp, TrendingDown, CreditCard } from 'lucide-react';
+import { ChevronRight, DollarSign, TrendingUp, TrendingDown, CreditCard } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import './SummaryCards.css';
 import { useLocale } from '../../../../store/LocaleContext';
@@ -16,7 +16,8 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
   const { t } = useLocale();
   return (
     <div className="summary-cards-container">
-      <div className="glass-panel summary-card">
+      <Link to="/transactions" className="glass-panel summary-card summary-card-navigable hover-lift" style={{ textDecoration: 'none' }}>
+        <ChevronRight className="summary-card-navigation-arrow" size={20} aria-hidden="true" />
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper primary">
             <DollarSign size={20} color="var(--clr-primary)" />
@@ -26,9 +27,10 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
         <div className={`summary-card-value ${currentBalance < 0 ? 'text-danger' : currentBalance < 500 ? 'text-warning' : ''}`}>
           {formatCurrency(currentBalance)}
         </div>
-      </div>
+      </Link>
 
-      <Link to="/transactions" state={{ filter: FilterType.INCOME }} className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
+      <Link to="/transactions" state={{ filter: FilterType.INCOME }} className="glass-panel summary-card summary-card-navigable hover-lift" style={{ textDecoration: 'none' }}>
+        <ChevronRight className="summary-card-navigation-arrow" size={20} aria-hidden="true" />
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper success">
             <TrendingUp size={20} color="var(--clr-success)" />
@@ -40,7 +42,8 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
         </div>
       </Link>
 
-      <Link to="/transactions" state={{ filter: FilterType.EXPENSE }} className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
+      <Link to="/expenses/breakdown" className="glass-panel summary-card summary-card-navigable hover-lift" style={{ textDecoration: 'none' }}>
+        <ChevronRight className="summary-card-navigation-arrow" size={20} aria-hidden="true" />
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper danger">
             <TrendingDown size={20} color="var(--clr-danger)" />
@@ -52,7 +55,8 @@ export function SummaryCards({ currentBalance, monthlyIncome, monthlyExpense, cu
         </div>
       </Link>
 
-      <Link to="/credit" className="glass-panel summary-card hover-lift" style={{ textDecoration: 'none' }}>
+      <Link to="/credit" className="glass-panel summary-card summary-card-navigable hover-lift" style={{ textDecoration: 'none' }}>
+        <ChevronRight className="summary-card-navigation-arrow" size={20} aria-hidden="true" />
         <div className="summary-card-header">
           <div className="summary-card-icon-wrapper warning">
             <CreditCard size={20} color="var(--clr-warning)" />

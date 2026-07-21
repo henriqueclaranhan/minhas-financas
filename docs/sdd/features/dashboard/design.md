@@ -8,6 +8,7 @@
 ### 2.1 View (`DashboardPage.tsx`)
 - **Components:** Summary Cards (Income, Expense, Balance), Recent Transactions List, Expense by Category Chart with category icons in its legend and tooltip.
 - **Layout:** Grid layout with widgets.
+- **Summary navigation:** Every summary card is a semantic link with the shared top-right chevron. Balance and income open Transactions, expenses open `/expenses/breakdown`, and the current invoice opens Invoices. The chevron alone communicates navigation without supplementary action copy.
 
 ### 2.2 ViewModel (`useDashboardViewModel.ts`)
 - **State:** Total income, total expenses, balance, recent transactions array, chart data, loading status.

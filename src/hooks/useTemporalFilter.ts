@@ -3,20 +3,29 @@ import { endOfMonth, format, isWithinInterval, parseISO, startOfMonth } from 'da
 import { TemporalFilterMode, type TemporalFilterMode as TemporalFilterModeValue } from '../enums/UIEnums';
 import { useLocale } from '../store/LocaleContext';
 
-export function useTemporalFilter(defaultMode: TemporalFilterModeValue) {
+export interface TemporalFilterInitialState {
+  mode?: TemporalFilterModeValue;
+  month?: number;
+  year?: number;
+  startDate?: string;
+  endDate?: string;
+}
+
+export function useTemporalFilter(defaultMode: TemporalFilterModeValue, initialState: TemporalFilterInitialState = {}) {
   const { locale, t } = useLocale();
   const now = new Date();
-  const defaultMonth = now.getMonth();
-  const defaultYear = now.getFullYear();
-  const defaultStartDate = format(startOfMonth(now), 'yyyy-MM-dd');
-  const defaultEndDate = format(endOfMonth(now), 'yyyy-MM-dd');
+  const defaultMonth = initialState.month ?? now.getMonth();
+  const defaultYear = initialState.year ?? now.getFullYear();
+  const defaultStartDate = initialState.startDate ?? format(startOfMonth(now), 'yyyy-MM-dd');
+  const defaultEndDate = initialState.endDate ?? format(endOfMonth(now), 'yyyy-MM-dd');
+  const initialMode = initialState.mode ?? defaultMode;
 
-  const [mode, setMode] = useState(defaultMode);
+  const [mode, setMode] = useState(initialMode);
   const [month, setMonth] = useState(defaultMonth);
   const [year, setYear] = useState(defaultYear);
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
-  const [tempMode, setTempMode] = useState(defaultMode);
+  const [tempMode, setTempMode] = useState(initialMode);
   const [tempMonth, setTempMonth] = useState(defaultMonth);
   const [tempYear, setTempYear] = useState(defaultYear);
   const [tempStartDate, setTempStartDate] = useState(defaultStartDate);
@@ -42,7 +51,7 @@ export function useTemporalFilter(defaultMode: TemporalFilterModeValue) {
   };
 
   const reset = () => {
-    setTempMode(defaultMode);
+    setTempMode(initialMode);
     setTempMonth(defaultMonth);
     setTempYear(defaultYear);
     setTempStartDate(defaultStartDate);

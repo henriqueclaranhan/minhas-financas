@@ -19,6 +19,7 @@
 - **History projection:** Filter persisted transactions directly by their original `date`. Never expand installments for the table or mobile history cards. A credit purchase therefore appears immediately in the period when it was registered and remains one editable record.
 - **Period aggregation:** Build a separate internal projection with `expandTransactions` only for the summary cards. Credit expenses use next-month competence even when they have one installment; boleto expenses use current-month competence for their first installment. Search, category, and payment-method filters apply to both projections, while the type tab continues to affect the history list only.
 - **Context note:** The period panel explains that rows use the transaction date and totals use installment competence. This is explanatory copy, not a second viewing mode.
+- **Expense drill-down:** The expense summary card links to `/expenses/breakdown` with the active temporal state serialized in URL parameters.
 
 ### 2.3 Model
 - **Entities:** `Transaction` (id, description, amount, type, date, category, paymentMethod).

@@ -15,6 +15,7 @@ import { OnboardingWizard } from './components/OnboardingWizard';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage/PrivacyPolicyPage';
 import { CategoryExpensesPage } from './pages/CategoryExpensesPage';
 import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
+import { ExpenseBreakdownPage } from './pages/ExpenseBreakdownPage';
 import { SeoManager } from './components/SeoManager';
 import { ToastProvider } from './store/ToastContext';
 import './App.css';
@@ -30,6 +31,7 @@ const router = createBrowserRouter([
       { path: "/credit", element: <CreditCardPage /> },
       { path: "/forecast", element: <ForecastPage /> },
       { path: "/categories", element: <CategoryExpensesPage /> },
+      { path: "/expenses/breakdown", element: <ExpenseBreakdownPage /> },
       { path: "/settings", element: <SettingsPage /> },
       { path: "/settings/profile", element: <ProfileSettingsPage /> },
       { path: "/privacidade", element: <PrivacyPolicyPage /> },

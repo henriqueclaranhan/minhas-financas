@@ -19,3 +19,4 @@ Management of financial transactions (incomes and expenses).
 - [x] Installment purchases remain a single history row with their installment count; monthly installment rows belong to invoice and projection experiences.
 - [x] Period income and expense summary cards keep the existing competence calculation, including next-month credit and current-month boleto offsets.
 - [x] The page explains that history rows use transaction date while summary totals use installment competence.
+- [x] The period expense summary links to an explanatory breakdown while preserving the active temporal filter in the URL.

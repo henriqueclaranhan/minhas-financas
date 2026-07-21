@@ -79,6 +79,11 @@ describe('TransactionsPage UI', () => {
     const allText = document.body.textContent;
     expect(allText).toMatch(/1\.000,00/);
     expect(allText).toMatch(/150,00/);
+    expect(screen.getByRole('link', { name: /Saídas no período/i })).toHaveAttribute(
+      'href',
+      '/expenses/breakdown?mode=month&year=2026&month=5',
+    );
+    expect(screen.queryByText('Ver composição')).not.toBeInTheDocument();
   });
 
   it('renders transactions in the table', () => {

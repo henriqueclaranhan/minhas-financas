@@ -14,6 +14,7 @@ import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
+import { buildExpenseBreakdownPath } from '../../utils/expenseBreakdownUtils';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
@@ -43,6 +44,7 @@ export function TransactionsPage() {
       <PeriodSummaryCards
         income={state.totalIncome}
         expense={state.totalExpense}
+        expenseHref={buildExpenseBreakdownPath(state.temporal)}
       />
 
       <FilterTabs

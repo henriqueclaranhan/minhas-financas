@@ -12,3 +12,5 @@ A main dashboard providing a snapshot of the user's financial status.
 - [x] Displays a chart grouping expenses by category.
 - [x] Displays each category icon in the expense chart legend and tooltip.
 - [x] Shows a list of recent transactions.\n
+- [x] The monthly expense card opens the current-month expense breakdown.
+- [x] Every dashboard summary card is navigable and uses the same top-right chevron without supplementary action copy.

@@ -12,6 +12,23 @@
   gap: var(--spacing-sm);
 }
 
+.period-summary-cards .period-summary-link {
+  position: relative;
+  color: inherit;
+  text-decoration: none;
+}
+
+.period-summary-cards .period-summary-link .summary-card-header {
+  padding-right: var(--spacing-lg);
+}
+
+.period-summary-cards .summary-card-navigation-arrow {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  color: var(--clr-text-secondary);
+}
+
 .period-summary-cards .summary-card-header {
   display: flex;
   align-items: center;
@@ -97,5 +114,16 @@
     margin-top: auto; /* Aligns to bottom */
     width: 100%;
     word-break: break-word; /* Prevents overflow if number grows */
+  }
+
+  .period-summary-cards .period-summary-link .summary-card-header {
+    padding-right: 0;
+  }
+
+  .period-summary-cards .summary-card-navigation-arrow {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 1rem;
+    height: 1rem;
   }
 }

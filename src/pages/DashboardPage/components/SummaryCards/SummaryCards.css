@@ -5,11 +5,23 @@
 }
 
 .summary-card {
+  position: relative;
   padding: var(--spacing-lg);
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
   transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.summary-card > .summary-card-navigation-arrow {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  color: var(--clr-text-secondary);
+}
+
+.summary-card-navigable .summary-card-header {
+  padding-right: var(--spacing-lg);
 }
 
 .summary-card.hover-lift:hover {
@@ -137,5 +149,16 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+
+  .summary-cards-container .summary-card > .summary-card-navigation-arrow {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 1rem;
+    height: 1rem;
+  }
+
+  .summary-cards-container .summary-card-navigable .summary-card-header {
+    padding-right: 0;
   }
 }

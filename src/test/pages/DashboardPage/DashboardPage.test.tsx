@@ -50,6 +50,12 @@ describe('DashboardPage UI', () => {
     
     const allText = document.body.textContent;
     expect(allText).toMatch(/1\.000,00/);
+    expect(screen.getByRole('link', { name: /Saldo atual/i })).toHaveAttribute('href', '/transactions');
+    expect(screen.getByRole('link', { name: /Receitas do mês/i })).toHaveAttribute('href', '/transactions');
+    expect(screen.getByRole('link', { name: /Despesas do mês/i })).toHaveAttribute('href', '/expenses/breakdown');
+    expect(screen.getByRole('link', { name: /Fatura atual/i })).toHaveAttribute('href', '/credit');
+    expect(document.querySelectorAll('.summary-cards-container .summary-card-navigation-arrow')).toHaveLength(4);
+    expect(screen.queryByText('Ver composição')).not.toBeInTheDocument();
   });
 
   it('calls openNewModal when clicking Nova ação', () => {

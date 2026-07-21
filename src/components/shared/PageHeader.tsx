@@ -12,18 +12,30 @@ interface PageHeaderProps {
   };
   showBackButton?: boolean;
   forceShowBackButtonOnDesktop?: boolean;
+  backFallback?: string;
 }
 
-export function PageHeader({ title, description, primaryButton, showBackButton, forceShowBackButtonOnDesktop }: PageHeaderProps) {
+export function PageHeader({ title, description, primaryButton, showBackButton, forceShowBackButtonOnDesktop, backFallback = '/' }: PageHeaderProps) {
   const navigate = useNavigate();
   const { t } = useLocale();
+
+  const handleBack = () => {
+    const historyIndex = window.history.state?.idx;
+
+    if (typeof historyIndex === 'number' && historyIndex > 0) {
+      navigate(-1);
+      return;
+    }
+
+    navigate(backFallback, { replace: true });
+  };
 
   return (
     <>
       {showBackButton && (
         <header className={`${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'} mb-xl flex items-center`}>
           <button 
-            onClick={() => navigate(-1)} 
+            onClick={handleBack}
             className={`btn ${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'}`}
             style={{ background: 'transparent', padding: '0', color: 'var(--clr-primary)', display: 'flex', alignItems: 'center', fontSize: '1.1rem', fontWeight: 500 }}
           >
