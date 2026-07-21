@@ -1,6 +1,7 @@
 import { addMonths, endOfDay, isWithinInterval, parseISO, startOfDay } from 'date-fns';
 import { PaymentMethod, TransactionType } from '../enums/FinanceEnums';
-import type { Transaction } from '../types';
+import type { CompetenceEntry, Transaction } from '../types';
+import { aggregateCompetenceEntries } from './financeAggregationUtils';
 
 const CATEGORY_COLORS = [
   '#6366f1',
@@ -69,6 +70,23 @@ export function calculateExpensesByCategory({
 
   const total = Object.values(categoryTotals).reduce((sum, value) => sum + value, 0);
 
+  return Object.entries(categoryTotals)
+    .sort(([, firstValue], [, secondValue]) => secondValue - firstValue)
+    .map(([category, value], index) => ({
+      category,
+      name: `categories.${category}`,
+      value,
+      color: CATEGORY_COLORS[index % CATEGORY_COLORS.length],
+      percentage: total > 0 ? (value / total) * 100 : 0,
+    }));
+}
+
+export function calculateCompetenceExpensesByCategory(entries: CompetenceEntry[]): CategoryExpenseData[] {
+  return formatCompetenceCategoryTotals(aggregateCompetenceEntries(entries).byCategory);
+}
+
+export function formatCompetenceCategoryTotals(categoryTotals: Record<string, number>): CategoryExpenseData[] {
+  const total = Object.values(categoryTotals).reduce((sum, value) => sum + value, 0);
   return Object.entries(categoryTotals)
     .sort(([, firstValue], [, secondValue]) => secondValue - firstValue)
     .map(([category, value], index) => ({

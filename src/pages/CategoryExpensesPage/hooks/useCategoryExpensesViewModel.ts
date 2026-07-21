@@ -2,8 +2,9 @@ import { useMemo, useState } from 'react';
 import { endOfMonth, format, parseISO, startOfMonth } from 'date-fns';
 import { useFinance } from '../../../store/FinanceContext';
 import { useLocale } from '../../../store/LocaleContext';
-import { calculateExpensesByCategory } from '../../../utils/categoryExpenseUtils';
+import { calculateCompetenceExpensesByCategory } from '../../../utils/categoryExpenseUtils';
 import { CategoryExpenseFilterMode, type CategoryExpenseFilterMode as CategoryExpenseFilterModeValue } from '../../../enums/UIEnums';
+import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 
 export function useCategoryExpensesViewModel() {
   const { transactions } = useFinance();
@@ -28,9 +29,12 @@ export function useCategoryExpensesViewModel() {
   const [tempEndDate, setTempEndDate] = useState(defaultEndDate);
   const [filterErrorKey, setFilterErrorKey] = useState<string | null>(null);
 
+  const startDateIso = format(startDate, 'yyyy-MM-dd');
+  const endDateIso = format(endDate, 'yyyy-MM-dd');
+  const { entries: competenceEntries } = useCompetenceEntries(startDateIso, endDateIso, transactions);
   const categoryData = useMemo(
-    () => calculateExpensesByCategory({ transactions, startDate, endDate }),
-    [transactions, startDate, endDate],
+    () => calculateCompetenceExpensesByCategory(competenceEntries),
+    [competenceEntries],
   );
 
   const totalExpense = useMemo(

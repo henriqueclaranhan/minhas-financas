@@ -1,7 +1,8 @@
 import { parseISO, addMonths, isSameMonth, format, isBefore, startOfMonth, endOfMonth } from 'date-fns';
 import { ptBR, enUS } from 'date-fns/locale';
-import type { Transaction, PlannedExpense } from '../types';
+import type { CompetenceEntry, PlannedExpense, Transaction } from '../types';
 import { TransactionType, ExpenseStatus, PaymentMethod } from '../enums/FinanceEnums';
+import { aggregateCompetenceEntries, type FinanceAggregate } from './financeAggregationUtils';
 
 interface ProjectionOptions {
   transactions: Transaction[];
@@ -13,6 +14,8 @@ interface ProjectionOptions {
   includePlannedExpense?: boolean;
   currentDate?: Date;
   locale?: string;
+  competenceEntries?: CompetenceEntry[];
+  competenceAggregate?: FinanceAggregate;
 }
 
 export function calculateProjections(options: ProjectionOptions) {
@@ -25,7 +28,9 @@ export function calculateProjections(options: ProjectionOptions) {
     includePlannedIncome = true,
     includePlannedExpense = true,
     currentDate = new Date(),
-    locale = 'pt-BR'
+    locale = 'pt-BR',
+    competenceEntries,
+    competenceAggregate,
   } = options;
 
   const dateFnsLocale = locale === 'en-US' ? enUS : ptBR;
@@ -48,8 +53,15 @@ export function calculateProjections(options: ProjectionOptions) {
     return monthlyData[m];
   };
   
-  // Process confirmed transactions
-  transactions.forEach(t => {
+  // Process confirmed transactions. Materialized competence entries are authoritative when provided.
+  if (competenceEntries) {
+    const aggregate = competenceAggregate ?? aggregateCompetenceEntries(competenceEntries);
+    Object.entries(aggregate.byMonth).forEach(([month, values]) => {
+      const bucket = getMonthData(month);
+      bucket.income += values.income;
+      bucket.expense += values.expense;
+    });
+  } else transactions.forEach(t => {
     const txDate = parseISO(t.date);
     const isCredit = t.paymentMethod === PaymentMethod.CREDIT;
     const isBoleto = t.paymentMethod === PaymentMethod.BOLETO;
@@ -154,7 +166,11 @@ export function calculateProjections(options: ProjectionOptions) {
   let monthlyExp = 0;
   const targetMonthKey = format(currentDate, 'yyyy-MM');
   
-  transactions.forEach(t => {
+  if (competenceEntries) {
+    const currentMonth = (competenceAggregate ?? aggregateCompetenceEntries(competenceEntries)).byMonth[targetMonthKey];
+    monthlyInc = currentMonth?.income ?? 0;
+    monthlyExp = currentMonth?.expense ?? 0;
+  } else transactions.forEach(t => {
     const txDate = parseISO(t.date);
     const isCredit = t.paymentMethod === PaymentMethod.CREDIT;
     const isBoleto = t.paymentMethod === PaymentMethod.BOLETO;

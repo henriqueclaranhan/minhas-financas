@@ -1,6 +1,6 @@
 import { parseISO, addMonths, eachMonthOfInterval, format } from 'date-fns';
 import type { SupportedLocale } from '../i18n/translations';
-import type { Transaction } from '../types';
+import type { CompetenceEntry, Transaction } from '../types';
 import { TransactionType, PaymentMethod } from '../enums/FinanceEnums';
 
 interface BillItem extends Transaction {
@@ -67,6 +67,44 @@ export function calculateCreditCardBills(
       labelShort,
       data: monthlyBills[key] || { total: 0, items: [] },
       index: i
+    };
+  });
+}
+
+export function calculateCreditCardBillsFromEntries(
+  entries: CompetenceEntry[],
+  interval: { start: Date; end: Date },
+  locale: SupportedLocale = 'pt-BR',
+): MonthData[] {
+  const monthlyBills: Record<string, MonthlyBill> = {};
+  for (const entry of entries) {
+    if (entry.type !== TransactionType.EXPENSE || entry.paymentMethod !== PaymentMethod.CREDIT) continue;
+    const monthKey = entry.competenceDate.slice(0, 7);
+    const bucket = monthlyBills[monthKey] ?? (monthlyBills[monthKey] = { total: 0, items: [] });
+    bucket.total += entry.amount;
+    bucket.items.push({
+      id: entry.transactionId,
+      description: entry.description,
+      amount: entry.amount * entry.totalInstallments,
+      date: entry.originalDate,
+      paymentMethod: entry.paymentMethod,
+      type: entry.type,
+      category: entry.category,
+      installments: entry.totalInstallments,
+      installmentNumber: entry.installmentNumber,
+      installmentValue: entry.amount,
+    });
+  }
+  return eachMonthOfInterval(interval).map((date, index) => {
+    const key = format(date, 'yyyy-MM');
+    const labelFull = new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric' }).format(date);
+    const labelShort = new Intl.DateTimeFormat(locale, { month: 'short' }).format(date).replace('.', '').toUpperCase();
+    return {
+      key,
+      labelFull: labelFull.charAt(0).toUpperCase() + labelFull.slice(1),
+      labelShort,
+      data: monthlyBills[key] ?? { total: 0, items: [] },
+      index,
     };
   });
 }

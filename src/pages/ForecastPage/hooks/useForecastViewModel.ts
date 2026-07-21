@@ -2,9 +2,11 @@ import { useState, useMemo } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
-import { endOfMonth, endOfYear, parseISO, startOfMonth, startOfYear } from 'date-fns';
+import { endOfMonth, endOfYear, format, parseISO, startOfMonth, startOfYear } from 'date-fns';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
 import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
+import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
+import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
 
 export function useForecastViewModel() {
   const { transactions, plannedExpenses, initialBalance } = useFinance();
@@ -29,6 +31,8 @@ export function useForecastViewModel() {
   }, [mode, month, rangeEnd, rangeStart, year]);
 
   const resolvedInitialBalance = initialBalance ?? 0;
+  const { entries: competenceEntries } = useCompetenceEntries('0001-01-01', format(endDate, 'yyyy-MM-dd'), transactions);
+  const competenceAggregate = useMemo(() => aggregateCompetenceEntries(competenceEntries), [competenceEntries]);
 
   const chartData = useMemo(() => {
     return calculateProjections({
@@ -40,9 +44,12 @@ export function useForecastViewModel() {
       includePlannedIncome,
       includePlannedExpense,
       locale,
+      competenceEntries,
+      competenceAggregate,
     });
   }, [
-    transactions,
+    competenceAggregate,
+    competenceEntries,
     plannedExpenses,
     resolvedInitialBalance,
     startDate,
@@ -50,6 +57,7 @@ export function useForecastViewModel() {
     includePlannedIncome,
     includePlannedExpense,
     locale,
+    transactions,
   ]);
 
   const totalIncome = useMemo(() => chartData.data.reduce((sum, item) => sum + item.income, 0), [chartData.data]);
@@ -74,4 +82,3 @@ export function useForecastViewModel() {
     },
   };
 }
-

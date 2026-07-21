@@ -1,12 +1,13 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useFinance } from '../../../store/FinanceContext';
-import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
+import { calculateCreditCardBillsFromEntries } from '../../../utils/creditCardUtils';
 import { useLocale } from '../../../store/LocaleContext';
 import type { PlannedExpense, Transaction } from '../../../types';
 import { FinanceEntryMode, type FinanceEntryMode as FinanceEntryModeValue } from '../../../enums/UIEnums';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
 import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { addMonths, endOfMonth, endOfYear, format, parseISO, startOfMonth, startOfYear } from 'date-fns';
+import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 
 export function useCreditCardViewModel() {
   const { transactions, addTransaction, addPlannedExpense } = useFinance();
@@ -29,9 +30,14 @@ export function useCreditCardViewModel() {
     return { start: parseISO(rangeStart), end: parseISO(rangeEnd) };
   }, [mode, month, rangeEnd, rangeStart, year]);
 
+  const { entries: competenceEntries } = useCompetenceEntries(
+    format(interval.start, 'yyyy-MM-dd'),
+    format(interval.end, 'yyyy-MM-dd'),
+    transactions,
+  );
   const nextMonths = useMemo(() => {
-    return calculateCreditCardBills(transactions, new Date(), locale, interval);
-  }, [transactions, locale, interval]);
+    return calculateCreditCardBillsFromEntries(competenceEntries, interval, locale);
+  }, [competenceEntries, locale, interval]);
 
   const currentInvoiceKey = format(addMonths(new Date(), 1), 'yyyy-MM');
 
