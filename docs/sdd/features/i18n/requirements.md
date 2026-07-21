@@ -11,3 +11,4 @@ Implement a global internationalization sweep across the entire application to s
 - [x] All hardcoded UI strings are replaced with translation keys.
 - [x] Application provides Portuguese (pt-BR) and English (en) dictionaries at minimum.
 - [x] Language selection is persisted globally and updates the UI instantly.
+- [x] Numeric values in charts use locale-aware decimal and grouping separators, including percentages and currency values.

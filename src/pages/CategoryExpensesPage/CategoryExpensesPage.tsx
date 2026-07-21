@@ -7,6 +7,7 @@ import { PageHeader } from '../../components/shared/PageHeader';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import { useLocale } from '../../store/LocaleContext';
 import { useCategoryExpensesViewModel } from './hooks/useCategoryExpensesViewModel';
+import { formatPercentage } from '../../utils/numberFormatUtils';
 import { CategoryExpenseSummaryCards } from './components/CategoryExpenseSummaryCards';
 import './CategoryExpensesPage.css';
 
@@ -85,7 +86,7 @@ export function CategoryExpensesPage() {
                   <div className="category-expenses-item-copy">
                     <span className="category-expenses-item-name">{t(category.name)}</span>
                     <span className="category-expenses-item-percent">
-                      {new Intl.NumberFormat(locale, { maximumFractionDigits: 1 }).format(category.percentage)}%
+                      {formatPercentage(category.percentage, locale)}
                     </span>
                   </div>
                   <span className="category-expenses-item-value">

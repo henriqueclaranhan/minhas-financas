@@ -9,6 +9,7 @@
 ### 2.1 View
 - **Components:** `LocaleProvider` wrapping the application root. Language Selector in `SettingsPage`.
 - **Layout:** Transparent to layout, but provides the `t` function to all components.
+- **Chart formatting:** Currency values use `formatCurrency`; other numeric labels use `Intl.NumberFormat` with the active locale from `useLocale()`.
 
 ### 2.2 ViewModel
 - **State:** Current `locale` (e.g., 'pt', 'en').

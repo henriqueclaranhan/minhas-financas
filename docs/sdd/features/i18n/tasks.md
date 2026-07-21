@@ -7,3 +7,4 @@
 - [x] **Task 5:** Sweep `CreditCardPage`, `ForecastPage`, and `PlannedExpensesPage`.
 - [x] **Task 6:** Sweep `SettingsPage` and `ProfileSettingsPage`.
 - [x] **Task 7:** Add language switcher UI in Settings.
+- [x] **Task 8:** Apply locale-aware separators to chart percentages and numeric labels.

@@ -2,6 +2,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 import { useLocale } from '../../../store/LocaleContext';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import type { CategoryExpenseData } from '../../../utils/categoryExpenseUtils';
+import { formatPercentage } from '../../../utils/numberFormatUtils';
 import './ExpensesByCategoryChart.css';
 
 interface ExpensesByCategoryChartProps {
@@ -19,7 +20,7 @@ export function ExpensesByCategoryChart({
   showTotal = true,
   variant = 'default',
 }: ExpensesByCategoryChartProps) {
-  const { t } = useLocale();
+  const { locale, t } = useLocale();
   const total = data.reduce((sum, item) => sum + item.value, 0);
   const isExpanded = variant === 'expanded';
   const panelClassName = `glass-panel chart-panel pie-chart-panel${isExpanded ? ' pie-chart-panel-expanded' : ''} flex flex-col`;
@@ -37,7 +38,7 @@ export function ExpensesByCategoryChart({
             <p className="pie-tooltip-label" style={{ margin: 0 }}>{t(data.name)}</p>
           </div>
           <p className="pie-tooltip-value text-danger">{formatCurrency(data.value)}</p>
-          <p className="pie-tooltip-percent">{data.percentage.toFixed(1)}%</p>
+          <p className="pie-tooltip-percent">{formatPercentage(data.percentage, locale)}</p>
         </div>
       );
     }
