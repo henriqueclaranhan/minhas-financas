@@ -1,8 +1,9 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import './DashboardChart.css';
 import { useLocale } from '../../../store/LocaleContext';
+import { calculateCurrencyAxisWidth, createCompactCurrencyFormatter } from '../../../utils/chartAxisUtils';
 
 interface ChartDataPoint {
   name: string;
@@ -19,7 +20,7 @@ interface DashboardChartProps {
 }
 
 export function DashboardChart({ data, formatCurrency, title, headerAction }: DashboardChartProps) {
-  const { t } = useLocale();
+  const { currency, locale, t } = useLocale();
   
   const [isTableExpanded, setIsTableExpanded] = useState(() => {
     const saved = localStorage.getItem('dashboardTableExpanded');
@@ -33,6 +34,14 @@ export function DashboardChart({ data, formatCurrency, title, headerAction }: Da
   const max = Math.max(...data.map(d => d.saldo), 0);
   const min = Math.min(...data.map(d => d.saldo), 0);
   const range = max - min;
+  const formatAxisCurrency = useMemo(
+    () => createCompactCurrencyFormatter(locale, currency),
+    [currency, locale],
+  );
+  const axisWidth = useMemo(
+    () => calculateCurrencyAxisWidth(data.map(point => point.saldo), formatAxisCurrency),
+    [data, formatAxisCurrency],
+  );
 
   const getOffset = (val: number) => {
     if (range === 0) {
@@ -81,11 +90,11 @@ export function DashboardChart({ data, formatCurrency, title, headerAction }: Da
             <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="var(--clr-border)" />
             <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fill: 'var(--clr-text-secondary)', fontSize: 12 }} dy={10} />
             <YAxis 
-              width={90}
+              width={axisWidth}
               axisLine={false} 
               tickLine={false} 
               tick={{ fill: 'var(--clr-text-secondary)', fontSize: 12 }}
-              tickFormatter={(val) => formatCurrency(val)}
+              tickFormatter={(val) => formatAxisCurrency(Number(val))}
               dx={-10}
             />
             <Tooltip 

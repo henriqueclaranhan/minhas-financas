@@ -13,6 +13,7 @@
 - **Filter context:** The shared temporal panel supports Month, Year, and custom Period independently from projection characteristics.
 - **Summary order:** The forecast filter panel renders before the period summary cards and projection chart.
 - **Summary spacing:** The filter-to-summary and summary-to-chart gaps both use `--spacing-lg`.
+- **Vertical axis:** Uses locale-aware compact currency notation and derives a bounded width from the longest candidate label. Exact currency formatting remains in tooltips and the supporting table.
 
 ### 2.2 ViewModel (`useForecastViewModel.ts`)
 - **State:** Forecast data points, projection parameters (months), loading status.

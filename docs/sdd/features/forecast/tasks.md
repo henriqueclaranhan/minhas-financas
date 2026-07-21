@@ -5,3 +5,4 @@
 - [x] **Task 3:** Render Forecast Line Chart using Recharts in `ForecastPage`.
 - [x] **Task 4:** Internationalize chart axes and labels.
 - [x] **Task 5:** Align the spacing between forecast filters and the content below.
+- [x] **Task 6:** Make vertical-axis currency labels resilient to large projected balances.
