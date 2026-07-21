@@ -9,7 +9,7 @@ import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 export function usePlannedExpensesViewModel() {
-  const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense } = useFinance();
+  const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense, isLoading } = useFinance();
   const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
   const { matchesDate } = temporal.actions;
   
@@ -155,6 +155,7 @@ export function usePlannedExpensesViewModel() {
       hasMoreHistory: visibleCount < filteredPendingExpenses.length,
       isLoadingHistory: false,
       historyError: false,
+      isLoading,
       filterLabel: temporal.state.label,
       temporal: temporal.state
     },

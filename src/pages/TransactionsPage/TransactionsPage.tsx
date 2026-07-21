@@ -16,12 +16,22 @@ import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 import { buildExpenseBreakdownPath } from '../../utils/expenseBreakdownUtils';
 import { LazyLoadSentinel } from '../../components/shared/LazyLoadSentinel';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
   const { state, actions } = useTransactionsViewModel();
   const { t } = useLocale();
   const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];
+
+  if (state.isLoading) {
+    return (
+      <div className="animate-fade-in transactions-page">
+        <PageHeader title={t('transactions.title')} description={t('transactions.description')} />
+        <FinanceContentSkeleton variant="list" />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in transactions-page">

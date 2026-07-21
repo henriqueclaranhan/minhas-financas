@@ -88,4 +88,16 @@ describe('DashboardPage UI', () => {
     expect(container.querySelector('.pie-legend-item .lucide-utensils')).toBeInTheDocument();
     expect(container.querySelector('.category-details-link')).toHaveAttribute('href', '/categories');
   });
+
+  it('shows structural loading without temporary financial values', () => {
+    vi.mocked(useDashboardViewModel).mockReturnValue({
+      state: { ...mockState, isLoading: true },
+      actions: mockActions,
+    } as any);
+
+    renderWithRouter(<DashboardPage />);
+
+    expect(screen.getByRole('status', { name: 'Carregando conteúdo financeiro' })).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Saldo atual/i })).not.toBeInTheDocument();
+  });
 });

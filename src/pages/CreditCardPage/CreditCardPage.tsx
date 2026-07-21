@@ -9,6 +9,7 @@ import './CreditCardPage.css';
 import { FinanceEntryMode } from '../../enums/UIEnums';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 
 export function CreditCardPage() {
   const { state, actions } = useCreditCardViewModel();
@@ -20,6 +21,15 @@ export function CreditCardPage() {
       scrollRef.current.scrollTo({ left: 120, behavior: 'smooth' });
     }
   }, []);
+
+  if (state.isLoading) {
+    return (
+      <div className="animate-fade-in">
+        <PageHeader title={t('invoices.title')} description={t('invoices.description')} />
+        <FinanceContentSkeleton variant="report" />
+      </div>
+    );
+  }
 
   const CustomTooltip = ({ active, payload }: any) => {
     if (active && payload && payload.length) {

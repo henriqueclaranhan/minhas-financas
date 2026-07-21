@@ -44,7 +44,7 @@ function toBreakdownItem(
 }
 
 export function useExpenseBreakdownViewModel() {
-  const { transactions } = useFinance();
+  const { transactions, isLoading: isFinanceLoading } = useFinance();
   const [searchParams, setSearchParams] = useSearchParams();
   const initialPeriod = useRef(parseExpenseBreakdownPeriod(searchParams)).current;
   const temporal = useTemporalFilter(TemporalFilterMode.MONTH, initialPeriod);
@@ -69,7 +69,7 @@ export function useExpenseBreakdownViewModel() {
   }, [activePeriod, searchParams, setSearchParams]);
 
   const period = getExpenseBreakdownIsoPeriod(activePeriod);
-  const { entries: competenceEntries } = useCompetenceEntries(period.startDate, period.endDate, transactions);
+  const { entries: competenceEntries, isLoading: isCompetenceLoading } = useCompetenceEntries(period.startDate, period.endDate, transactions);
 
   const items = useMemo(() => {
     return competenceEntries
@@ -101,6 +101,7 @@ export function useExpenseBreakdownViewModel() {
       paymentsShare: total > 0 ? (paymentsTotal / total) * 100 : 0,
       filterLabel: temporal.state.label,
       temporal: temporal.state,
+      isLoading: isFinanceLoading || isCompetenceLoading,
     },
     actions: {
       temporal: temporal.actions,

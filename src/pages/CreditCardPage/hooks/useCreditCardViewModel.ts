@@ -10,7 +10,7 @@ import { addMonths, endOfMonth, endOfYear, format, parseISO, startOfMonth, start
 import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 
 export function useCreditCardViewModel() {
-  const { transactions, addTransaction, addPlannedExpense } = useFinance();
+  const { transactions, addTransaction, addPlannedExpense, isLoading: isFinanceLoading } = useFinance();
   const { locale } = useLocale();
   const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(0);
@@ -30,7 +30,7 @@ export function useCreditCardViewModel() {
     return { start: parseISO(rangeStart), end: parseISO(rangeEnd) };
   }, [mode, month, rangeEnd, rangeStart, year]);
 
-  const { entries: competenceEntries } = useCompetenceEntries(
+  const { entries: competenceEntries, isLoading: isCompetenceLoading } = useCompetenceEntries(
     format(interval.start, 'yyyy-MM-dd'),
     format(interval.end, 'yyyy-MM-dd'),
     transactions,
@@ -70,6 +70,7 @@ export function useCreditCardViewModel() {
       isModalOpen,
       actionType,
       temporal: temporal.state,
+      isLoading: isFinanceLoading || isCompetenceLoading,
     },
     actions: {
       setSelectedMonthIndex,

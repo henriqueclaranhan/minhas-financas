@@ -9,6 +9,7 @@ import { useLocale } from '../../store/LocaleContext';
 import { getCategoryIcon } from '../../utils/categoryIcons';
 import type { ExpenseBreakdownItem } from './hooks/useExpenseBreakdownViewModel';
 import { useExpenseBreakdownViewModel } from './hooks/useExpenseBreakdownViewModel';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 import './ExpenseBreakdownPage.css';
 
 interface LedgerSectionProps {
@@ -101,6 +102,20 @@ function LedgerSection({ title, description, total, items, kind }: LedgerSection
 export function ExpenseBreakdownPage() {
   const { state, actions } = useExpenseBreakdownViewModel();
   const { formatCurrency, t } = useLocale();
+
+  if (state.isLoading) {
+    return (
+      <div className="animate-fade-in expense-breakdown-page">
+        <PageHeader
+          title={t('expenseBreakdown.title')}
+          description={t('expenseBreakdown.description')}
+          showBackButton
+          forceShowBackButtonOnDesktop
+        />
+        <FinanceContentSkeleton variant="details" />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in expense-breakdown-page">

@@ -8,6 +8,7 @@ import '../../components/shared/FilterTabs/FilterTabs.css';
 import './ForecastPage.css';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 
 export function ForecastPage() {
   const { state, actions } = useForecastViewModel();
@@ -20,12 +21,22 @@ export function ForecastPage() {
     temporal,
     totalIncome,
     totalExpense,
+    isLoading,
   } = state;
   const {
     setIncludePlannedIncome,
     setIncludePlannedExpense,
     temporal: temporalActions,
   } = actions;
+
+  if (isLoading) {
+    return (
+      <div className="animate-fade-in forecast-page">
+        <PageHeader title={t('forecast.title')} description={t('forecast.description')} showBackButton={true} />
+        <FinanceContentSkeleton variant="report" />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in forecast-page">

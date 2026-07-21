@@ -9,7 +9,7 @@ import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
 
 export function useForecastViewModel() {
-  const { transactions, plannedExpenses, initialBalance } = useFinance();
+  const { transactions, plannedExpenses, initialBalance, isLoading: isFinanceLoading } = useFinance();
   const { formatCurrency, locale } = useLocale();
 
   const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
@@ -31,7 +31,7 @@ export function useForecastViewModel() {
   }, [mode, month, rangeEnd, rangeStart, year]);
 
   const resolvedInitialBalance = initialBalance ?? 0;
-  const { entries: competenceEntries } = useCompetenceEntries('0001-01-01', format(endDate, 'yyyy-MM-dd'), transactions);
+  const { entries: competenceEntries, isLoading: isCompetenceLoading } = useCompetenceEntries('0001-01-01', format(endDate, 'yyyy-MM-dd'), transactions);
   const competenceAggregate = useMemo(() => aggregateCompetenceEntries(competenceEntries), [competenceEntries]);
 
   const chartData = useMemo(() => {
@@ -74,6 +74,7 @@ export function useForecastViewModel() {
       temporal: temporal.state,
       totalIncome,
       totalExpense,
+      isLoading: isFinanceLoading || isCompetenceLoading,
     },
     actions: {
       setIncludePlannedIncome,

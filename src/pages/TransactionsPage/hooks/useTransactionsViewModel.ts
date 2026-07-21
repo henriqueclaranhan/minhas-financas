@@ -12,7 +12,7 @@ import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
 
 export function useTransactionsViewModel() {
-  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction, isLoading: isFinanceLoading } = useFinance();
   const { user } = useAuth();
   const temporal = useTemporalFilter(TemporalFilterMode.MONTH);
   const { matchesDate } = temporal.actions;
@@ -56,7 +56,7 @@ export function useTransactionsViewModel() {
     }
     return { startDate: temporal.state.startDate, endDate: temporal.state.endDate };
   }, [temporal.state.endDate, temporal.state.mode, temporal.state.month, temporal.state.startDate, temporal.state.year]);
-  const { entries: competenceEntries } = useCompetenceEntries(
+  const { entries: competenceEntries, isLoading: isCompetenceLoading } = useCompetenceEntries(
     expansionPeriod.startDate,
     expansionPeriod.endDate,
     transactions,
@@ -195,6 +195,7 @@ export function useTransactionsViewModel() {
       transactionToDelete,
       hasMoreHistory,
       isLoadingHistory,
+      isLoading: isFinanceLoading || isCompetenceLoading || (isLoadingHistory && historyWindow.length === 0),
       historyError,
       filterLabel: temporal.state.label,
       temporal: temporal.state

@@ -16,12 +16,22 @@ import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 import { LazyLoadSentinel } from '../../components/shared/LazyLoadSentinel';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
   const { state, actions } = usePlannedExpensesViewModel();
   const { t } = useLocale();
   const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];
+
+  if (state.isLoading) {
+    return (
+      <div className="animate-fade-in planned-expenses-page">
+        <PageHeader title={t('planning.title')} description={t('planning.description')} />
+        <FinanceContentSkeleton variant="list" />
+      </div>
+    );
+  }
 
   return (
     <div className="animate-fade-in planned-expenses-page">

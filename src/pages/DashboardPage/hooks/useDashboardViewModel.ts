@@ -12,7 +12,7 @@ import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUti
 import { PaymentMethod, TransactionType } from '../../../enums/FinanceEnums';
 
 export function useDashboardViewModel() {
-  const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
+  const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense, isLoading: isFinanceLoading } = useFinance();
   const { user } = useAuth();
   const { locale } = useLocale();
   
@@ -22,7 +22,7 @@ export function useDashboardViewModel() {
   const hasData = transactions.length > 0 || plannedExpenses.length > 0;
   const resolvedInitialBalance = initialBalance ?? 0;
   const projectionEnd = useMemo(() => endOfMonth(addMonths(new Date(), 4)), []);
-  const { entries: competenceEntries } = useCompetenceEntries(
+  const { entries: competenceEntries, isLoading: isCompetenceLoading } = useCompetenceEntries(
     '0001-01-01',
     format(projectionEnd, 'yyyy-MM-dd'),
     transactions,
@@ -86,7 +86,8 @@ export function useDashboardViewModel() {
       actionType,
       chartData,
       expensesByCategory,
-      currentInvoice
+      currentInvoice,
+      isLoading: isFinanceLoading || isCompetenceLoading,
     },
     actions: {
       setIsModalOpen,

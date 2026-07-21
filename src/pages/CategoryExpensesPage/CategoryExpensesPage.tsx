@@ -12,10 +12,21 @@ import { CategoryExpenseSummaryCards } from './components/CategoryExpenseSummary
 import './CategoryExpensesPage.css';
 import { CategoryExpenseFilterMode } from '../../enums/UIEnums';
 import { PeriodContext } from '../../components/shared/PeriodContext';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 
 export function CategoryExpensesPage() {
   const { t, locale } = useLocale();
   const { state, actions } = useCategoryExpensesViewModel();
+
+  if (state.isLoading) {
+    return (
+      <div className="animate-fade-in category-expenses-page">
+        <PageHeader title={t('categoryExpenses.title')} description={t('categoryExpenses.description')} showBackButton={true} />
+        <FinanceContentSkeleton variant="report" />
+      </div>
+    );
+  }
+
   const monthOptions = Array.from({ length: 12 }, (_, month) => ({
     value: String(month),
     label: new Intl.DateTimeFormat(locale, { month: 'long' })

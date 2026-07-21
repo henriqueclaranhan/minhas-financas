@@ -7,7 +7,7 @@ import { CategoryExpenseFilterMode, type CategoryExpenseFilterMode as CategoryEx
 import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
 
 export function useCategoryExpensesViewModel() {
-  const { transactions } = useFinance();
+  const { transactions, isLoading: isFinanceLoading } = useFinance();
   const { locale, formatCurrency } = useLocale();
   const now = new Date();
   const defaultMonth = now.getMonth();
@@ -31,7 +31,7 @@ export function useCategoryExpensesViewModel() {
 
   const startDateIso = format(startDate, 'yyyy-MM-dd');
   const endDateIso = format(endDate, 'yyyy-MM-dd');
-  const { entries: competenceEntries } = useCompetenceEntries(startDateIso, endDateIso, transactions);
+  const { entries: competenceEntries, isLoading: isCompetenceLoading } = useCompetenceEntries(startDateIso, endDateIso, transactions);
   const categoryData = useMemo(
     () => calculateCompetenceExpensesByCategory(competenceEntries),
     [competenceEntries],
@@ -135,6 +135,7 @@ export function useCategoryExpensesViewModel() {
       startDateValue: format(tempStartDate, 'yyyy-MM-dd'),
       endDateValue: format(tempEndDate, 'yyyy-MM-dd'),
       formatCurrency,
+      isLoading: isFinanceLoading || isCompetenceLoading,
     },
     actions: {
       setTempFilterMode,

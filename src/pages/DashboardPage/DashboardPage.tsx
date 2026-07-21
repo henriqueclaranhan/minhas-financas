@@ -6,10 +6,20 @@ import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import './DashboardPage.css';
 import { FinanceEntryMode } from '../../enums/UIEnums';
+import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 
 export function DashboardPage() {
   const { state, actions } = useDashboardViewModel();
   const { t } = useLocale();
+
+  if (state.isLoading) {
+    return (
+      <div className="animate-fade-in">
+        <PageHeader title={t('dashboard.greeting', { name: state.userName })} description={t('dashboard.description')} />
+        <FinanceContentSkeleton variant="dashboard" />
+      </div>
+    );
+  }
 
   if (state.initialBalance === null && !state.hasData) {
     return null;

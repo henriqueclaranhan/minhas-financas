@@ -139,6 +139,8 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Global focus-visible styles MUST not be removed without an accessible replacement.
 - Do not communicate financial status by color alone; pair color with text, sign, label, or icon.
 - Motion SHOULD be brief and purposeful. New non-essential motion MUST respect reduced-motion preferences.
+- Asynchronous financial values MUST render structural skeletons while their authoritative source is loading; temporary zero values and empty states MUST NOT represent unknown data.
+- Skeletons MUST approximate final geometry, expose a localized status to assistive technology, avoid semantic financial colors, and disable animation for reduced-motion preferences.
 
 ### 12.1 Temporary notifications
 
