@@ -1,6 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { ChevronLeft } from 'lucide-react';
 import { useLocale } from '../../store/LocaleContext';
+import './PageHeader.css';
 
 interface PageHeaderProps {
   title: string;
@@ -33,7 +34,7 @@ export function PageHeader({ title, description, primaryButton, showBackButton, 
   return (
     <>
       {showBackButton && (
-        <header className={`${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'} mb-xl flex items-center`}>
+        <header className={`page-back-header ${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'} mb-xl flex items-center`}>
           <button 
             onClick={handleBack}
             className={`btn ${forceShowBackButtonOnDesktop ? '' : 'hide-on-desktop'}`}

@@ -16,7 +16,7 @@ export default defineConfig({
         short_name: 'Minhas Finanças',
         description: 'Gerenciador de finanças pessoais focado em usabilidade e desempenho.',
         lang: 'pt-BR',
-        theme_color: '#34c759',
+        theme_color: '#F2F2F7',
         background_color: '#ffffff',
         start_url: '/',
         scope: '/',

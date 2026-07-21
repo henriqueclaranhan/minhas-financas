@@ -18,6 +18,12 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] Desktop selection behavior remains unchanged.
 - [x] Shared modals animate both entrance and exit on mobile before the portal is removed.
 - [x] Modal content and document scroll locking remain stable until the exit animation completes.
+- [x] The primary app header remains visible while scrolling main destinations on mobile.
+- [x] The back-navigation header remains visible while scrolling secondary and nested pages on mobile.
+- [x] Sticky mobile headers respect the top safe area without making the large page title persistent.
+- [x] Sticky headers use an opaque active-theme background continuous with the mobile status bar.
+- [x] Mobile content does not create a competing overflow container that prevents sticky back navigation.
+- [x] Sticky mobile headers blend into the page without a bottom divider.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.

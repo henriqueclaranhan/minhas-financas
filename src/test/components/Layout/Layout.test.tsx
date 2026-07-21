@@ -23,6 +23,7 @@ describe('Layout navigation', () => {
 
     expect(categoryLinks).toHaveLength(2);
     categoryLinks.forEach((link) => expect(link).toHaveAttribute('href', '/categories'));
+    expect(document.querySelector('.mobile-header')).toBeInTheDocument();
   });
 
   it('resets scroll when navigating to another page on mobile', () => {

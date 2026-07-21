@@ -1,0 +1,12 @@
+@media (max-width: 768px) {
+  .page-back-header {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    margin-top: calc(-1 * var(--spacing-md));
+    margin-right: calc(-1 * var(--spacing-md));
+    margin-left: calc(-1 * var(--spacing-md));
+    padding: calc(var(--spacing-md) + env(safe-area-inset-top, 0px)) var(--spacing-md) var(--spacing-md);
+    background: var(--clr-background);
+  }
+}

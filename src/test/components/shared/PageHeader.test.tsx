@@ -19,7 +19,9 @@ describe('PageHeader safe back navigation', () => {
 
   it('returns to the previous React Router entry when one exists', () => {
     window.history.replaceState({ idx: 2 }, '');
-    render(<PageHeader title="Detalhes" showBackButton forceShowBackButtonOnDesktop />);
+    const { container } = render(<PageHeader title="Detalhes" showBackButton forceShowBackButtonOnDesktop />);
+
+    expect(container.querySelector('.page-back-header')).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'Voltar' }));
 
