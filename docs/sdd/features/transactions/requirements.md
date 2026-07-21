@@ -12,3 +12,4 @@ Management of financial transactions (incomes and expenses).
 - [x] Table/List view of all transactions.
 - [x] Filtering capabilities by date range and category.
 - [x] Ability to delete a transaction.\n
+- [x] Period totals use the same installment competence rules as the dashboard: credit expenses start in the next month, including single-installment purchases, while boleto expenses start in the current month.

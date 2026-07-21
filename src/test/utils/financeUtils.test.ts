@@ -80,6 +80,49 @@ describe('financeUtils', () => {
       expect(expanded[0].isInstallment).toBeUndefined();
       expect(expanded[0].amount).toBe(50);
     });
+
+    it('should move a single-installment credit expense to the next month', () => {
+      const transactions: Transaction[] = [
+        {
+          id: 'credit-1',
+          description: 'Groceries',
+          amount: 300,
+          date: '2026-07-10',
+          paymentMethod: PaymentMethod.CREDIT,
+          type: TransactionType.EXPENSE,
+          installments: 1,
+        }
+      ];
+
+      const expanded = expandTransactions(transactions);
+
+      expect(expanded).toHaveLength(1);
+      expect(expanded[0].date).toBe('2026-08-10');
+      expect(expanded[0].amount).toBe(300);
+      expect(expanded[0].isInstallment).toBe(false);
+      expect(expanded[0].originalId).toBe('credit-1');
+    });
+
+    it('should keep a single-installment boleto expense in the current month', () => {
+      const transactions: Transaction[] = [
+        {
+          id: 'boleto-1',
+          description: 'Course',
+          amount: 300,
+          date: '2026-07-10',
+          paymentMethod: PaymentMethod.BOLETO,
+          type: TransactionType.EXPENSE,
+          installments: 1,
+        }
+      ];
+
+      const expanded = expandTransactions(transactions);
+
+      expect(expanded).toHaveLength(1);
+      expect(expanded[0].date).toBe('2026-07-10');
+      expect(expanded[0].amount).toBe(300);
+      expect(expanded[0].isInstallment).toBeUndefined();
+    });
   });
 
   describe('expandPlannedExpenses', () => {

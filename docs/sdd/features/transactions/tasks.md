@@ -1,0 +1,2 @@
+- [x] Align single-installment credit expense competence with dashboard totals.
+- [x] Add regression coverage for credit and boleto single-installment expenses.
