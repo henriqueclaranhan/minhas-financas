@@ -8,3 +8,4 @@
 - [x] 6. Add modal transition regression tests and complete verification.
 - [x] 7. Keep primary and back-navigation headers visible during mobile scrolling.
 - [x] 8. Prevent horizontal scrolling inside mobile transaction modals.
+- [x] 9. Add standalone PWA pull-to-refresh with localized feedback and gesture safeguards.

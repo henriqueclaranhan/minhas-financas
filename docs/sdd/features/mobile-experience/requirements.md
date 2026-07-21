@@ -8,6 +8,7 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - As a PWA user, I want the installed application name to be readable.
 - As a mobile user, I want each navigated page to start at the top.
 - As a mobile user, I want gestures to interact with the interface without accidentally selecting labels.
+- As a PWA user, I want to refresh current financial data with a familiar pull gesture.
 
 ## Acceptance Criteria
 - [x] Mobile modal surfaces have no bottom border and enter vertically from below the viewport.
@@ -25,6 +26,10 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] Mobile content does not create a competing overflow container that prevents sticky back navigation.
 - [x] Sticky mobile headers blend into the page without a bottom divider.
 - [x] Mobile modal bodies do not expose horizontal scrolling when forms or action descriptions approach the viewport width.
+- [x] Pull-to-refresh is available only in installed standalone PWA mode when the document is already at the top.
+- [x] The pull gesture shows localized pull, release, and refreshing feedback.
+- [x] Pull-to-refresh ignores predominantly horizontal gestures, editable controls, open modals, and the open mobile drawer.
+- [x] Reduced-motion preferences disable the refresh spinner animation.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.

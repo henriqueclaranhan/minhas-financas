@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp, Tags } from 'lucide-react';
 import { useAuth } from '../../store/AuthContext';
 import { useLocale } from '../../store/LocaleContext';
+import { PullToRefresh } from '../shared/PullToRefresh';
 import './Layout.css';
 
 export function Layout() {
@@ -37,6 +38,7 @@ export function Layout() {
 
   return (
     <div className="layout-container">
+      <PullToRefresh />
       {/* Mobile Header */}
       {isMainTab && (
         <div className="mobile-header hide-on-desktop">
