@@ -33,7 +33,7 @@ export function ForecastPage() {
     return (
       <div className="animate-fade-in forecast-page">
         <PageHeader title={t('forecast.title')} description={t('forecast.description')} showBackButton={true} />
-        <FinanceContentSkeleton variant="report" />
+        <FinanceContentSkeleton variant="forecast" />
       </div>
     );
   }

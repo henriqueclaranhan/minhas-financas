@@ -28,7 +28,7 @@ export function PlannedExpensesPage() {
     return (
       <div className="animate-fade-in planned-expenses-page">
         <PageHeader title={t('planning.title')} description={t('planning.description')} />
-        <FinanceContentSkeleton variant="list" />
+        <FinanceContentSkeleton variant="planned" />
       </div>
     );
   }

@@ -112,7 +112,7 @@ export function ExpenseBreakdownPage() {
           showBackButton
           forceShowBackButtonOnDesktop
         />
-        <FinanceContentSkeleton variant="details" />
+        <FinanceContentSkeleton variant="expenseBreakdown" />
       </div>
     );
   }

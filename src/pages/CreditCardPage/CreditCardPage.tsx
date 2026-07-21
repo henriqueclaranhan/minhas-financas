@@ -26,7 +26,7 @@ export function CreditCardPage() {
     return (
       <div className="animate-fade-in">
         <PageHeader title={t('invoices.title')} description={t('invoices.description')} />
-        <FinanceContentSkeleton variant="report" />
+        <FinanceContentSkeleton variant="credit" />
       </div>
     );
   }

@@ -28,7 +28,7 @@ export function TransactionsPage() {
     return (
       <div className="animate-fade-in transactions-page">
         <PageHeader title={t('transactions.title')} description={t('transactions.description')} />
-        <FinanceContentSkeleton variant="list" />
+        <FinanceContentSkeleton variant="transactions" />
       </div>
     );
   }

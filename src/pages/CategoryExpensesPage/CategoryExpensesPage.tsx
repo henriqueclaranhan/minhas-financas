@@ -22,7 +22,7 @@ export function CategoryExpensesPage() {
     return (
       <div className="animate-fade-in category-expenses-page">
         <PageHeader title={t('categoryExpenses.title')} description={t('categoryExpenses.description')} showBackButton={true} />
-        <FinanceContentSkeleton variant="report" />
+        <FinanceContentSkeleton variant="categories" />
       </div>
     );
   }
