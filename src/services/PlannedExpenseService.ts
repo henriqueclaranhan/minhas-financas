@@ -1,4 +1,5 @@
-import { collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot, orderBy, query, runTransaction } from 'firebase/firestore';
+import { collection, doc, documentId, addDoc, updateDoc, deleteDoc, getDocs, limit, onSnapshot, orderBy, query, runTransaction, startAfter, where } from 'firebase/firestore';
+import type { QueryConstraint } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { PlannedExpense, Transaction } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
@@ -7,6 +8,33 @@ import { removeUndefinedFields } from './firestoreData';
 import { buildCompetenceEntries } from '../utils/competenceEntryUtils';
 
 export class PlannedExpenseService {
+  static readonly HISTORY_PAGE_SIZE = 40;
+
+  static async getHistoryPage(
+    uid: string,
+    period: { startDate: string; endDate: string },
+    cursor?: { dueDate: string; id: string },
+  ): Promise<{ plannedExpenses: PlannedExpense[]; cursor?: { dueDate: string; id: string }; hasMore: boolean }> {
+    if (!uid) throw new Error('User ID is required');
+    const constraints: QueryConstraint[] = [
+      where('status', '==', ExpenseStatus.PENDING),
+      where('dueDate', '>=', period.startDate),
+      where('dueDate', '<=', period.endDate),
+      orderBy('dueDate', 'asc'),
+      orderBy(documentId(), 'asc'),
+    ];
+    if (cursor) constraints.push(startAfter(cursor.dueDate, cursor.id));
+    constraints.push(limit(this.HISTORY_PAGE_SIZE));
+    const snapshot = await getDocs(query(collection(db, 'users', uid, 'plannedExpenses'), ...constraints));
+    const plannedExpenses = snapshot.docs.map(item => ({ ...item.data(), id: item.id } as PlannedExpense));
+    const last = plannedExpenses[plannedExpenses.length - 1];
+    return {
+      plannedExpenses,
+      cursor: last?.id ? { dueDate: last.dueDate, id: last.id } : undefined,
+      hasMore: plannedExpenses.length === this.HISTORY_PAGE_SIZE,
+    };
+  }
+
   static subscribeToPlannedExpenses(
     uid: string,
     onUpdate: (plans: PlannedExpense[]) => void,
@@ -15,6 +43,7 @@ export class PlannedExpenseService {
     if (!uid) throw new Error("User ID is required");
     const plannedExpenseQuery = query(
       collection(db, 'users', uid, 'plannedExpenses'),
+      where('status', '==', ExpenseStatus.PENDING),
       orderBy('dueDate', 'desc'),
     );
     const unsub = onSnapshot(plannedExpenseQuery, (snapshot: any) => {

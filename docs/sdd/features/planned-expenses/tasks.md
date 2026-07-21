@@ -1,0 +1,5 @@
+- [x] 1. Restrict the shared planning listener to active pending documents.
+- [x] 2. Add temporal cursor queries and the required composite indexes.
+- [x] 3. Replace client-only slicing with Firestore-backed lazy loading.
+- [x] 4. Preserve exact summary totals independently from loaded pages.
+- [x] 5. Add regression coverage and complete verification.

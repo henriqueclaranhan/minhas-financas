@@ -218,6 +218,8 @@ interface PlannedExpenseDocument {
 
 The TypeScript `id` property is populated from `{plannedExpenseId}` when documents are read and is not persisted as a field.
 
+Planning screens query active documents with `status == pending` and order them by `dueDate` plus document ID for cursor pagination. Composite indexes for the ascending paginated query and descending active listener are declared in `firestore.indexes.json`.
+
 ## Relationships and Lifecycle
 
 ```text

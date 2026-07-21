@@ -26,3 +26,4 @@
 - [x] Add exact-payload and persistence regression tests.
 - [x] Remove unsafe global truncation and make exports independently paginated.
 - [x] Propagate import failure state to Settings.
+- [x] Paginate the Planning list while limiting its global listener to active plans.

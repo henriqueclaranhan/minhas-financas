@@ -6,7 +6,7 @@
 - Every persisted transaction has one or more competence entries. Credit expenses start at offset `i`; boleto expenses start at `i - 1`; non-installment entries retain the original date.
 - `FinanceMigrationService` backfills existing transactions in deterministic pages and records `financeSchemaVersion` plus a cursor on the user document. Consumers keep the compatibility source until migration version 2 completes.
 - Period screens query only intersecting competence entries. Transaction history independently lazy-loads source transactions and never feeds aggregate calculations.
-- Planned expenses retain their complete source listener because recurring plans can project into an interval from an earlier base date; their table uses incremental rendering to bound DOM work. Backup/delete operations continue to use direct deterministic pagination.
+- Planned-expense projections retain the complete active (`pending`) source set because recurring plans can project into an interval from an earlier base date; confirmed and cancelled history is excluded from that listener. The Planning table independently uses temporal cursor queries and incremental rendering. Backup/delete operations continue to use direct deterministic pagination.
 - Data-sync deletion queries Firestore directly in pages instead of depending on the currently loaded client window.
 - Data export also reads directly from Firestore in deterministic document-ID pages.
 

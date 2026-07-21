@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { PlannedExpenseService } from '../../services/PlannedExpenseService';
-import { addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { addDoc, updateDoc, deleteDoc, getDocs, onSnapshot, where } from 'firebase/firestore';
 import { TransactionType, ExpenseStatus, PaymentMethod } from '../../enums/FinanceEnums';
 
 const { transactionMock } = vi.hoisted(() => ({
@@ -24,7 +24,11 @@ vi.mock('firebase/firestore', () => {
     deleteDoc: vi.fn(),
     query: vi.fn(ref => ref),
     orderBy: vi.fn(),
+    where: vi.fn(),
+    documentId: vi.fn(() => '__name__'),
+    startAfter: vi.fn(),
     limit: vi.fn(),
+    getDocs: vi.fn(),
     runTransaction: vi.fn(async (_db, callback) => callback(transactionMock)),
     onSnapshot: vi.fn((_ref, callback) => {
       callback({ forEach: vi.fn(), size: 0 });
@@ -93,7 +97,28 @@ describe('PlannedExpenseService', () => {
     const onUpdate = vi.fn();
     const unsub = PlannedExpenseService.subscribeToPlannedExpenses('user1', onUpdate, vi.fn());
     expect(onSnapshot).toHaveBeenCalled();
+    expect(where).toHaveBeenCalledWith('status', '==', ExpenseStatus.PENDING);
     expect(typeof unsub).toBe('function');
+  });
+
+  it('loads a cursor-based page of pending plans', async () => {
+    const plans = Array.from({ length: 40 }, (_, index) => ({
+      ...mockExpense,
+      dueDate: `2026-05-${String((index % 28) + 1).padStart(2, '0')}`,
+      id: `plan-${index}`,
+    }));
+    vi.mocked(getDocs).mockResolvedValueOnce({
+      docs: plans.map(plan => ({ id: plan.id, data: () => plan })),
+    } as never);
+
+    const page = await PlannedExpenseService.getHistoryPage(
+      mockUid,
+      { startDate: '2026-01-01', endDate: '2026-12-31' },
+    );
+
+    expect(page.plannedExpenses).toHaveLength(40);
+    expect(page.hasMore).toBe(true);
+    expect(page.cursor).toEqual({ dueDate: plans[39].dueDate, id: plans[39].id });
   });
 
   it('should confirm a planned expense and create recurrence if applicable', async () => {

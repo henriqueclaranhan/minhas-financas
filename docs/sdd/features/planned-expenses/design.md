@@ -16,10 +16,13 @@
 ### 2.2 ViewModel (`usePlannedExpensesViewModel.ts`)
 - **State:** List of planned expenses, modal visibility, loading status.
 - **Actions:** `addPlannedExpense`, `updatePlannedExpense`, `deletePlannedExpense`, `markAsPaid` (which converts it into an actual Transaction).
+- **Lazy-loaded list:** Source plans are queried in pages of 40 ordered by `dueDate, documentId`. Temporal changes reset the cursor, while the shared intersection sentinel requests subsequent pages. The query widens its lower date boundary by the maximum supported installment horizon, then the existing expansion utility retains only occurrences intersecting the selected period.
+- **Exact summaries:** Summary totals continue to use the complete active-plan working set and never depend on the loaded list window.
 
 ### 2.3 Model
 - **Entities:** `PlannedExpense` (id, description, amount, expectedDate, frequency).
 - **Services:** Firestore CRUD on `plannedExpenses`, plus transactional insertion into `transactions` when marked as paid.
+- **Active working set:** The realtime listener includes only `pending` plans, preventing confirmed and cancelled history from growing every projection consumer indefinitely. Processed history remains available to export and direct service queries.
 
 ## 3. i18n
 - **Requirements:** Headers, modal titles, frequency options (e.g., "Monthly", "Weekly"), and alerts must use `useLocale`.

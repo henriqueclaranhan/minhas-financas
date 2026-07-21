@@ -13,3 +13,6 @@ Manage future and recurring financial commitments.
 - [x] Action button to convert planned expense to a transaction ("Mark as Paid").\n
 - [x] Income and expense summary cards show both totals for the active detailed filters regardless of the selected type tab.
 - [x] Date filtering supports Month, Year, and custom Period independently from search and category filters.
+- [x] The planning list loads pending source documents in cursor-based pages as the user scrolls.
+- [x] Processed plans do not remain in the global realtime working set.
+- [x] Period totals remain exact and independent from the pages currently rendered.
