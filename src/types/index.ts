@@ -13,6 +13,20 @@ export interface Transaction {
   category?: string;
 }
 
+export interface CompetenceEntry {
+  id?: string;
+  transactionId: string;
+  description: string;
+  amount: number;
+  competenceDate: string;
+  originalDate: string;
+  paymentMethod: PaymentMethod | string;
+  type: TransactionType;
+  category?: string;
+  installmentNumber: number;
+  totalInstallments: number;
+}
+
 export interface PlannedExpense {
   id?: string;
   description: string;

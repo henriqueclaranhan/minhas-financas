@@ -18,7 +18,7 @@ vi.mock('../../config/firebase', () => ({
 vi.mock('firebase/firestore', () => {
   return {
     collection: vi.fn(),
-    doc: vi.fn(),
+    doc: vi.fn((...args: unknown[]) => ({ id: args.at(-1), path: String(args.at(-1)) })),
     addDoc: vi.fn(),
     updateDoc: vi.fn(),
     deleteDoc: vi.fn(),
@@ -80,7 +80,7 @@ describe('PlannedExpenseService', () => {
       id: 'client-only', category: undefined, description: 'Updated',
     });
 
-    expect(updateDoc).toHaveBeenCalledWith(undefined, { description: 'Updated' });
+    expect(updateDoc).toHaveBeenCalledWith(expect.anything(), { description: 'Updated' });
   });
 
   it('should delete a planned expense', async () => {
@@ -115,10 +115,11 @@ describe('PlannedExpenseService', () => {
     
     expect(transactionMock.get).toHaveBeenCalled();
     expect(transactionMock.update.mock.calls[0][1]).toEqual({ status: ExpenseStatus.CONFIRMED });
-    expect(transactionMock.set).toHaveBeenCalledTimes(2);
+    expect(transactionMock.set).toHaveBeenCalledTimes(3);
     expect(transactionMock.set.mock.calls[0][1]).toMatchObject({ sourceKey: 'plannedExpense:pe123:confirmation' });
     expect(transactionMock.set.mock.calls[0][1]).not.toHaveProperty('category');
-    expect(transactionMock.set.mock.calls[1][1]).not.toHaveProperty('category');
+    expect(transactionMock.set.mock.calls[1][1]).toMatchObject({ transactionId: 'planned-expense-pe123-confirmation' });
+    expect(transactionMock.set.mock.calls[2][1]).not.toHaveProperty('category');
   });
 
   it('should reject a planned expense and create recurrence if applicable', async () => {

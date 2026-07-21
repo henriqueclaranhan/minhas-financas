@@ -7,6 +7,8 @@ import { UserService } from '../services/UserService';
 import { DataSyncService } from '../services/DataSyncService';
 import { useLocale } from './LocaleContext';
 import { useToast } from './ToastContext';
+import { FinanceMigrationService } from '../services/FinanceMigrationService';
+import type { ImportProgress } from '../services/DataSyncService';
 
 interface FinanceContextData {
   initialBalance: number | null;
@@ -22,15 +24,16 @@ interface FinanceContextData {
   rejectPlannedExpense: (id: string) => Promise<void>;
   deletePlannedExpense: (id: string) => Promise<void>;
   exportData: () => Promise<void>;
-  importData: (jsonData: string) => Promise<boolean>;
+  importData: (jsonData: string, onProgress?: (progress: ImportProgress) => void) => Promise<boolean>;
   clearData: () => Promise<void>;
   isLoading: boolean;
   error: FinanceError | null;
   retry: () => void;
+  isSchemaReady: boolean;
 }
 
 export interface FinanceError {
-  source: 'user' | 'transactions' | 'plannedExpenses';
+  source: 'user' | 'transactions' | 'plannedExpenses' | 'migration';
   message: string;
 }
 
@@ -50,6 +53,24 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [loadingPlans, setLoadingPlans] = useState(true);
   const [error, setError] = useState<FinanceError | null>(null);
   const [retryGeneration, setRetryGeneration] = useState(0);
+  const [isSchemaReady, setIsSchemaReady] = useState(false);
+
+  useEffect(() => {
+    if (!uid) {
+      setIsSchemaReady(true);
+      return;
+    }
+    let active = true;
+    setIsSchemaReady(false);
+    setError(current => current?.source === 'migration' ? null : current);
+    FinanceMigrationService.ensureCurrentSchema(uid)
+      .then(() => { if (active) setIsSchemaReady(true); })
+      .catch(migrationError => {
+        if (!active) return;
+        setError({ source: 'migration', message: (migrationError as Error).message });
+      });
+    return () => { active = false; };
+  }, [retryGeneration, uid]);
 
   const runMutation = useCallback(async <T,>(
     operation: () => Promise<T>,
@@ -216,9 +237,9 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
     return DataSyncService.exportData(uid, initialBalance);
   }, [initialBalance, uid]);
 
-  const importData = useCallback(async (jsonData: string) => {
+  const importData = useCallback(async (jsonData: string, onProgress?: (progress: ImportProgress) => void) => {
     if (!uid) return false;
-    return DataSyncService.importData(uid, jsonData);
+    return DataSyncService.importData(uid, jsonData, onProgress);
   }, [uid]);
 
   const clearData = useCallback(async () => {
@@ -227,18 +248,18 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   }, [uid]);
 
   const retry = useCallback(() => setRetryGeneration(generation => generation + 1), []);
-  const isLoading = loadingUser || loadingTransactions || loadingPlans;
+  const isLoading = loadingUser || loadingTransactions || loadingPlans || !isSchemaReady;
 
   const value = useMemo<FinanceContextData>(() => ({
     initialBalance, setInitialBalance, transactions, plannedExpenses,
     addTransaction, updateTransaction, deleteTransaction,
     addPlannedExpense, updatePlannedExpense, confirmPlannedExpense,
     rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData,
-    isLoading, error, retry,
+    isLoading, error, retry, isSchemaReady,
   }), [
     addPlannedExpense, addTransaction, clearData, confirmPlannedExpense, deletePlannedExpense,
     deleteTransaction, error, exportData, importData,
-    initialBalance, isLoading, plannedExpenses,
+    initialBalance, isLoading, isSchemaReady, plannedExpenses,
     rejectPlannedExpense, retry, setInitialBalance, transactions, updatePlannedExpense, updateTransaction,
   ]);
 

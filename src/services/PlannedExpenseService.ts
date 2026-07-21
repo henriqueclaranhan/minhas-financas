@@ -4,6 +4,7 @@ import type { PlannedExpense, Transaction } from '../types';
 import { addMonths, parseISO, format } from 'date-fns';
 import { ExpenseStatus } from '../enums/FinanceEnums';
 import { removeUndefinedFields } from './firestoreData';
+import { buildCompetenceEntries } from '../utils/competenceEntryUtils';
 
 export class PlannedExpenseService {
   static subscribeToPlannedExpenses(
@@ -70,6 +71,13 @@ export class PlannedExpenseService {
         plannedExpenseId: id,
         sourceKey,
       }));
+      buildCompetenceEntries(transactionRef.id, transactionData).forEach(entry => {
+        const { id: entryId, ...storedEntry } = entry;
+        firestoreTransaction.set(
+          doc(db, 'users', uid, 'competenceEntries', entryId!),
+          removeUndefinedFields(storedEntry),
+        );
+      });
 
       if (expense.isRecurring) {
         const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
