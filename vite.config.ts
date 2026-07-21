@@ -11,9 +11,11 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg'],
       manifest: {
+        id: '/',
         name: 'Minhas Finanças',
         short_name: 'MinhasFinanças',
         description: 'Gerenciador de finanças pessoais focado em usabilidade e desempenho.',
+        lang: 'pt-BR',
         theme_color: '#34c759',
         background_color: '#ffffff',
         display: 'standalone',
@@ -33,7 +35,13 @@ export default defineConfig({
             src: 'maskable-icon.svg',
             sizes: 'any',
             type: 'image/svg+xml',
-            purpose: 'any maskable'
+            purpose: 'maskable'
+          },
+          {
+            src: 'maskable-icon-v2-512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
