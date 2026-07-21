@@ -15,7 +15,6 @@ import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
-  // Force HMR update
   const { state, actions } = useTransactionsViewModel();
   const { locale, t } = useLocale();
   const categoryOptions = [...new Set([...Object.values(ExpenseCategory), ...Object.values(IncomeCategory)])];

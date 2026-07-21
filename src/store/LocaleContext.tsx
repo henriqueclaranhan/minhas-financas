@@ -79,7 +79,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
       setLocaleState(systemDefaults.locale);
       setCurrencyState(systemDefaults.currency);
     }
-  }, [user?.uid, systemDefaults.locale, systemDefaults.currency]);
+  }, [user, systemDefaults]);
 
   const updatePreferences = useCallback((next: { locale: Locale; currency: Currency }) => {
     preferencesRef.current = next;
@@ -116,4 +116,6 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Kept with the provider and labels to preserve the stable locale module consumed by the application and tests.
+// oxlint-disable-next-line react/only-export-components
 export const useLocale = () => useContext(LocaleContext);

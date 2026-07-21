@@ -36,7 +36,7 @@ export function useProfileSettingsViewModel() {
       setName(user.displayName || '');
       setEmail(user.email || '');
     }
-  }, [user?.displayName, user?.email]);
+  }, [user]);
 
   const handleResendVerification = useCallback(async () => {
     try {

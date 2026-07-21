@@ -12,7 +12,7 @@ export function DashboardPage() {
   const { t } = useLocale();
 
   if (state.initialBalance === null && !state.hasData) {
-    return null; // Wait for OnboardingWizard to set the balance
+    return null;
   }
 
   return (
@@ -35,7 +35,6 @@ export function DashboardPage() {
         />
       </div>
 
-      {/* Mobile FAB */}
       <button 
         className="btn btn-primary fab hide-on-desktop" 
         onClick={() => { actions.setIsModalOpen(true); actions.setActionType(FinanceEntryMode.NONE); }}

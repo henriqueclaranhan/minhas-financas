@@ -17,7 +17,6 @@ describe('creditCardUtils', () => {
     expect(result.length).toBe(12);
 
     // Current month is index 3 (since we start at -3)
-    // Wait, -3 means: index 0 = Mar, index 1 = Apr, index 2 = May, index 3 = Jun
     // 1200 TV in May with 3 installments -> Jun(400), Jul(400), Aug(400)
     // 300 Groceries in Jun with 1 installment -> Jul(300)
     // Pix Payment -> ignored

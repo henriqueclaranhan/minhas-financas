@@ -16,6 +16,6 @@
 - [x] 5. Narrow public APIs and replace repeated application modes with constants.
   - [x] Remove unnecessary exports.
   - [x] Introduce shared action and filter-mode constants.
-- [ ] 6. Remove stale comments and resolve lint warnings.
-  - [ ] Fix hook dependencies, empty catches, and regular expressions.
-  - [ ] Split context providers and hooks for Fast Refresh compatibility.
+- [x] 6. Remove stale comments and resolve lint warnings.
+  - [x] Fix hook dependencies and empty catches.
+  - [x] Document stable provider-hook modules and scope Fast Refresh exceptions.

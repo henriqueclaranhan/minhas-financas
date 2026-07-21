@@ -70,4 +70,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
+// Kept with the provider to preserve the stable context module consumed by the application and tests.
+// oxlint-disable-next-line react/only-export-components
 export const useTheme = () => useContext(ThemeContext);

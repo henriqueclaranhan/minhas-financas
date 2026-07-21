@@ -15,7 +15,6 @@ export function CreditCardPage() {
 
   useEffect(() => {
     if (scrollRef.current) {
-      // Auto-scroll slightly so the current invoice (index 4) is well-positioned on mobile
       scrollRef.current.scrollTo({ left: 120, behavior: 'smooth' });
     }
   }, []);
@@ -41,7 +40,6 @@ export function CreditCardPage() {
         description={t('invoices.description')}
       />
 
-      {/* Chart Section */}
       <div className="glass-panel p-lg mb-lg">
         <h3 className="credit-card-chart-title mb-md">{t('invoices.chartTitle')}</h3>
         <div ref={scrollRef} className="w-full credit-card-scroll-wrapper">
@@ -124,7 +122,6 @@ export function CreditCardPage() {
         </div>
       </div>
 
-      {/* Selected Invoice Details */}
       <div className="glass-panel invoice-details-panel">
         <div className="invoice-header-panel">
           <h3 className="invoice-header-title">
@@ -176,7 +173,6 @@ export function CreditCardPage() {
           )}
         </div>
       </div>
-      {/* Mobile FAB */}
       <button 
         className="btn btn-primary fab hide-on-desktop" 
         onClick={() => { actions.setIsModalOpen(true); actions.setActionType(FinanceEntryMode.NONE); }}

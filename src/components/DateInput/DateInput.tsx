@@ -97,7 +97,9 @@ export function DateInput({ value, onChangeValue, className, required, ...rest }
               if ('showPicker' in HTMLInputElement.prototype) {
                 (e.target as HTMLInputElement).showPicker();
               }
-            } catch (err) {}
+            } catch {
+              // Some mobile browsers expose showPicker but reject programmatic invocation.
+            }
           }}
         />
       </div>
