@@ -104,8 +104,8 @@
   padding: 3rem 2.5rem;
   border-radius: 24px;
   background: var(--glass-bg);
-  backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
+  backdrop-filter: blur(24px);
   border: 1px solid var(--clr-border);
   box-shadow: 0 24px 48px rgba(0, 0, 0, 0.05);
 }
