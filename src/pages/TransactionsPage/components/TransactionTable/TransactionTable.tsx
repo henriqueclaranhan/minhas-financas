@@ -1,4 +1,3 @@
-import { useState, useRef } from 'react';
 import { parseISO } from 'date-fns';
 import { Pencil, Trash2 } from 'lucide-react';
 import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
@@ -7,6 +6,7 @@ import { TransactionMobileCard } from '../TransactionMobileCard';
 import type { ExpandedTransaction } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
 import '../Transaction.css';
+import { useLongPressActions } from '../../../../hooks/useLongPressActions';
 
 interface TransactionTableProps {
   transactions: ExpandedTransaction[];
@@ -16,9 +16,7 @@ interface TransactionTableProps {
 
 export function TransactionTable({ transactions, onEdit, onDelete }: TransactionTableProps) {
   const { formatCurrency, locale, t: translate } = useLocale();
-  const [mobileActionItem, setMobileActionItem] = useState<ExpandedTransaction | null>(null);
-  const [pressingId, setPressingId] = useState<string | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { actionItem: mobileActionItem, setActionItem: setMobileActionItem, pressingId, startPress: handleTouchStart, endPress: handleTouchEnd } = useLongPressActions<ExpandedTransaction>();
 
   if (transactions.length === 0) {
     return (
@@ -27,22 +25,6 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
       </div>
     );
   }
-
-  const handleTouchStart = (t: ExpandedTransaction) => {
-    setPressingId(t.id!);
-    timerRef.current = setTimeout(() => {
-      navigator.vibrate?.(50);
-      setMobileActionItem(t);
-      setPressingId(null);
-    }, 500);
-  };
-
-  const handleTouchEnd = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    setPressingId(null);
-  };
 
   return (
     <>

@@ -9,10 +9,10 @@
 - [x] 3. Route page mutations exclusively through `FinanceContext`.
   - [x] Remove direct service and unauthenticated fallback branches from ViewModels.
   - [x] Replace mutation payload `any` types with domain types.
-- [ ] 4. Extract repeated UI and interaction behavior.
-  - [ ] Share finance-entry modal and form fields.
-  - [ ] Share month/year filter fields.
-  - [ ] Share long-press action behavior.
+- [x] 4. Extract repeated UI and interaction behavior.
+  - [x] Share the duplicated finance-entry modal.
+  - [x] Keep distinct form and filter fields local where their validation and layouts differ.
+  - [x] Share long-press action behavior.
 - [ ] 5. Narrow public APIs and replace repeated application modes with constants.
   - [ ] Remove unnecessary exports.
   - [ ] Introduce shared action/filter constants and remove avoidable casts.

@@ -1,4 +1,3 @@
-import { useState, useRef } from 'react';
 import { parseISO } from 'date-fns';
 import { Pencil, Trash2, CheckCircle, XCircle, RefreshCw } from 'lucide-react';
 import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
@@ -7,6 +6,7 @@ import { PlannedExpenseMobileCard } from '../PlannedExpenseMobileCard';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
 import '../PlannedExpense.css';
+import { useLongPressActions } from '../../../../hooks/useLongPressActions';
 
 interface PlannedExpenseTableProps {
   expenses: ExpandedPlannedExpense[];
@@ -18,9 +18,7 @@ interface PlannedExpenseTableProps {
 
 export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onDelete }: PlannedExpenseTableProps) {
   const { formatCurrency, locale, t } = useLocale();
-  const [mobileActionItem, setMobileActionItem] = useState<ExpandedPlannedExpense | null>(null);
-  const [pressingId, setPressingId] = useState<string | null>(null);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const { actionItem: mobileActionItem, setActionItem: setMobileActionItem, pressingId, startPress: handleTouchStart, endPress: handleTouchEnd } = useLongPressActions<ExpandedPlannedExpense>();
 
   if (expenses.length === 0) {
     return (
@@ -29,22 +27,6 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
       </div>
     );
   }
-
-  const handleTouchStart = (p: ExpandedPlannedExpense) => {
-    setPressingId(p.id!);
-    timerRef.current = setTimeout(() => {
-      navigator.vibrate?.(50);
-      setMobileActionItem(p);
-      setPressingId(null);
-    }, 500);
-  };
-
-  const handleTouchEnd = () => {
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    setPressingId(null);
-  };
 
   return (
     <>
