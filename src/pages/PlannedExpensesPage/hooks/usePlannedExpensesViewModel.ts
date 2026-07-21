@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
 import { FilterType, TransactionType, ExpenseStatus } from '../../../enums/FinanceEnums';
 import type { PlannedExpense, Transaction } from '../../../types';
@@ -25,6 +25,7 @@ export function usePlannedExpensesViewModel() {
   const [editingExpense, setEditingExpense] = useState<PlannedExpense | null>(null);
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
   const [expenseToConfirm, setExpenseToConfirm] = useState<PlannedExpense | null>(null);
+  const [visibleCount, setVisibleCount] = useState(40);
 
   const expansionPeriod = useMemo(() => {
     if (temporal.state.mode === TemporalFilterMode.MONTH) {
@@ -55,9 +56,14 @@ export function usePlannedExpensesViewModel() {
     [expandedPlannedExpenses, matchesDate, searchQuery, categoryFilter]
   );
 
-  const pendingExpenses = useMemo(
+  const filteredPendingExpenses = useMemo(
     () => periodPendingExpenses.filter(p => filter === FilterType.ALL || p.type === filter || (!p.type && filter === FilterType.EXPENSE)),
     [periodPendingExpenses, filter]
+  );
+  useEffect(() => setVisibleCount(40), [categoryFilter, expansionPeriod, filter, searchQuery]);
+  const pendingExpenses = useMemo(
+    () => filteredPendingExpenses.slice(0, visibleCount),
+    [filteredPendingExpenses, visibleCount],
   );
 
   const totalIncome = useMemo(() => periodPendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0), [periodPendingExpenses]);
@@ -146,6 +152,9 @@ export function usePlannedExpensesViewModel() {
       editingExpense,
       expenseToDelete,
       expenseToConfirm,
+      hasMoreHistory: visibleCount < filteredPendingExpenses.length,
+      isLoadingHistory: false,
+      historyError: false,
       filterLabel: temporal.state.label,
       temporal: temporal.state
     },
@@ -169,6 +178,7 @@ export function usePlannedExpensesViewModel() {
       rejectAction,
       handleConfirmPrompt,
       handleDeletePrompt,
+      loadMoreHistory: () => setVisibleCount(count => count + 40),
       temporal: temporal.actions
     }
   };

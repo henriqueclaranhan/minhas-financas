@@ -15,6 +15,7 @@ import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 import { buildExpenseBreakdownPath } from '../../utils/expenseBreakdownUtils';
+import { LazyLoadSentinel } from '../../components/shared/LazyLoadSentinel';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
@@ -62,6 +63,12 @@ export function TransactionsPage() {
           onDelete={(id) => {
             actions.setTransactionToDelete(id);
           }}
+        />
+        <LazyLoadSentinel
+          hasMore={state.hasMoreHistory}
+          isLoading={state.isLoadingHistory}
+          hasError={state.historyError}
+          onLoadMore={actions.loadMoreHistory}
         />
       </div>
 

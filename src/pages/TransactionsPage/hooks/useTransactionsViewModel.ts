@@ -1,15 +1,19 @@
-import { useCallback, useState, useMemo } from 'react';
+import { useCallback, useEffect, useState, useMemo, useRef } from 'react';
 import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
 import { useLocation } from 'react-router-dom';
-import { FilterType, TransactionType } from '../../../enums/FinanceEnums';
+import { FilterType } from '../../../enums/FinanceEnums';
 import type { Transaction } from '../../../types';
-import { expandTransactions } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
 import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
+import { useAuth } from '../../../store/AuthContext';
+import { TransactionService } from '../../../services/TransactionService';
+import { useCompetenceEntries } from '../../../hooks/useCompetenceEntries';
+import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
 
 export function useTransactionsViewModel() {
   const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
+  const { user } = useAuth();
   const temporal = useTemporalFilter(TemporalFilterMode.MONTH);
   const { matchesDate } = temporal.actions;
   
@@ -31,6 +35,15 @@ export function useTransactionsViewModel() {
 
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
+  const [historyWindow, setHistoryWindow] = useState<Transaction[]>([]);
+  const [hasMoreHistory, setHasMoreHistory] = useState(true);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [historyError, setHistoryError] = useState(false);
+  const [historyGeneration, setHistoryGeneration] = useState(0);
+  const requestGeneration = useRef(0);
+  const historyCursorRef = useRef<{ date: string; id: string } | undefined>(undefined);
+  const hasMoreHistoryRef = useRef(true);
+  const isLoadingHistoryRef = useRef(false);
 
   const expansionPeriod = useMemo(() => {
     if (temporal.state.mode === TemporalFilterMode.MONTH) {
@@ -43,25 +56,64 @@ export function useTransactionsViewModel() {
     }
     return { startDate: temporal.state.startDate, endDate: temporal.state.endDate };
   }, [temporal.state.endDate, temporal.state.mode, temporal.state.month, temporal.state.startDate, temporal.state.year]);
-  const competenceTransactions = useMemo(
-    () => expandTransactions(transactions, expansionPeriod),
-    [expansionPeriod, transactions],
+  const { entries: competenceEntries } = useCompetenceEntries(
+    expansionPeriod.startDate,
+    expansionPeriod.endDate,
+    transactions,
   );
 
-  const matchesDetailedFilters = useCallback((t: Transaction) => {
+  const loadHistoryPage = useCallback(async (reset = false) => {
+    if (!user?.uid || (!reset && (isLoadingHistoryRef.current || !hasMoreHistoryRef.current))) return;
+    const generation = reset ? requestGeneration.current + 1 : requestGeneration.current;
+    if (reset) requestGeneration.current = generation;
+    setIsLoadingHistory(true);
+    isLoadingHistoryRef.current = true;
+    setHistoryError(false);
+    try {
+      const page = await TransactionService.getHistoryPage(
+        user.uid,
+        expansionPeriod,
+        reset ? undefined : historyCursorRef.current,
+      );
+      if (generation !== requestGeneration.current) return;
+      setHistoryWindow(current => reset ? page.transactions : [...current, ...page.transactions]);
+      setHasMoreHistory(page.hasMore);
+      historyCursorRef.current = page.cursor;
+      hasMoreHistoryRef.current = page.hasMore;
+    } catch {
+      if (generation === requestGeneration.current) setHistoryError(true);
+    } finally {
+      if (generation === requestGeneration.current) {
+        setIsLoadingHistory(false);
+        isLoadingHistoryRef.current = false;
+      }
+    }
+  }, [expansionPeriod, user?.uid]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    setHistoryWindow([]);
+    setHasMoreHistory(true);
+    historyCursorRef.current = undefined;
+    hasMoreHistoryRef.current = true;
+    void loadHistoryPage(true);
+  }, [historyGeneration, loadHistoryPage, user?.uid]);
+
+  const matchesDetailedFilters = useCallback((t: Pick<Transaction, 'description' | 'paymentMethod' | 'category'>) => {
     const matchesSearch = !searchQuery || t.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMethod = methodFilter === 'all' || t.paymentMethod === methodFilter;
     const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
     return matchesSearch && matchesMethod && matchesCategory;
   }, [categoryFilter, methodFilter, searchQuery]);
 
-  const historyTransactions = useMemo(() => transactions.filter(t => {
+  const historySource = user?.uid ? historyWindow : transactions;
+  const historyTransactions = useMemo(() => historySource.filter(t => {
     return matchesDate(t.date) && matchesDetailedFilters(t);
-  }), [matchesDate, matchesDetailedFilters, transactions]);
+  }), [historySource, matchesDate, matchesDetailedFilters]);
 
   const competenceFiltered = useMemo(
-    () => competenceTransactions.filter(matchesDetailedFilters),
-    [competenceTransactions, matchesDetailedFilters],
+    () => competenceEntries.filter(matchesDetailedFilters),
+    [competenceEntries, matchesDetailedFilters],
   );
 
   const filtered = useMemo(
@@ -71,8 +123,9 @@ export function useTransactionsViewModel() {
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [filtered]);
 
-  const totalIncome = useMemo(() => competenceFiltered.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0), [competenceFiltered]);
-  const totalExpense = useMemo(() => competenceFiltered.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0), [competenceFiltered]);
+  const competenceAggregate = useMemo(() => aggregateCompetenceEntries(competenceFiltered), [competenceFiltered]);
+  const totalIncome = competenceAggregate.income;
+  const totalExpense = competenceAggregate.expense;
 
   const handleAddOrUpdate = async (transaction: Omit<Transaction, 'id'>) => {
     if (editingTransaction?.id) {
@@ -83,6 +136,7 @@ export function useTransactionsViewModel() {
     
     setIsModalOpen(false);
     setEditingTransaction(null);
+    setHistoryGeneration(generation => generation + 1);
   };
 
   const openNewModal = () => {
@@ -99,6 +153,7 @@ export function useTransactionsViewModel() {
     if (transactionToDelete) {
       await deleteTransaction(transactionToDelete);
       setTransactionToDelete(null);
+      setHistoryGeneration(generation => generation + 1);
     }
   };
 
@@ -138,6 +193,9 @@ export function useTransactionsViewModel() {
       tempCategoryFilter,
       editingTransaction,
       transactionToDelete,
+      hasMoreHistory,
+      isLoadingHistory,
+      historyError,
       filterLabel: temporal.state.label,
       temporal: temporal.state
     },
@@ -157,6 +215,7 @@ export function useTransactionsViewModel() {
       handleOpenFilters,
       handleApplyFilters,
       handleResetFilters,
+      loadMoreHistory: () => loadHistoryPage(false),
       temporal: temporal.actions
     }
   };
