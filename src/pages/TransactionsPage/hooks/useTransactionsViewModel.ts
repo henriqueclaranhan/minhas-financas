@@ -40,11 +40,9 @@ export function useTransactionsViewModel() {
 
   const expandedTransactions = useMemo(() => expandTransactions(transactions), [transactions]);
 
-  const filtered = useMemo(() => expandedTransactions.filter(t => {
+  const periodFiltered = useMemo(() => expandedTransactions.filter(t => {
     const tMonth = parseISO(t.date).getUTCMonth();
     const tYear = parseISO(t.date).getUTCFullYear();
-    
-    const matchesFilter = filter === FilterType.ALL || t.type === filter;
     const matchesMonth = selectedMonth === 'all' || tMonth === selectedMonth;
     const matchesYear = tYear === selectedYear;
     
@@ -52,13 +50,18 @@ export function useTransactionsViewModel() {
     const matchesMethod = methodFilter === 'all' || t.paymentMethod === methodFilter;
     const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
 
-    return matchesFilter && matchesMonth && matchesYear && matchesSearch && matchesMethod && matchesCategory;
-  }), [expandedTransactions, filter, selectedMonth, selectedYear, searchQuery, methodFilter, categoryFilter]);
+    return matchesMonth && matchesYear && matchesSearch && matchesMethod && matchesCategory;
+  }), [expandedTransactions, selectedMonth, selectedYear, searchQuery, methodFilter, categoryFilter]);
+
+  const filtered = useMemo(
+    () => periodFiltered.filter(t => filter === FilterType.ALL || t.type === filter),
+    [periodFiltered, filter]
+  );
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [filtered]);
 
-  const totalIncome = useMemo(() => filtered.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0), [filtered]);
-  const totalExpense = useMemo(() => filtered.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0), [filtered]);
+  const totalIncome = useMemo(() => periodFiltered.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0), [periodFiltered]);
+  const totalExpense = useMemo(() => periodFiltered.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0), [periodFiltered]);
 
   const handleAddOrUpdate = async (transaction: Omit<Transaction, 'id'>) => {
     if (editingTransaction?.id) {

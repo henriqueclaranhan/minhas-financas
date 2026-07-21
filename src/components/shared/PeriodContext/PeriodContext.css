@@ -1,0 +1,74 @@
+.period-context {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-lg);
+  background: var(--clr-surface-alt);
+}
+
+.period-context-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: var(--radius-md);
+  color: var(--clr-primary);
+  background: var(--clr-primary-glow);
+}
+
+.period-context-copy {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.period-context-eyebrow {
+  color: var(--clr-text-secondary);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.period-context-value {
+  overflow: hidden;
+  color: var(--clr-text-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.period-context-action {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  flex-shrink: 0;
+  color: var(--clr-primary);
+  background: var(--clr-surface);
+}
+
+@media (max-width: 768px) {
+  .period-context {
+    align-items: center;
+  }
+
+  .period-context-action {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .period-context-action span {
+    display: none;
+  }
+}

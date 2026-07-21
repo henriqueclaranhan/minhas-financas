@@ -59,6 +59,8 @@
 4. The ViewModel exposes presentation-ready category data and total.
 5. The View renders the shared chart, ranked breakdown, active period, and empty state.
 
+The active period uses the shared primary period context with a direct Adjust action.
+
 ## 4. Internationalization
 
 Add Portuguese and English keys under a `categoryExpenses` namespace for:

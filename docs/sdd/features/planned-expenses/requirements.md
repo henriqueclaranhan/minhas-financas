@@ -11,3 +11,4 @@ Manage future and recurring financial commitments.
 - [x] Form to create planned expenses with frequency.
 - [x] List view of upcoming expenses.
 - [x] Action button to convert planned expense to a transaction ("Mark as Paid").\n
+- [x] Income and expense summary cards show both totals for the active detailed filters regardless of the selected type tab.

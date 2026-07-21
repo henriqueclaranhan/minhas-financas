@@ -95,6 +95,8 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Modal filters MUST keep temporary values separate from active values. Changes take effect only through the Apply action.
 - Reset MUST restore every detailed filter to that page's documented default.
 - Active filters SHOULD be shown as compact labels with semantic icons.
+- The active date period MUST be presented as the primary filter context with a visible label, strong value, and filter action. Payment method and category remain secondary compact labels.
+- On mobile, the period adjustment action uses its icon-only variant with a translated accessible label to preserve space and hierarchy.
 - Search and all active filters combine using logical AND unless a feature specification explicitly defines otherwise.
 
 ## 9. Tables and data-heavy content

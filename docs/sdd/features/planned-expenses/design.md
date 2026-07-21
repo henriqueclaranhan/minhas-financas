@@ -8,6 +8,8 @@
 ### 2.1 View (`PlannedExpensesPage.tsx`)
 - **Components:** Planned Expenses List/Table, Add/Edit Modal (`PlannedExpenseForm`), Mark as Paid button.
 - **Layout:** List view similar to Transactions.
+- **Filter context:** The selected period is the primary visual context above type tabs and search; category remains a secondary badge.
+- **Summary order:** Type tabs render above the summary cards and affect the list only. The period/search filter panel remains below the cards; summary totals retain both planning types while respecting detailed filters.
 
 ### 2.2 ViewModel (`usePlannedExpensesViewModel.ts`)
 - **State:** List of planned expenses, modal visibility, loading status.

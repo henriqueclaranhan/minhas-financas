@@ -3,15 +3,11 @@
 }
 
 .category-expenses-filter-panel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-md);
   padding: var(--spacing-lg);
   margin-bottom: var(--spacing-lg);
 }
 
-.category-expenses-period-labels {
+.category-expenses-filter-panel .period-context {
   margin: 0;
 }
 

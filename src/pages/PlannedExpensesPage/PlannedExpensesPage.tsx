@@ -12,6 +12,7 @@ import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import { getCategoryIcon } from '../../utils/categoryIcons';
+import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
@@ -31,20 +32,21 @@ export function PlannedExpensesPage() {
         }}
       />
 
-      <PeriodSummaryCards 
-        income={state.totalIncome} 
-        expense={state.totalExpense} 
+      <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
+
+      <PeriodSummaryCards
+        income={state.totalIncome}
+        expense={state.totalExpense}
       />
 
-      <FilterTabs 
-        filter={state.filter}
-        setFilter={actions.setFilter}
+      <FilterTabs
         searchQuery={state.searchQuery}
         setSearchQuery={actions.setSearchQuery}
         onOpenFilters={actions.handleOpenFilters}
         activeDateLabel={state.filterLabel}
         activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
       />
+
 
       <div className="glass-panel panel-no-padding">
         <PlannedExpenseTable 

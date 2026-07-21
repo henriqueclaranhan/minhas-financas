@@ -4,12 +4,13 @@ import { PageHeader } from '../../components/shared/PageHeader';
 import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
 import { Modal } from '../../components/Modal';
 import { format, parseISO } from 'date-fns';
-import { Filter, ArrowUpCircle, ArrowDownCircle, CalendarDays } from 'lucide-react';
+import { ArrowUpCircle, ArrowDownCircle } from 'lucide-react';
 import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import '../../components/shared/FilterTabs/FilterTabs.css';
 import './ForecastPage.css';
 import { ForecastFilterMode } from '../../enums/UIEnums';
+import { PeriodContext } from '../../components/shared/PeriodContext';
 
 export function ForecastPage() {
   const { state, actions } = useForecastViewModel();
@@ -67,6 +68,13 @@ export function ForecastPage() {
 
       <div className="forecast-content">
         <div className="glass-panel filter-tabs-panel">
+          <PeriodContext
+            label={filterType === ForecastFilterMode.YEAR
+              ? String(selectedYear)
+              : `${format(startDate, 'MM/yyyy')} – ${format(endDate, 'MM/yyyy')}`}
+            onAdjust={handleOpenFilters}
+          />
+
           <div className="filter-tabs-container">
             <div className="btn filter-tab-btn filter-tab-btn-inactive" style={{ padding: '8px 16px', cursor: 'default' }}>
               <label className="forecast-checkbox-label" style={{ margin: 0, cursor: 'pointer' }}>
@@ -97,26 +105,6 @@ export function ForecastPage() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'var(--spacing-md)' }}>
-            <div className="filter-active-labels" style={{ margin: 0 }}>
-              <div className="filter-active-label">
-                <CalendarDays size={14} /> 
-                {filterType === ForecastFilterMode.YEAR 
-                  ? selectedYear 
-                  : `${format(startDate, 'MM/yyyy')} - ${format(endDate, 'MM/yyyy')}`
-                }
-              </div>
-            </div>
-
-            <button 
-              className="btn filter-action-btn" 
-              onClick={handleOpenFilters}
-              title={t('filters.title')}
-              style={{ margin: 0 }}
-            >
-              <Filter size={20} />
-            </button>
-          </div>
         </div>
 
         <div>
@@ -194,6 +182,5 @@ export function ForecastPage() {
     </div>
   );
 }
-
 
 

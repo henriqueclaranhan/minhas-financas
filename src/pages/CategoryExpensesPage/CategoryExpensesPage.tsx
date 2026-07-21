@@ -1,4 +1,4 @@
-import { CalendarDays, Filter, Tags } from 'lucide-react';
+import { Tags } from 'lucide-react';
 import { ExpensesByCategoryChart } from '../../components/dashboard/ExpensesByCategoryChart';
 import { DateInput } from '../../components/DateInput';
 import { Modal } from '../../components/Modal';
@@ -11,6 +11,7 @@ import { formatPercentage } from '../../utils/numberFormatUtils';
 import { CategoryExpenseSummaryCards } from './components/CategoryExpenseSummaryCards';
 import './CategoryExpensesPage.css';
 import { CategoryExpenseFilterMode } from '../../enums/UIEnums';
+import { PeriodContext } from '../../components/shared/PeriodContext';
 
 export function CategoryExpensesPage() {
   const { t, locale } = useLocale();
@@ -38,21 +39,7 @@ export function CategoryExpensesPage() {
       />
 
       <div className="glass-panel category-expenses-filter-panel">
-        <div className="filter-active-labels category-expenses-period-labels">
-          <div className="filter-active-label">
-            <CalendarDays size={14} aria-hidden="true" />
-            {state.periodLabel}
-          </div>
-        </div>
-        <button
-          type="button"
-          className="btn filter-action-btn"
-          onClick={actions.handleOpenFilters}
-          title={t('filters.title')}
-          aria-label={t('filters.title')}
-        >
-          <Filter size={20} aria-hidden="true" />
-        </button>
+        <PeriodContext label={state.periodLabel} onAdjust={actions.handleOpenFilters} />
       </div>
 
       <CategoryExpenseSummaryCards

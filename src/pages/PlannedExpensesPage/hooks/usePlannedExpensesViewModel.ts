@@ -33,26 +33,30 @@ export function usePlannedExpensesViewModel() {
 
   const expandedPlannedExpenses = useMemo(() => expandPlannedExpenses(plannedExpenses), [plannedExpenses]);
 
-  const pendingExpenses = useMemo(() => expandedPlannedExpenses
+  const periodPendingExpenses = useMemo(() => expandedPlannedExpenses
     .filter(p => {
       const pMonth = parseISO(p.dueDate).getUTCMonth();
       const pYear = parseISO(p.dueDate).getUTCFullYear();
       
       const isPending = p.status === ExpenseStatus.PENDING;
-      const matchesFilter = filter === FilterType.ALL || p.type === filter || (!p.type && filter === FilterType.EXPENSE);
       const matchesMonth = selectedMonth === 'all' || pMonth === selectedMonth;
       const matchesYear = pYear === selectedYear;
       const matchesSearch = !searchQuery || p.description.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || p.category === categoryFilter;
 
-      return isPending && matchesFilter && matchesMonth && matchesYear && matchesSearch && matchesCategory;
+      return isPending && matchesMonth && matchesYear && matchesSearch && matchesCategory;
     })
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime()), 
-    [expandedPlannedExpenses, filter, selectedMonth, selectedYear, searchQuery, categoryFilter]
+    [expandedPlannedExpenses, selectedMonth, selectedYear, searchQuery, categoryFilter]
   );
 
-  const totalIncome = useMemo(() => pendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0), [pendingExpenses]);
-  const totalExpense = useMemo(() => pendingExpenses.filter(p => p.type === TransactionType.EXPENSE || !p.type).reduce((acc, p) => acc + p.amount, 0), [pendingExpenses]);
+  const pendingExpenses = useMemo(
+    () => periodPendingExpenses.filter(p => filter === FilterType.ALL || p.type === filter || (!p.type && filter === FilterType.EXPENSE)),
+    [periodPendingExpenses, filter]
+  );
+
+  const totalIncome = useMemo(() => periodPendingExpenses.filter(p => p.type === TransactionType.INCOME).reduce((acc, p) => acc + p.amount, 0), [periodPendingExpenses]);
+  const totalExpense = useMemo(() => periodPendingExpenses.filter(p => p.type === TransactionType.EXPENSE || !p.type).reduce((acc, p) => acc + p.amount, 0), [periodPendingExpenses]);
 
   const handleAddOrUpdate = async (data: Omit<PlannedExpense, 'id'>) => {
     if (editingExpense?.id) {

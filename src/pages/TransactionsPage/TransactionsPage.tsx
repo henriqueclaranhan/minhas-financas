@@ -12,6 +12,7 @@ import { useTransactionsViewModel } from './hooks/useTransactionsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
+import { FilterTypeTabs } from '../../components/shared/FilterTypeTabs';
 import './TransactionsPage.css';
 
 export function TransactionsPage() {
@@ -31,14 +32,14 @@ export function TransactionsPage() {
         }}
       />
 
-      <PeriodSummaryCards 
-        income={state.totalIncome} 
-        expense={state.totalExpense} 
+      <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
+
+      <PeriodSummaryCards
+        income={state.totalIncome}
+        expense={state.totalExpense}
       />
 
-      <FilterTabs 
-        filter={state.filter}
-        setFilter={actions.setFilter}
+      <FilterTabs
         searchQuery={state.searchQuery}
         setSearchQuery={actions.setSearchQuery}
         onOpenFilters={actions.handleOpenFilters}
@@ -46,6 +47,7 @@ export function TransactionsPage() {
         activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
         activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
       />
+
       
       <div className="glass-panel panel-no-padding">
         <TransactionTable 
