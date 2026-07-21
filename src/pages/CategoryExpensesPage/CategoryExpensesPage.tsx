@@ -10,6 +10,7 @@ import { useCategoryExpensesViewModel } from './hooks/useCategoryExpensesViewMod
 import { formatPercentage } from '../../utils/numberFormatUtils';
 import { CategoryExpenseSummaryCards } from './components/CategoryExpenseSummaryCards';
 import './CategoryExpensesPage.css';
+import { CategoryExpenseFilterMode } from '../../enums/UIEnums';
 
 export function CategoryExpensesPage() {
   const { t, locale } = useLocale();
@@ -109,22 +110,22 @@ export function CategoryExpensesPage() {
           <div className="category-expenses-mode-options">
             <button
               type="button"
-              className={`btn flex-1 ${state.tempFilterMode === 'month' ? 'btn-primary' : 'btn-alt-bg'}`}
-              onClick={() => actions.setTempFilterMode('month')}
+              className={`btn flex-1 ${state.tempFilterMode === CategoryExpenseFilterMode.MONTH ? 'btn-primary' : 'btn-alt-bg'}`}
+              onClick={() => actions.setTempFilterMode(CategoryExpenseFilterMode.MONTH)}
             >
               {t('categoryExpenses.monthMode')}
             </button>
             <button
               type="button"
-              className={`btn flex-1 ${state.tempFilterMode === 'range' ? 'btn-primary' : 'btn-alt-bg'}`}
-              onClick={() => actions.setTempFilterMode('range')}
+              className={`btn flex-1 ${state.tempFilterMode === CategoryExpenseFilterMode.RANGE ? 'btn-primary' : 'btn-alt-bg'}`}
+              onClick={() => actions.setTempFilterMode(CategoryExpenseFilterMode.RANGE)}
             >
               {t('categoryExpenses.rangeMode')}
             </button>
           </div>
         </div>
 
-        {state.tempFilterMode === 'month' ? (
+        {state.tempFilterMode === CategoryExpenseFilterMode.MONTH ? (
           <div className="form-row">
             <div className="form-group">
               <label className="form-label">{t('filters.month')}</label>

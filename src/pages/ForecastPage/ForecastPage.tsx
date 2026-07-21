@@ -9,6 +9,7 @@ import { useLocale } from '../../store/LocaleContext';
 import { PeriodSummaryCards } from '../../components/shared/PeriodSummaryCards';
 import '../../components/shared/FilterTabs/FilterTabs.css';
 import './ForecastPage.css';
+import { ForecastFilterMode } from '../../enums/UIEnums';
 
 export function ForecastPage() {
   const { state, actions } = useForecastViewModel();
@@ -100,7 +101,7 @@ export function ForecastPage() {
             <div className="filter-active-labels" style={{ margin: 0 }}>
               <div className="filter-active-label">
                 <CalendarDays size={14} /> 
-                {filterType === 'year' 
+                {filterType === ForecastFilterMode.YEAR 
                   ? selectedYear 
                   : `${format(startDate, 'MM/yyyy')} - ${format(endDate, 'MM/yyyy')}`
                 }
@@ -133,22 +134,22 @@ export function ForecastPage() {
           <div className="flex gap-sm">
             <button 
               type="button"
-              className={`btn flex-1 ${tempFilterType === 'year' ? 'btn-primary' : 'btn-alt-bg'}`} 
-              onClick={() => setTempFilterType('year')}
+              className={`btn flex-1 ${tempFilterType === ForecastFilterMode.YEAR ? 'btn-primary' : 'btn-alt-bg'}`} 
+              onClick={() => setTempFilterType(ForecastFilterMode.YEAR)}
             >
               {t('filters.year', { defaultValue: 'Ano' })}
             </button>
             <button 
               type="button"
-              className={`btn flex-1 ${tempFilterType === 'period' ? 'btn-primary' : 'btn-alt-bg'}`} 
-              onClick={() => setTempFilterType('period')}
+              className={`btn flex-1 ${tempFilterType === ForecastFilterMode.PERIOD ? 'btn-primary' : 'btn-alt-bg'}`} 
+              onClick={() => setTempFilterType(ForecastFilterMode.PERIOD)}
             >
               {t('filters.period', { defaultValue: 'Período' })}
             </button>
           </div>
         </div>
 
-        {tempFilterType === 'year' ? (
+        {tempFilterType === ForecastFilterMode.YEAR ? (
           <div className="form-group">
             <label className="form-label">{t('filters.year', { defaultValue: 'Ano' })}</label>
             <CustomSelect 
@@ -193,7 +194,6 @@ export function ForecastPage() {
     </div>
   );
 }
-
 
 
 

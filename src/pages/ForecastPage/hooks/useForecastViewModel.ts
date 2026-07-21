@@ -3,6 +3,7 @@ import { useFinance } from '../../../store/FinanceContext';
 import { calculateProjections } from '../../../utils/projectionUtils';
 import { useLocale } from '../../../store/LocaleContext';
 import { startOfYear, endOfYear } from 'date-fns';
+import { ForecastFilterMode, type ForecastFilterMode as ForecastFilterModeValue } from '../../../enums/UIEnums';
 
 export function useForecastViewModel() {
   const { transactions, plannedExpenses, initialBalance } = useFinance();
@@ -15,7 +16,7 @@ export function useForecastViewModel() {
   const [includePlannedIncome, setIncludePlannedIncome] = useState(true);
   const [includePlannedExpense, setIncludePlannedExpense] = useState(true);
   
-  const [filterType, setFilterType] = useState<'year' | 'period'>('year');
+  const [filterType, setFilterType] = useState<ForecastFilterModeValue>(ForecastFilterMode.YEAR);
   const [selectedYear, setSelectedYear] = useState<number>(currentYear);
   
   const [startDate, setStartDate] = useState<Date>(defaultStartDate);
@@ -24,7 +25,7 @@ export function useForecastViewModel() {
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   // Temporary state for the modal
-  const [tempFilterType, setTempFilterType] = useState<'year' | 'period'>('year');
+  const [tempFilterType, setTempFilterType] = useState<ForecastFilterModeValue>(ForecastFilterMode.YEAR);
   const [tempSelectedYear, setTempSelectedYear] = useState<number>(currentYear);
   const [tempStartDate, setTempStartDate] = useState<Date>(defaultStartDate);
   const [tempEndDate, setTempEndDate] = useState<Date>(defaultEndDate);
@@ -64,7 +65,7 @@ export function useForecastViewModel() {
   const handleApplyFilters = () => {
     setFilterType(tempFilterType);
     setSelectedYear(tempSelectedYear);
-    if (tempFilterType === 'year') {
+    if (tempFilterType === ForecastFilterMode.YEAR) {
       setStartDate(startOfYear(new Date(tempSelectedYear, 0, 1)));
       setEndDate(endOfYear(new Date(tempSelectedYear, 11, 1)));
     } else {
@@ -75,7 +76,7 @@ export function useForecastViewModel() {
   };
 
   const handleResetFilters = () => {
-    setTempFilterType('year');
+    setTempFilterType(ForecastFilterMode.YEAR);
     setTempSelectedYear(currentYear);
     setTempStartDate(defaultStartDate);
     setTempEndDate(defaultEndDate);
@@ -124,6 +125,5 @@ export function useForecastViewModel() {
     },
   };
 }
-
 
 

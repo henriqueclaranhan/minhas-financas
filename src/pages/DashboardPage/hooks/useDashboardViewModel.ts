@@ -7,6 +7,7 @@ import { addMonths, startOfMonth, endOfMonth } from 'date-fns';
 import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
 import { calculateExpensesByCategory } from '../../../utils/categoryExpenseUtils';
 import type { PlannedExpense, Transaction } from '../../../types';
+import { FinanceEntryMode, type FinanceEntryMode as FinanceEntryModeValue } from '../../../enums/UIEnums';
 
 export function useDashboardViewModel() {
   const { initialBalance, transactions, plannedExpenses, addTransaction, addPlannedExpense } = useFinance();
@@ -14,7 +15,7 @@ export function useDashboardViewModel() {
   const { locale } = useLocale();
   
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [actionType, setActionType] = useState<'none' | 'transaction' | 'planning'>('none');
+  const [actionType, setActionType] = useState<FinanceEntryModeValue>(FinanceEntryMode.NONE);
 
   const hasData = transactions.length > 0 || plannedExpenses.length > 0;
   const resolvedInitialBalance = initialBalance ?? 0;
@@ -38,13 +39,13 @@ export function useDashboardViewModel() {
   const handleTransactionAdd = (data: Omit<Transaction, 'id'>) => {
     addTransaction(data);
     setIsModalOpen(false);
-    setActionType('none');
+    setActionType(FinanceEntryMode.NONE);
   };
 
   const handlePlanningAdd = (data: Omit<PlannedExpense, 'id'>) => {
     addPlannedExpense(data);
     setIsModalOpen(false);
-    setActionType('none');
+    setActionType(FinanceEntryMode.NONE);
   };
 
   const userName = user?.displayName?.split(' ')[0] || user?.email?.split('@')[0] || 'Usuário';

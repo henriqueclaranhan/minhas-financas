@@ -3,7 +3,7 @@ import { ptBR, enUS } from 'date-fns/locale';
 import type { Transaction, PlannedExpense } from '../types';
 import { TransactionType, ExpenseStatus, PaymentMethod } from '../enums/FinanceEnums';
 
-export interface ProjectionOptions {
+interface ProjectionOptions {
   transactions: Transaction[];
   plannedExpenses: PlannedExpense[];
   initialBalance: number;

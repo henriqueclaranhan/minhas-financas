@@ -6,6 +6,7 @@ import { useCreditCardViewModel } from './hooks/useCreditCardViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import './CreditCardPage.css';
+import { FinanceEntryMode } from '../../enums/UIEnums';
 
 export function CreditCardPage() {
   const { state, actions } = useCreditCardViewModel();
@@ -178,14 +179,14 @@ export function CreditCardPage() {
       {/* Mobile FAB */}
       <button 
         className="btn btn-primary fab hide-on-desktop" 
-        onClick={() => { actions.setIsModalOpen(true); actions.setActionType('none'); }}
+        onClick={() => { actions.setIsModalOpen(true); actions.setActionType(FinanceEntryMode.NONE); }}
       >
         <Plus size={28} />
       </button>
 
       <CreateFinanceEntryModal
         isOpen={state.isModalOpen} 
-        onClose={() => { actions.setIsModalOpen(false); setTimeout(() => actions.setActionType('none'), 300); }} 
+        onClose={() => { actions.setIsModalOpen(false); setTimeout(() => actions.setActionType(FinanceEntryMode.NONE), 300); }} 
         mode={state.actionType}
         onModeChange={actions.setActionType}
         onTransactionSubmit={actions.handleTransactionAdd}

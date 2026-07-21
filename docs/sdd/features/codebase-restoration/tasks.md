@@ -13,9 +13,9 @@
   - [x] Share the duplicated finance-entry modal.
   - [x] Keep distinct form and filter fields local where their validation and layouts differ.
   - [x] Share long-press action behavior.
-- [ ] 5. Narrow public APIs and replace repeated application modes with constants.
-  - [ ] Remove unnecessary exports.
-  - [ ] Introduce shared action/filter constants and remove avoidable casts.
+- [x] 5. Narrow public APIs and replace repeated application modes with constants.
+  - [x] Remove unnecessary exports.
+  - [x] Introduce shared action and filter-mode constants.
 - [ ] 6. Remove stale comments and resolve lint warnings.
   - [ ] Fix hook dependencies, empty catches, and regular expressions.
   - [ ] Split context providers and hooks for Fast Refresh compatibility.

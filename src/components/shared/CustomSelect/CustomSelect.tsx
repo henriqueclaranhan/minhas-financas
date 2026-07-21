@@ -5,7 +5,7 @@ import { ChevronDown, Search } from 'lucide-react';
 import { useLocale } from '../../../store/LocaleContext';
 import './CustomSelect.css';
 
-export interface SelectOption {
+interface SelectOption {
   value: string;
   label: string;
   icon?: ReactNode;

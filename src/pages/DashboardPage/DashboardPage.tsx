@@ -5,6 +5,7 @@ import { useDashboardViewModel } from './hooks/useDashboardViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { useLocale } from '../../store/LocaleContext';
 import './DashboardPage.css';
+import { FinanceEntryMode } from '../../enums/UIEnums';
 
 export function DashboardPage() {
   const { state, actions } = useDashboardViewModel();
@@ -22,7 +23,7 @@ export function DashboardPage() {
         primaryButton={{
           label: t('dashboard.newAction'),
           icon: <Plus size={18} className="mr-sm" />,
-          onClick: () => { actions.setIsModalOpen(true); actions.setActionType('none'); }
+          onClick: () => { actions.setIsModalOpen(true); actions.setActionType(FinanceEntryMode.NONE); }
         }}
       />
       
@@ -37,14 +38,14 @@ export function DashboardPage() {
       {/* Mobile FAB */}
       <button 
         className="btn btn-primary fab hide-on-desktop" 
-        onClick={() => { actions.setIsModalOpen(true); actions.setActionType('none'); }}
+        onClick={() => { actions.setIsModalOpen(true); actions.setActionType(FinanceEntryMode.NONE); }}
       >
         <Plus size={28} />
       </button>
 
       <CreateFinanceEntryModal
         isOpen={state.isModalOpen} 
-        onClose={() => { actions.setIsModalOpen(false); setTimeout(() => actions.setActionType('none'), 300); }} 
+        onClose={() => { actions.setIsModalOpen(false); setTimeout(() => actions.setActionType(FinanceEntryMode.NONE), 300); }} 
         mode={state.actionType}
         onModeChange={actions.setActionType}
         onTransactionSubmit={actions.handleTransactionAdd}

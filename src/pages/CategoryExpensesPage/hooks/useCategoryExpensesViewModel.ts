@@ -3,8 +3,7 @@ import { endOfMonth, format, parseISO, startOfMonth } from 'date-fns';
 import { useFinance } from '../../../store/FinanceContext';
 import { useLocale } from '../../../store/LocaleContext';
 import { calculateExpensesByCategory } from '../../../utils/categoryExpenseUtils';
-
-export type CategoryExpensesFilterMode = 'month' | 'range';
+import { CategoryExpenseFilterMode, type CategoryExpenseFilterMode as CategoryExpenseFilterModeValue } from '../../../enums/UIEnums';
 
 export function useCategoryExpensesViewModel() {
   const { transactions } = useFinance();
@@ -15,14 +14,14 @@ export function useCategoryExpensesViewModel() {
   const defaultStartDate = startOfMonth(now);
   const defaultEndDate = endOfMonth(now);
 
-  const [filterMode, setFilterMode] = useState<CategoryExpensesFilterMode>('month');
+  const [filterMode, setFilterMode] = useState<CategoryExpenseFilterModeValue>(CategoryExpenseFilterMode.MONTH);
   const [selectedMonth, setSelectedMonth] = useState(defaultMonth);
   const [selectedYear, setSelectedYear] = useState(defaultYear);
   const [startDate, setStartDate] = useState(defaultStartDate);
   const [endDate, setEndDate] = useState(defaultEndDate);
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
-  const [tempFilterMode, setTempFilterMode] = useState<CategoryExpensesFilterMode>('month');
+  const [tempFilterMode, setTempFilterMode] = useState<CategoryExpenseFilterModeValue>(CategoryExpenseFilterMode.MONTH);
   const [tempSelectedMonth, setTempSelectedMonth] = useState(defaultMonth);
   const [tempSelectedYear, setTempSelectedYear] = useState(defaultYear);
   const [tempStartDate, setTempStartDate] = useState(defaultStartDate);
@@ -40,7 +39,7 @@ export function useCategoryExpensesViewModel() {
   );
 
   const periodLabel = useMemo(() => {
-    if (filterMode === 'month') {
+    if (filterMode === CategoryExpenseFilterMode.MONTH) {
       const monthName = new Intl.DateTimeFormat(locale, { month: 'long' }).format(
         new Date(selectedYear, selectedMonth, 1),
       );
@@ -71,7 +70,7 @@ export function useCategoryExpensesViewModel() {
   };
 
   const handleApplyFilters = () => {
-    if (tempFilterMode === 'range' && tempEndDate < tempStartDate) {
+    if (tempFilterMode === CategoryExpenseFilterMode.RANGE && tempEndDate < tempStartDate) {
       setFilterErrorKey('categoryExpenses.invalidRange');
       return;
     }
@@ -79,7 +78,7 @@ export function useCategoryExpensesViewModel() {
     setFilterMode(tempFilterMode);
     setFilterErrorKey(null);
 
-    if (tempFilterMode === 'month') {
+    if (tempFilterMode === CategoryExpenseFilterMode.MONTH) {
       const monthDate = new Date(tempSelectedYear, tempSelectedMonth, 1);
       setSelectedMonth(tempSelectedMonth);
       setSelectedYear(tempSelectedYear);
@@ -94,12 +93,12 @@ export function useCategoryExpensesViewModel() {
   };
 
   const handleResetFilters = () => {
-    setFilterMode('month');
+    setFilterMode(CategoryExpenseFilterMode.MONTH);
     setSelectedMonth(defaultMonth);
     setSelectedYear(defaultYear);
     setStartDate(defaultStartDate);
     setEndDate(defaultEndDate);
-    setTempFilterMode('month');
+    setTempFilterMode(CategoryExpenseFilterMode.MONTH);
     setTempSelectedMonth(defaultMonth);
     setTempSelectedYear(defaultYear);
     setTempStartDate(defaultStartDate);

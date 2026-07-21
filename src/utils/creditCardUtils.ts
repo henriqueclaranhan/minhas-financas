@@ -3,17 +3,17 @@ import type { SupportedLocale } from '../i18n/translations';
 import type { Transaction } from '../types';
 import { TransactionType, PaymentMethod } from '../enums/FinanceEnums';
 
-export interface BillItem extends Transaction {
+interface BillItem extends Transaction {
   installmentNumber: number;
   installmentValue: number;
 }
 
-export interface MonthlyBill {
+interface MonthlyBill {
   total: number;
   items: BillItem[];
 }
 
-export interface MonthData {
+interface MonthData {
   key: string;
   labelFull: string;
   labelShort: string;

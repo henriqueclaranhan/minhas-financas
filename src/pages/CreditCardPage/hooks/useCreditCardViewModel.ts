@@ -3,13 +3,14 @@ import { useFinance } from '../../../store/FinanceContext';
 import { calculateCreditCardBills } from '../../../utils/creditCardUtils';
 import { useLocale } from '../../../store/LocaleContext';
 import type { PlannedExpense, Transaction } from '../../../types';
+import { FinanceEntryMode, type FinanceEntryMode as FinanceEntryModeValue } from '../../../enums/UIEnums';
 
 export function useCreditCardViewModel() {
   const { transactions, addTransaction, addPlannedExpense } = useFinance();
   const { locale } = useLocale();
   const [selectedMonthIndex, setSelectedMonthIndex] = useState(4);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [actionType, setActionType] = useState<'none' | 'transaction' | 'planning'>('none');
+  const [actionType, setActionType] = useState<FinanceEntryModeValue>(FinanceEntryMode.NONE);
 
   const nextMonths = useMemo(() => {
     return calculateCreditCardBills(transactions, new Date(), locale);
@@ -22,7 +23,7 @@ export function useCreditCardViewModel() {
     try {
       await addTransaction(data);
       setIsModalOpen(false);
-      setTimeout(() => setActionType('none'), 300);
+      setTimeout(() => setActionType(FinanceEntryMode.NONE), 300);
     } catch (error) {
       console.error('Failed to add transaction:', error);
     }
@@ -32,7 +33,7 @@ export function useCreditCardViewModel() {
     try {
       await addPlannedExpense(data);
       setIsModalOpen(false);
-      setTimeout(() => setActionType('none'), 300);
+      setTimeout(() => setActionType(FinanceEntryMode.NONE), 300);
     } catch (error) {
       console.error('Failed to add planned expense:', error);
     }

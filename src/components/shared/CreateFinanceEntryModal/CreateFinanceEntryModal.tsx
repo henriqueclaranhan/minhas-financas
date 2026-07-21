@@ -4,34 +4,33 @@ import { useLocale } from '../../../store/LocaleContext';
 import { Modal } from '../../Modal';
 import { PlannedExpenseForm } from '../../PlannedExpenseForm';
 import { TransactionForm } from '../../TransactionForm';
-
-type EntryMode = 'none' | 'transaction' | 'planning';
+import { FinanceEntryMode, type FinanceEntryMode as FinanceEntryModeValue } from '../../../enums/UIEnums';
 
 interface CreateFinanceEntryModalProps {
   isOpen: boolean;
-  mode: EntryMode;
+  mode: FinanceEntryModeValue;
   onClose: () => void;
-  onModeChange: (mode: EntryMode) => void;
+  onModeChange: (mode: FinanceEntryModeValue) => void;
   onTransactionSubmit: (data: Omit<Transaction, 'id'>) => void;
   onPlanningSubmit: (data: Omit<PlannedExpense, 'id'>) => void;
 }
 
 export function CreateFinanceEntryModal({ isOpen, mode, onClose, onModeChange, onTransactionSubmit, onPlanningSubmit }: CreateFinanceEntryModalProps) {
   const { t } = useLocale();
-  const title = mode === 'none' ? t('dashboard.whatToDo') : mode === 'transaction' ? t('dashboard.newTransaction') : t('planning.new');
+  const title = mode === FinanceEntryMode.NONE ? t('dashboard.whatToDo') : mode === FinanceEntryMode.TRANSACTION ? t('dashboard.newTransaction') : t('planning.new');
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={title}>
-      {mode === 'none' && (
+      {mode === FinanceEntryMode.NONE && (
         <div className="dashboard-modal-grid">
-          <button className="glass-panel hover-lift dashboard-modal-btn" onClick={() => onModeChange('transaction')}>
+          <button className="glass-panel hover-lift dashboard-modal-btn" onClick={() => onModeChange(FinanceEntryMode.TRANSACTION)}>
             <div className="dashboard-icon-bg primary"><Wallet size={24} color="#fff" /></div>
             <div>
               <h3 className="dashboard-modal-title">{t('dashboard.newTransaction')}</h3>
               <p className="dashboard-modal-desc">{t('dashboard.transactionDescription')}</p>
             </div>
           </button>
-          <button className="glass-panel hover-lift dashboard-modal-btn" onClick={() => onModeChange('planning')}>
+          <button className="glass-panel hover-lift dashboard-modal-btn" onClick={() => onModeChange(FinanceEntryMode.PLANNING)}>
             <div className="dashboard-icon-bg warning"><CalendarClock size={24} color="#fff" /></div>
             <div>
               <h3 className="dashboard-modal-title">{t('dashboard.newPlanning')}</h3>
@@ -40,8 +39,8 @@ export function CreateFinanceEntryModal({ isOpen, mode, onClose, onModeChange, o
           </button>
         </div>
       )}
-      {mode === 'transaction' && <TransactionForm onSubmit={onTransactionSubmit} />}
-      {mode === 'planning' && <PlannedExpenseForm onSubmit={onPlanningSubmit} />}
+      {mode === FinanceEntryMode.TRANSACTION && <TransactionForm onSubmit={onTransactionSubmit} />}
+      {mode === FinanceEntryMode.PLANNING && <PlannedExpenseForm onSubmit={onPlanningSubmit} />}
     </Modal>
   );
 }
