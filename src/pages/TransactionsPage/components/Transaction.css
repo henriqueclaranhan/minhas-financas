@@ -25,6 +25,9 @@
   cursor: pointer;
   padding: 16px;
 }
+.modal-action-btn > :last-child {
+  min-width: 0;
+}
 .icon-circle {
   padding: 12px;
   border-radius: 50%;
@@ -47,6 +50,7 @@
   margin: 0;
   font-size: 0.875rem;
   color: var(--clr-text-secondary);
+  overflow-wrap: anywhere;
 }
 
 .mobile-card-container {

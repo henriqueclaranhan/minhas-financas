@@ -24,6 +24,7 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] Sticky headers use an opaque active-theme background continuous with the mobile status bar.
 - [x] Mobile content does not create a competing overflow container that prevents sticky back navigation.
 - [x] Sticky mobile headers blend into the page without a bottom divider.
+- [x] Mobile modal bodies do not expose horizontal scrolling when forms or action descriptions approach the viewport width.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.

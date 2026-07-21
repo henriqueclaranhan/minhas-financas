@@ -27,6 +27,7 @@
   border-radius: var(--radius-xl);
   width: 100%;
   max-width: 500px;
+  min-width: 0;
   max-height: 90vh;
   display: flex;
   flex-direction: column;
@@ -73,7 +74,14 @@
 .modal-body {
   padding: var(--spacing-lg);
   overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
   overscroll-behavior: contain;
+}
+
+.modal-body > * {
+  min-width: 0;
+  max-width: 100%;
 }
 
 @keyframes modal-slide-up {
@@ -111,6 +119,7 @@
   }
 
   .modal-content {
+    width: 100vw;
     max-width: 100%;
     border-bottom: 0;
     border-bottom-left-radius: 0;

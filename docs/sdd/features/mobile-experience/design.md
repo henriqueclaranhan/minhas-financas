@@ -9,6 +9,8 @@
 ### 2.1 Modal presentation
 At the canonical `768px` breakpoint, the shared modal keeps its top corners and side borders, removes the bottom border, and uses dedicated translate-only bottom-sheet entrance and exit animations. Entrance lasts 250 ms while exit uses a faster 150 ms response. The shared component retains the portal, frozen content, and scroll lock during its closing phase, then restores the document after the animation. Reopening during that phase cancels the pending removal. Reduced-motion users receive no transition delay or animation.
 
+The modal body owns vertical scrolling and clips unintended horizontal overflow. Its direct children and transaction action-copy containers may shrink within the viewport so long labels wrap instead of widening the bottom sheet.
+
 ### 2.2 PWA metadata
 The static Vite PWA manifest uses `Minhas Finanças` for both `name` and `short_name`. Manifest metadata cannot reliably follow the authenticated locale preference because installation metadata is fetched outside React state and may be cached by the browser.
 
