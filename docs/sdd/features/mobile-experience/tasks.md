@@ -3,4 +3,4 @@
 - [x] 1. Refine the shared mobile modal border and entrance animation.
 - [x] 2. Correct the installed PWA name.
 - [x] 3. Reset document scroll on mobile pathname changes and cover it with tests.
-- [ ] 4. Disable non-input text selection on mobile and complete verification.
+- [x] 4. Disable non-input text selection on mobile and complete verification.

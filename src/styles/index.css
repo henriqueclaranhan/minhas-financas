@@ -119,6 +119,18 @@ h1 {
 }
 
 @media (max-width: 768px) {
+  body {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  input,
+  textarea,
+  [contenteditable="true"] {
+    -webkit-user-select: text;
+    user-select: text;
+  }
+
   h1 {
     font-size: 1.5rem;
   }

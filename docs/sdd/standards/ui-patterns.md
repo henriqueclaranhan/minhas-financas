@@ -129,6 +129,8 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Use the shared `.hide-on-mobile` and `.hide-on-desktop` utilities for simple visibility changes.
 - Desktop layouts MAY use denser grids. Mobile layouts MUST prioritize reading order and touch targets over preserving desktop geometry.
 - Fixed mobile controls MUST respect `env(safe-area-inset-bottom)` where applicable.
+- Mobile route changes MUST reset page scroll when the pathname changes; filter-only query-string changes retain their position.
+- Mobile surfaces disable text selection by default to prevent accidental gesture selection, while inputs, textareas, and editable content MUST retain native selection.
 
 ## 12. Accessibility and interaction
 

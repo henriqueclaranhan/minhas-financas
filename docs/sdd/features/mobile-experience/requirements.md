@@ -10,12 +10,12 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - As a mobile user, I want gestures to interact with the interface without accidentally selecting labels.
 
 ## Acceptance Criteria
-- [ ] Mobile modal surfaces have no bottom border and enter vertically from below the viewport.
-- [ ] Reduced-motion preferences disable the mobile modal entrance animation.
-- [ ] The PWA full and short names are `Minhas Finanças`.
-- [ ] Client-side pathname changes reset the mobile document scroll position.
-- [ ] Mobile text selection is disabled globally except for text inputs, textareas, and editable content.
-- [ ] Desktop selection behavior remains unchanged.
+- [x] Mobile modal surfaces have no bottom border and enter vertically from below the viewport.
+- [x] Reduced-motion preferences disable the mobile modal entrance animation.
+- [x] The PWA full and short names are `Minhas Finanças`.
+- [x] Client-side pathname changes reset the mobile document scroll position.
+- [x] Mobile text selection is disabled globally except for text inputs, textareas, and editable content.
+- [x] Desktop selection behavior remains unchanged.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.
