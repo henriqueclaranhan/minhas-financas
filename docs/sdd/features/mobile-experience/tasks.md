@@ -9,3 +9,4 @@
 - [x] 7. Keep primary and back-navigation headers visible during mobile scrolling.
 - [x] 8. Prevent horizontal scrolling inside mobile transaction modals.
 - [x] 9. Add standalone PWA pull-to-refresh with localized feedback and gesture safeguards.
+- [x] 10. Add branded Android and iOS PWA launch screens.

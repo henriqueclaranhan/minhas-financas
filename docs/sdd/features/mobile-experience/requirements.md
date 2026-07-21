@@ -9,6 +9,7 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - As a mobile user, I want each navigated page to start at the top.
 - As a mobile user, I want gestures to interact with the interface without accidentally selecting labels.
 - As a PWA user, I want to refresh current financial data with a familiar pull gesture.
+- As a PWA user, I want launch feedback that matches the application instead of a blank screen.
 
 ## Acceptance Criteria
 - [x] Mobile modal surfaces have no bottom border and enter vertically from below the viewport.
@@ -30,7 +31,11 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] The pull gesture shows localized pull, release, and refreshing feedback.
 - [x] Pull-to-refresh ignores predominantly horizontal gestures, editable controls, open modals, and the open mobile drawer.
 - [x] Reduced-motion preferences disable the refresh spinner animation.
+- [x] Android launch presentation uses matching manifest theme and background colors.
+- [x] Installed iPhone and iPad PWAs use branded portrait startup images for supported viewport sizes.
+- [x] iOS startup images support light and dark color schemes and preserve the existing app icon.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.
+- Startup image branding is static launch metadata and uses the product name `Minhas Finanças` independently from the authenticated locale.
 - Form editing, keyboard focus, and assistive-technology semantics must remain intact.

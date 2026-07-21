@@ -26,9 +26,13 @@ The primary app bar is sticky at the viewport top on main destinations. Secondar
 ### 2.6 Pull-to-refresh
 `PullToRefresh` is mounted once by the authenticated layout. It activates only when the display mode is standalone (including the iOS standalone flag), the document is at the top, and the gesture begins outside editable controls, modals, and the open drawer. A resisted vertical distance drives a fixed safe-area-aware status pill; crossing the threshold and releasing performs a full reload so the service worker shell and Firebase providers initialize through the normal application lifecycle. Horizontal or upward gestures are abandoned. Reduced-motion users retain state feedback without spinner motion.
 
+### 2.7 PWA launch screen
+Android derives its launch screen from the web app manifest, whose `theme_color` and `background_color` both match the light application background. iOS receives `apple-touch-startup-image` metadata for current portrait iPhone and iPad viewport families at their native pixel densities, with light and dark variants selected through `prefers-color-scheme`. Each committed asset uses the existing green finance mark, the static product name in Outfit, and the corresponding application background. Startup images are precached by the existing Workbox PNG glob.
+
 ## 3. Verification
 - Unit-test route scroll reset at mobile and desktop viewport sizes.
 - Unit-test delayed modal removal, closing state, and rapid reopening.
 - Verify sticky classes for primary and back-navigation mobile headers.
 - Unit-test standalone detection, threshold behavior, and gesture exclusions for pull-to-refresh.
+- Verify that every declared iOS startup image exists and that production build precaching includes splash PNG assets.
 - Run the application test suite, lint, and production build.

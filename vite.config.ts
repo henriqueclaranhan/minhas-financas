@@ -17,7 +17,7 @@ export default defineConfig({
         description: 'Gerenciador de finanças pessoais focado em usabilidade e desempenho.',
         lang: 'pt-BR',
         theme_color: '#F2F2F7',
-        background_color: '#ffffff',
+        background_color: '#F2F2F7',
         start_url: '/',
         scope: '/',
         display: 'standalone',
