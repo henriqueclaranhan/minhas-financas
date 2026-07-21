@@ -40,7 +40,7 @@ describe('TransactionsPage UI', () => {
       isOpen: false, label: 'Maio de 2026', defaultYear: 2026
     },
     transactions: [
-      { id: '1', description: 'Mercado', amount: 150, type: 'expense', date: '2026-05-10', paymentMethod: PaymentMethod.CREDIT }
+      { id: '1', description: 'Mercado', amount: 150, type: 'expense', date: '2026-05-10', paymentMethod: PaymentMethod.CREDIT, installments: 3 }
     ],
     totalIncome: 1000,
     totalExpense: 150,
@@ -85,6 +85,7 @@ describe('TransactionsPage UI', () => {
     renderWithRouter(<TransactionsPage />);
     expect(screen.getAllByText('Mercado').length).toBeGreaterThan(0);
     expect(screen.getAllByText('Crédito').length).toBeGreaterThan(0);
+    expect(screen.getAllByText('3x de R$ 50,00').length).toBeGreaterThan(0);
   });
 
   it('calls openNewModal when clicking Nova transação', () => {

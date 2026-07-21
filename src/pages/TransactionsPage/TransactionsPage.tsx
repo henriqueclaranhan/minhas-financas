@@ -6,7 +6,6 @@ import { Modal } from '../../components/Modal';
 import { Plus } from 'lucide-react';
 import { CustomSelect } from '../../components/shared/CustomSelect/CustomSelect';
 import { getCategoryIcon, getPaymentMethodIcon } from '../../utils/categoryIcons';
-import type { Transaction } from '../../types';
 import { ExpenseCategory, IncomeCategory, PaymentMethod } from '../../enums/FinanceEnums';
 import { useTransactionsViewModel } from './hooks/useTransactionsViewModel';
 import { PageHeader } from '../../components/shared/PageHeader';
@@ -38,6 +37,7 @@ export function TransactionsPage() {
 
       <div className="glass-panel filter-tabs-panel temporal-filter-panel">
         <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
+        <p className="transactions-period-note">{t('transactions.periodCalculationNote')}</p>
       </div>
 
       <PeriodSummaryCards
@@ -55,11 +55,10 @@ export function TransactionsPage() {
 
       <div className="glass-panel panel-no-padding">
         <TransactionTable 
-          transactions={state.transactions as Transaction[]}
+          transactions={state.transactions}
           onEdit={actions.openEditModal}
           onDelete={(id) => {
-            const t = state.transactions.find(tx => tx.id === id);
-            actions.setTransactionToDelete(t?.originalId || id);
+            actions.setTransactionToDelete(id);
           }}
         />
       </div>

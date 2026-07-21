@@ -2,12 +2,11 @@ import { parseISO } from 'date-fns';
 import { MoreHorizontal } from 'lucide-react';
 import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
 import type { Transaction } from '../../../../types';
-import type { ExpandedTransaction } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
 import '../Transaction.css';
 
 interface Props {
-  t: ExpandedTransaction;
+  t: Transaction;
   pressingId: string | null;
   onPointerDown: (t: Transaction) => void;
   handleTouchStart: (t: Transaction) => void;
@@ -31,10 +30,13 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
         <div>
           <h3 className="mobile-card-title">
             {t.description}
-            {t.isInstallment ? (
-              <span className="mobile-badge-secondary">({t.installmentNumber}/{t.totalInstallments})</span>
-            ) : t.installments > 1 ? (
-              <span className="mobile-badge-secondary">{t.installments}x</span>
+            {t.installments > 1 ? (
+              <span className="mobile-badge-secondary">
+                {translate('transactions.installmentSummary', {
+                  count: t.installments,
+                  amount: formatCurrency(t.amount / t.installments),
+                })}
+              </span>
             ) : null}
           </h3>
           <p className="mobile-card-subtitle" style={{ color: 'var(--clr-text-secondary)' }}>
@@ -64,11 +66,6 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
           }}>
             {t.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(t.amount)}
           </span>
-          {t.isInstallment && (
-            <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '2px' }}>
-              Total: {formatCurrency(t.originalAmount || 0)}
-            </div>
-          )}
         </div>
       </div>
     </div>

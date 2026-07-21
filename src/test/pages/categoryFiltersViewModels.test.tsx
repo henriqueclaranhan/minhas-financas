@@ -63,6 +63,51 @@ describe('category filters in list view models', () => {
     expect(result.current.state.categoryFilter).toBe('all');
   });
 
+  it('lists original credit purchases while preserving competence-based totals', () => {
+    const transactions = [
+      {
+        id: 'credit',
+        description: 'Notebook',
+        amount: 900,
+        type: 'expense',
+        date: currentDate,
+        paymentMethod: 'credit',
+        category: 'other',
+        installments: 3
+      },
+      {
+        id: 'pix',
+        description: 'Market',
+        amount: 100,
+        type: 'expense',
+        date: currentDate,
+        paymentMethod: 'pix',
+        category: 'food',
+        installments: 1
+      }
+    ];
+
+    vi.mocked(expandTransactions).mockReturnValue([transactions[1]] as any);
+    vi.mocked(useFinance).mockReturnValue({
+      transactions,
+      plannedExpenses: [],
+      addTransaction: noop,
+      updateTransaction: noop,
+      deleteTransaction: noop
+    } as any);
+
+    const { result } = renderHook(() => useTransactionsViewModel(), { wrapper });
+
+    expect(result.current.state.transactions.map(item => item.id)).toEqual(['credit', 'pix']);
+    expect(result.current.state.transactions[0]).toMatchObject({
+      id: 'credit',
+      amount: 900,
+      date: currentDate,
+      installments: 3
+    });
+    expect(result.current.state.totalExpense).toBe(100);
+  });
+
   it('applies and resets the planned expense category filter', () => {
     const plannedExpenses = [
       { id: 'food', description: 'Market', amount: 100, type: 'expense', dueDate: `${currentYear}-08-15`, status: 'pending', category: 'food' },

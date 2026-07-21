@@ -3,20 +3,20 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { TransactionType, PaymentMethod } from '../../../../enums/FinanceEnums';
 import { Modal } from '../../../../components/Modal';
 import { TransactionMobileCard } from '../TransactionMobileCard';
-import type { ExpandedTransaction } from '../../../../utils/financeUtils';
+import type { Transaction } from '../../../../types';
 import { useLocale } from '../../../../store/LocaleContext';
 import '../Transaction.css';
 import { useLongPressActions } from '../../../../hooks/useLongPressActions';
 
 interface TransactionTableProps {
-  transactions: ExpandedTransaction[];
-  onEdit: (t: ExpandedTransaction) => void;
+  transactions: Transaction[];
+  onEdit: (t: Transaction) => void;
   onDelete: (id: string) => void;
 }
 
 export function TransactionTable({ transactions, onEdit, onDelete }: TransactionTableProps) {
   const { formatCurrency, locale, t: translate } = useLocale();
-  const { actionItem: mobileActionItem, setActionItem: setMobileActionItem, pressingId, startPress: handleTouchStart, endPress: handleTouchEnd } = useLongPressActions<ExpandedTransaction>();
+  const { actionItem: mobileActionItem, setActionItem: setMobileActionItem, pressingId, startPress: handleTouchStart, endPress: handleTouchEnd } = useLongPressActions<Transaction>();
 
   if (transactions.length === 0) {
     return (
@@ -43,13 +43,12 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
                 </td>
                 <td className="td-bold">
                   {t.description}
-                  {t.isInstallment ? (
+                  {t.installments > 1 ? (
                     <span className="badge-installments">
-                      ({t.installmentNumber}/{t.totalInstallments})
-                    </span>
-                  ) : t.installments > 1 ? (
-                    <span className="badge-installments">
-                      {t.installments}x
+                      {translate('transactions.installmentSummary', {
+                        count: t.installments,
+                        amount: formatCurrency(t.amount / t.installments),
+                      })}
                     </span>
                   ) : null}
                 </td>
@@ -61,11 +60,6 @@ export function TransactionTable({ transactions, onEdit, onDelete }: Transaction
                 </td>
                 <td className={t.type === TransactionType.INCOME ? 'td-amount-income' : 'td-amount-expense'}>
                   <div>{t.type === TransactionType.INCOME ? '+' : '-'} {formatCurrency(t.amount)}</div>
-                  {t.isInstallment && (
-                    <div style={{ fontSize: '0.75rem', color: 'var(--clr-text-secondary)', marginTop: '4px' }}>
-                      Total: {formatCurrency(t.originalAmount || 0)}
-                    </div>
-                  )}
                 </td>
                 <td className="td-actions">
                   <button onClick={() => onEdit(t)} className="btn btn-action primary" title={translate('common.edit')}>

@@ -1,10 +1,9 @@
-import { useState, useMemo } from 'react';
+import { useCallback, useState, useMemo } from 'react';
 import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
 import { useLocation } from 'react-router-dom';
 import { FilterType, TransactionType } from '../../../enums/FinanceEnums';
 import type { Transaction } from '../../../types';
 import { expandTransactions } from '../../../utils/financeUtils';
-import type { ExpandedTransaction } from '../../../utils/financeUtils';
 import { useFinance } from '../../../store/FinanceContext';
 import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
@@ -44,29 +43,36 @@ export function useTransactionsViewModel() {
     }
     return { startDate: temporal.state.startDate, endDate: temporal.state.endDate };
   }, [temporal.state.endDate, temporal.state.mode, temporal.state.month, temporal.state.startDate, temporal.state.year]);
-  const expandedTransactions = useMemo(
+  const competenceTransactions = useMemo(
     () => expandTransactions(transactions, expansionPeriod),
     [expansionPeriod, transactions],
   );
 
-  const periodFiltered = useMemo(() => expandedTransactions.filter(t => {
-    const matchesPeriod = matchesDate(t.date);
+  const matchesDetailedFilters = useCallback((t: Transaction) => {
     const matchesSearch = !searchQuery || t.description.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesMethod = methodFilter === 'all' || t.paymentMethod === methodFilter;
     const matchesCategory = categoryFilter === 'all' || t.category === categoryFilter;
+    return matchesSearch && matchesMethod && matchesCategory;
+  }, [categoryFilter, methodFilter, searchQuery]);
 
-    return matchesPeriod && matchesSearch && matchesMethod && matchesCategory;
-  }), [expandedTransactions, matchesDate, searchQuery, methodFilter, categoryFilter]);
+  const historyTransactions = useMemo(() => transactions.filter(t => {
+    return matchesDate(t.date) && matchesDetailedFilters(t);
+  }), [matchesDate, matchesDetailedFilters, transactions]);
+
+  const competenceFiltered = useMemo(
+    () => competenceTransactions.filter(matchesDetailedFilters),
+    [competenceTransactions, matchesDetailedFilters],
+  );
 
   const filtered = useMemo(
-    () => periodFiltered.filter(t => filter === FilterType.ALL || t.type === filter),
-    [periodFiltered, filter]
+    () => historyTransactions.filter(t => filter === FilterType.ALL || t.type === filter),
+    [historyTransactions, filter]
   );
 
   const sorted = useMemo(() => [...filtered].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()), [filtered]);
 
-  const totalIncome = useMemo(() => periodFiltered.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0), [periodFiltered]);
-  const totalExpense = useMemo(() => periodFiltered.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0), [periodFiltered]);
+  const totalIncome = useMemo(() => competenceFiltered.filter(t => t.type === TransactionType.INCOME).reduce((acc, t) => acc + t.amount, 0), [competenceFiltered]);
+  const totalExpense = useMemo(() => competenceFiltered.filter(t => t.type === TransactionType.EXPENSE).reduce((acc, t) => acc + t.amount, 0), [competenceFiltered]);
 
   const handleAddOrUpdate = async (transaction: Omit<Transaction, 'id'>) => {
     if (editingTransaction?.id) {
@@ -84,9 +90,8 @@ export function useTransactionsViewModel() {
     setIsModalOpen(true);
   };
 
-  const openEditModal = (t: ExpandedTransaction) => {
-    const originalTx = t.originalId ? transactions.find(tx => tx.id === t.originalId) : t;
-    setEditingTransaction(originalTx as Transaction);
+  const openEditModal = (t: Transaction) => {
+    setEditingTransaction(t);
     setIsModalOpen(true);
   };
 

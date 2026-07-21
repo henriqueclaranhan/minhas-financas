@@ -1,2 +1,6 @@
 - [x] Align single-installment credit expense competence with dashboard totals.
 - [x] Add regression coverage for credit and boleto single-installment expenses.
+- [x] Filter history rows by original transaction date and value.
+- [x] Preserve competence-based period summaries as a separate projection.
+- [x] Add explanatory period copy and installment metadata to desktop and mobile rows.
+- [x] Add regression tests for credit visibility and competence totals.
