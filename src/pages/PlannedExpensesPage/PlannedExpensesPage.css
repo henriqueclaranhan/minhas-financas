@@ -14,3 +14,4 @@
 .modal-actions-filters { display: flex; gap: var(--spacing-sm); margin-top: var(--spacing-lg); }
 .btn-danger-bg { background: var(--clr-danger) !important; }
 .btn-alt-bg { background: var(--clr-surface-alt) !important; }
+@media (max-width: 768px) { .mobile-list-panel { overflow: visible; } }

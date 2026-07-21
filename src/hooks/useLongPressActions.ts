@@ -13,9 +13,10 @@ export function useLongPressActions<T extends { id?: string }>(delay = 500) {
 
   const startPress = (item: T) => {
     if (!item.id) return;
+    navigator.vibrate?.(10);
     setPressingId(item.id);
     timerRef.current = setTimeout(() => {
-      navigator.vibrate?.(50);
+      navigator.vibrate?.(30);
       setActionItem(item);
       setPressingId(null);
       timerRef.current = null;

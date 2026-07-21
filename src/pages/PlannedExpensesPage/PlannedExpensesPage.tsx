@@ -64,7 +64,7 @@ export function PlannedExpensesPage() {
       />
 
 
-      <div className="glass-panel panel-no-padding">
+      <div className="glass-panel panel-no-padding mobile-list-panel">
         <PlannedExpenseTable 
           expenses={state.pendingExpenses as PlannedExpense[]}
           onConfirm={actions.handleConfirmPrompt}

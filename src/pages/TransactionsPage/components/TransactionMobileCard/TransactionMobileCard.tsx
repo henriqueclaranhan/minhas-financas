@@ -17,10 +17,7 @@ export function TransactionMobileCard({ t, pressingId, onPointerDown, handleTouc
   const { formatCurrency, locale, t: translate } = useLocale();
   return (
     <div 
-      className="glass-panel mobile-card-container" 
-      style={{ 
-        transform: pressingId === t.id ? 'scale(1.02)' : 'scale(1)'
-      }}
+      className={`glass-panel mobile-card-container${pressingId === t.id ? ' is-pressing' : ''}`}
       onTouchStart={() => handleTouchStart(t)}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchEnd}

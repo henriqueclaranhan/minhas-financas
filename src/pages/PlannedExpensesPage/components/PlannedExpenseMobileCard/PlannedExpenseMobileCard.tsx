@@ -27,10 +27,7 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
 
   return (
     <div 
-      className={`glass-panel mobile-card-container`} 
-      style={{ 
-        transform: pressingId === p.id ? 'scale(1.02)' : 'scale(1)'
-      }}
+      className={`glass-panel mobile-card-container${pressingId === p.id ? ' is-pressing' : ''}`}
       onTouchStart={() => handleTouchStart(p)}
       onTouchEnd={handleTouchEnd}
       onTouchMove={handleTouchEnd}

@@ -29,6 +29,9 @@ The primary app bar is sticky at the viewport top on main destinations. Secondar
 ### 2.7 PWA launch screen
 Android derives its launch screen from the web app manifest, whose `theme_color` and `background_color` both match the light application background. iOS receives `apple-touch-startup-image` metadata for current portrait iPhone and iPad viewport families at their native pixel densities, with light and dark variants selected through `prefers-color-scheme`. Each committed asset uses the existing green finance mark, the static product name in Outfit, and the corresponding application background. Startup images are precached by the existing Workbox PNG glob.
 
+### 2.8 Mobile list-card press feedback
+Transaction and planning list cards reuse the long-press hook for a light haptic tick at touch start and a stronger confirmation when the action sheet opens. Haptics remain capability-gated through the Vibration API. While held, the card scales outward above neighboring content using the shared fast transition, elevated stacking, visible overflow through the card and its mobile list panel, and reserved list-edge space that prevents clipping. Desktop table panels retain clipped overflow, and reduced-motion preferences disable the transform.
+
 ## 3. Verification
 - Unit-test route scroll reset at mobile and desktop viewport sizes.
 - Unit-test delayed modal removal, closing state, and rapid reopening.

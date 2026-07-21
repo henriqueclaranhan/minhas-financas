@@ -34,6 +34,8 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] Android launch presentation uses matching manifest theme and background colors.
 - [x] Installed iPhone and iPad PWAs use branded portrait startup images for supported viewport sizes.
 - [x] iOS startup images support light and dark color schemes and preserve the existing app icon.
+- [x] Pressing mobile list cards provides immediate haptic feedback when supported and scales outward above the list without being clipped.
+- [x] Completing a mobile list-card long press provides a second haptic confirmation when supported.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.

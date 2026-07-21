@@ -66,7 +66,7 @@ export function TransactionsPage() {
         activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
       />
 
-      <div className="glass-panel panel-no-padding">
+      <div className="glass-panel panel-no-padding mobile-list-panel">
         <TransactionTable 
           transactions={state.transactions}
           onEdit={actions.openEditModal}

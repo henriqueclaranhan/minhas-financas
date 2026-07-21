@@ -10,3 +10,4 @@
 - [x] 8. Prevent horizontal scrolling inside mobile transaction modals.
 - [x] 9. Add standalone PWA pull-to-refresh with localized feedback and gesture safeguards.
 - [x] 10. Add branded Android and iOS PWA launch screens.
+- [x] 11. Refine mobile list-card press feedback with capability-gated haptics, outward elevated scaling, clipping protection, and reduced-motion support.

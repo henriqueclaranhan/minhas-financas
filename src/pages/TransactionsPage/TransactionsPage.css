@@ -32,3 +32,4 @@
 .lazy-load-spinner { animation: lazy-load-spin var(--transition-slow) linear infinite; }
 @keyframes lazy-load-spin { to { transform: rotate(360deg); } }
 @media (prefers-reduced-motion: reduce) { .lazy-load-spinner { animation: none; } }
+@media (max-width: 768px) { .mobile-list-panel { overflow: visible; } }
