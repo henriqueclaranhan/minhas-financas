@@ -14,6 +14,7 @@ import { ProfileSettingsPage } from './pages/ProfileSettingsPage/ProfileSettings
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage/PrivacyPolicyPage';
 import { CategoryExpensesPage } from './pages/CategoryExpensesPage';
+import { NotFoundPage } from './pages/NotFoundPage/NotFoundPage';
 import { SeoManager } from './components/SeoManager';
 import './App.css';
 
@@ -31,13 +32,15 @@ const router = createBrowserRouter([
       { path: "/settings", element: <SettingsPage /> },
       { path: "/settings/profile", element: <ProfileSettingsPage /> },
       { path: "/privacidade", element: <PrivacyPolicyPage /> },
+      { path: "*", element: <NotFoundPage /> },
     ]
   }
 ]);
 
 const unauthRouter = createBrowserRouter([
+  { path: "/", element: <AuthPage /> },
   { path: "/privacidade", element: <PrivacyPolicyPage /> },
-  { path: "*", element: <AuthPage /> }
+  { path: "*", element: <NotFoundPage /> }
 ]);
 
 import { ThemeProvider } from './store/ThemeContext';
