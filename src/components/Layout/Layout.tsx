@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, Settings, X, PieChart, TrendingUp, Tags } from 'lucide-react';
+import { LayoutDashboard, Wallet, CalendarClock, CreditCard, User, PieChart, TrendingUp, Tags } from 'lucide-react';
 import { useAuth } from '../../store/AuthContext';
 import { useLocale } from '../../store/LocaleContext';
 import { PullToRefresh } from '../shared/PullToRefresh';
+import { AppSidebar, type SidebarNavItem } from './AppSidebar';
 import './Layout.css';
 
 export function Layout() {
   const [isMobileDrawerOpen, setIsMobileDrawerOpen] = useState(false);
+  const [isDesktopSidebarCollapsed, setIsDesktopSidebarCollapsed] = useState(
+    () => window.localStorage.getItem('desktop-sidebar-collapsed') === 'true',
+  );
   const mainContentRef = useRef<HTMLElement>(null);
   const { user } = useAuth();
   const { t } = useLocale();
@@ -23,8 +27,12 @@ export function Layout() {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     if (mainContentRef.current) mainContentRef.current.scrollTop = 0;
   }, [location.pathname]);
+
+  useEffect(() => {
+    window.localStorage.setItem('desktop-sidebar-collapsed', String(isDesktopSidebarCollapsed));
+  }, [isDesktopSidebarCollapsed]);
   
-  const navItems = [
+  const navItems: SidebarNavItem[] = [
     { to: '/', icon: <LayoutDashboard size={22} />, label: t('nav.dashboard'), isMain: true },
     { to: '/transactions', icon: <Wallet size={22} />, label: t('nav.transactions'), isMain: true },
     { to: '/planned', icon: <CalendarClock size={22} />, label: t('nav.planning'), isMain: true },
@@ -47,93 +55,41 @@ export function Layout() {
               <User size={20} />
             </div>
           </button>
-          <div className="mobile-header-title">
-            {t('app.name')}
+          <div className="mobile-header-brand">
+            <PieChart size={21} aria-hidden="true" />
+            <div className="mobile-header-title">{t('app.name')}</div>
           </div>
           <div className="mobile-header-placeholder" /> {/* Placeholder to center title */}
         </div>
       )}
 
-      {/* Mobile Drawer */}
-      <div className={`mobile-drawer ${isMobileDrawerOpen ? 'open' : ''}`}>
-        <div className="mobile-drawer-overlay" onClick={() => setIsMobileDrawerOpen(false)} />
-        <div className="mobile-drawer-content">
-          <div className="drawer-header">
-            <div className="flex items-center gap-sm">
-              <div className="avatar-icon-large">
-                <User size={24} />
-              </div>
-              <div className="drawer-user-name">{userName}</div>
-            </div>
-            <button onClick={() => setIsMobileDrawerOpen(false)} className="drawer-close-btn">
-              <X size={24} />
-            </button>
-          </div>
-          
-          <div className="flex-1">
-            {/* Mobile-only secondary nav links in drawer */}
-            <div className="hide-on-desktop drawer-nav-group">
-              {navItems.filter(i => !i.isMain).map(item => (
-                <NavLink 
-                  key={item.to} 
-                  to={item.to} 
-                  className="nav-item" 
-                  onClick={() => setIsMobileDrawerOpen(false)}
-                >
-                  {item.icon} {item.label}
-                </NavLink>
-              ))}
-            </div>
-          </div>
+      <AppSidebar
+        variant="mobile"
+        navItems={navItems}
+        userName={userName}
+        userEmail={user?.email}
+        appName={t('app.name')}
+        settingsLabel={t('nav.settings')}
+        isOpen={isMobileDrawerOpen}
+        onClose={() => setIsMobileDrawerOpen(false)}
+        collapseLabel={t('nav.collapseSidebar')}
+        expandLabel={t('nav.expandSidebar')}
+        closeLabel={t('nav.closeMenu')}
+      />
 
-          <div className="drawer-footer">
-            <NavLink to="/settings" className="nav-item" onClick={() => setIsMobileDrawerOpen(false)}>
-              <Settings size={22} /> {t('nav.settings')}
-            </NavLink>
-          </div>
-        </div>
-      </div>
-
-      {/* Desktop Sidebar */}
-      <aside className="sidebar">
-        <div className="sidebar-header flex-col gap-lg items-start">
-          
-          {/* App Logo */}
-          <div className="sidebar-logo">
-            <PieChart size={28} /> {t('app.name')}
-          </div>
-        </div>
-
-        {/* User Profile Card */}
-        <div className="sidebar-user-card">
-          <div className="avatar-wrapper">
-            <User size={20} className="avatar-icon-svg" />
-          </div>
-          <div className="sidebar-user-info">
-            <div className="sidebar-user-name" title={userName}>{userName}</div>
-            <div className="sidebar-user-email" title={user?.email || ''}>{user?.email || 'Bem-vindo(a)'}</div>
-          </div>
-        </div>
-        
-        <nav className="nav-links">
-          {navItems.map((item) => (
-            <NavLink 
-              key={item.to} 
-              to={item.to} 
-              className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}
-            >
-              {item.icon}
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-        
-        <div className="sidebar-footer">
-          <NavLink to="/settings" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}>
-            <Settings size={22} /> {t('nav.settings')}
-          </NavLink>
-        </div>
-      </aside>
+      <AppSidebar
+        variant="desktop"
+        navItems={navItems}
+        userName={userName}
+        userEmail={user?.email}
+        appName={t('app.name')}
+        settingsLabel={t('nav.settings')}
+        isCollapsed={isDesktopSidebarCollapsed}
+        onToggleCollapsed={() => setIsDesktopSidebarCollapsed(collapsed => !collapsed)}
+        collapseLabel={t('nav.collapseSidebar')}
+        expandLabel={t('nav.expandSidebar')}
+        closeLabel={t('nav.closeMenu')}
+      />
 
       {/* Main Content Area */}
       <main className="main-content" ref={mainContentRef}>

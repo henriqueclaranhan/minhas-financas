@@ -36,6 +36,9 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] iOS startup images support light and dark color schemes and preserve the existing app icon.
 - [x] Pressing mobile list cards provides immediate haptic feedback when supported and scales outward above the list without being clipped.
 - [x] Completing a mobile list-card long press provides a second haptic confirmation when supported.
+- [x] Desktop navigation can collapse into an icon rail and expand without changing routes or hiding any destination.
+- [x] The desktop sidebar preference persists locally, while mobile retains its drawer and bottom navigation presentation.
+- [x] Long mobile drawer user names truncate without wrapping or displacing the close action.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.

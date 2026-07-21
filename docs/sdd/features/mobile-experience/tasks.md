@@ -11,3 +11,4 @@
 - [x] 9. Add standalone PWA pull-to-refresh with localized feedback and gesture safeguards.
 - [x] 10. Add branded Android and iOS PWA launch screens.
 - [x] 11. Refine mobile list-card press feedback with capability-gated haptics, outward elevated scaling, clipping protection, and reduced-motion support.
+- [x] 12. Add a persistent collapsible desktop sidebar while retaining the shared mobile navigation model.

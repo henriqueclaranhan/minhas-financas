@@ -32,10 +32,14 @@ Android derives its launch screen from the web app manifest, whose `theme_color`
 ### 2.8 Mobile list-card press feedback
 Transaction and planning list cards reuse the long-press hook for a light haptic tick at touch start and a stronger confirmation when the action sheet opens. Haptics remain capability-gated through the Vibration API. While held, the card scales outward above neighboring content using the shared fast transition, elevated stacking, visible overflow through the card and its mobile list panel, and reserved list-edge space that prevents clipping. Desktop table panels retain clipped overflow, and reduced-motion preferences disable the transform.
 
+### 2.9 Responsive navigation shell
+`Layout` owns one translated navigation model for desktop links, mobile secondary links, and the bottom navigation subset. Both desktop and mobile drawer instantiate the shared `AppSidebar`, whose internal `NavigationLinks` implementation owns route markup, active states, labels, and navigation callbacks; viewport variants change only the surrounding presentation and which routes complement the mobile bottom bar. Desktop toggles between a 320 px full sidebar and an 88 px icon rail. The collapse control sits immediately after Settings and becomes a centered icon control in the rail. Every desktop section uses the same 16 px gutter and 56 px icon column: route items retain a fixed 46 px height regardless of label visibility or active font weight, the brand mark remains in that column in both states while its expanded title is independently centered, and the user card keeps a fixed 56 px height, padding, and avatar alignment. These stable dimensions allow sidebar, card, and item widths to animate with the shared transition while labels cross-fade without moving the icon column. Reduced-motion preferences disable all sidebar state transitions. The preference is stored locally under `desktop-sidebar-collapsed`. Mobile retains an overlay presentation because it serves a different touch role, while its app bar uses the same product mark and display typography. Drawer user identity is a shrinkable single-line region: long names truncate with an ellipsis while the avatar and close action retain their sizes.
+
 ## 3. Verification
 - Unit-test route scroll reset at mobile and desktop viewport sizes.
 - Unit-test delayed modal removal, closing state, and rapid reopening.
 - Verify sticky classes for primary and back-navigation mobile headers.
 - Unit-test standalone detection, threshold behavior, and gesture exclusions for pull-to-refresh.
 - Verify that every declared iOS startup image exists and that production build precaching includes splash PNG assets.
+- Unit-test desktop sidebar collapse, expansion, and local preference persistence.
 - Run the application test suite, lint, and production build.

@@ -1,9 +1,13 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Layout } from '../../../components/Layout';
 
 describe('Layout navigation', () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+  });
+
   afterEach(() => {
     vi.restoreAllMocks();
   });
@@ -64,5 +68,24 @@ describe('Layout navigation', () => {
     );
 
     expect(scrollTo).not.toHaveBeenCalled();
+  });
+
+  it('collapses the desktop sidebar and persists the preference', () => {
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route element={<Layout />}>
+            <Route index element={<div>Home</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    );
+
+    const sidebar = document.querySelector('.sidebar');
+    fireEvent.click(screen.getByRole('button', { name: /Recolher menu lateral/i }));
+
+    expect(sidebar).toHaveClass('collapsed');
+    expect(window.localStorage.getItem('desktop-sidebar-collapsed')).toBe('true');
+    expect(screen.getByRole('button', { name: /Expandir menu lateral/i })).toHaveAttribute('aria-expanded', 'false');
   });
 });

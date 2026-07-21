@@ -130,6 +130,7 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Desktop layouts MAY use denser grids. Mobile layouts MUST prioritize reading order and touch targets over preserving desktop geometry.
 - Fixed mobile controls MUST respect `env(safe-area-inset-bottom)` where applicable.
 - Main-destination app bars and secondary-page back-navigation bars remain sticky on mobile and MUST respect `env(safe-area-inset-top)`.
+- Desktop navigation MAY collapse from the full sidebar into an icon rail. The rail MUST preserve all destinations, active state, accessible labels, keyboard focus, and a discoverable expansion control; mobile drawer and bottom navigation remain viewport-specific presentations of the shared navigation model.
 - Mobile route changes MUST reset page scroll when the pathname changes; filter-only query-string changes retain their position.
 - Mobile surfaces disable text selection by default to prevent accidental gesture selection, while inputs, textareas, and editable content MUST retain native selection.
 
