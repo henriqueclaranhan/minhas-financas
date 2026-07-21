@@ -18,7 +18,16 @@ export type ExpandedPlannedExpense = PlannedExpense & {
   originalId?: string;
 };
 
-export function expandTransactions(transactions: Transaction[]): ExpandedTransaction[] {
+interface IsoPeriod {
+  startDate: string;
+  endDate: string;
+}
+
+function intersectsPeriod(date: string, period?: IsoPeriod): boolean {
+  return !period || (date >= period.startDate && date <= period.endDate);
+}
+
+export function expandTransactions(transactions: Transaction[], period?: IsoPeriod): ExpandedTransaction[] {
   const expanded: ExpandedTransaction[] = [];
   
   for (const t of transactions) {
@@ -35,9 +44,11 @@ export function expandTransactions(transactions: Transaction[]): ExpandedTransac
       for (let i = 1; i <= installmentCount; i++) {
         const offset = isCredit ? i : (i - 1);
         const nextDate = addMonths(parsedDate, offset);
+        const installmentDate = format(nextDate, 'yyyy-MM-dd');
+        if (!intersectsPeriod(installmentDate, period)) continue;
         expanded.push({
           ...t,
-          date: format(nextDate, 'yyyy-MM-dd'),
+          date: installmentDate,
           amount: installmentAmount,
           isInstallment: installmentCount > 1,
           installmentNumber: i,
@@ -48,14 +59,14 @@ export function expandTransactions(transactions: Transaction[]): ExpandedTransac
         });
       }
     } else {
-      expanded.push(t);
+      if (intersectsPeriod(t.date, period)) expanded.push(t);
     }
   }
   
   return expanded;
 }
 
-export function expandPlannedExpenses(expenses: PlannedExpense[]): ExpandedPlannedExpense[] {
+export function expandPlannedExpenses(expenses: PlannedExpense[], period?: IsoPeriod): ExpandedPlannedExpense[] {
   const expanded: ExpandedPlannedExpense[] = [];
   
   for (const p of expenses) {
@@ -67,9 +78,11 @@ export function expandPlannedExpenses(expenses: PlannedExpense[]): ExpandedPlann
       for (let i = 1; i <= p.installments; i++) {
         const offset = isCredit ? i : (i - 1);
         const nextDate = addMonths(parsedDate, offset);
+        const installmentDate = format(nextDate, 'yyyy-MM-dd');
+        if (!intersectsPeriod(installmentDate, period)) continue;
         expanded.push({
           ...p,
-          dueDate: format(nextDate, 'yyyy-MM-dd'),
+          dueDate: installmentDate,
           amount: installmentAmount,
           isInstallment: true,
           installmentNumber: i,
@@ -80,7 +93,7 @@ export function expandPlannedExpenses(expenses: PlannedExpense[]): ExpandedPlann
         });
       }
     } else {
-      expanded.push(p);
+      if (intersectsPeriod(p.dueDate, period)) expanded.push(p);
     }
   }
   

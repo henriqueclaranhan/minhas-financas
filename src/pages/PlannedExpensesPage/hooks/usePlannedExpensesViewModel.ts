@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
 import { FilterType, TransactionType, ExpenseStatus } from '../../../enums/FinanceEnums';
 import type { PlannedExpense, Transaction } from '../../../types';
 import { expandPlannedExpenses } from '../../../utils/financeUtils';
@@ -8,7 +9,7 @@ import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 export function usePlannedExpensesViewModel() {
-  const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense } = useFinance();
+  const { plannedExpenses, addPlannedExpense, updatePlannedExpense, confirmPlannedExpense, rejectPlannedExpense, deletePlannedExpense, hasMorePlannedExpenses, loadMorePlannedExpenses } = useFinance();
   const temporal = useTemporalFilter(TemporalFilterMode.YEAR);
   const { matchesDate } = temporal.actions;
   
@@ -25,7 +26,21 @@ export function usePlannedExpensesViewModel() {
   const [expenseToDelete, setExpenseToDelete] = useState<string | null>(null);
   const [expenseToConfirm, setExpenseToConfirm] = useState<PlannedExpense | null>(null);
 
-  const expandedPlannedExpenses = useMemo(() => expandPlannedExpenses(plannedExpenses), [plannedExpenses]);
+  const expansionPeriod = useMemo(() => {
+    if (temporal.state.mode === TemporalFilterMode.MONTH) {
+      const date = new Date(temporal.state.year, temporal.state.month, 1);
+      return { startDate: format(startOfMonth(date), 'yyyy-MM-dd'), endDate: format(endOfMonth(date), 'yyyy-MM-dd') };
+    }
+    if (temporal.state.mode === TemporalFilterMode.YEAR) {
+      const date = new Date(temporal.state.year, 0, 1);
+      return { startDate: format(startOfYear(date), 'yyyy-MM-dd'), endDate: format(endOfYear(date), 'yyyy-MM-dd') };
+    }
+    return { startDate: temporal.state.startDate, endDate: temporal.state.endDate };
+  }, [temporal.state.endDate, temporal.state.mode, temporal.state.month, temporal.state.startDate, temporal.state.year]);
+  const expandedPlannedExpenses = useMemo(
+    () => expandPlannedExpenses(plannedExpenses, expansionPeriod),
+    [expansionPeriod, plannedExpenses],
+  );
 
   const periodPendingExpenses = useMemo(() => expandedPlannedExpenses
     .filter(p => {
@@ -131,6 +146,7 @@ export function usePlannedExpensesViewModel() {
       editingExpense,
       expenseToDelete,
       expenseToConfirm,
+      hasMorePlannedExpenses,
       filterLabel: temporal.state.label,
       temporal: temporal.state
     },
@@ -151,6 +167,7 @@ export function usePlannedExpensesViewModel() {
       handleResetFilters,
       confirmDelete,
       confirmAction,
+      loadMorePlannedExpenses,
       rejectAction,
       handleConfirmPrompt,
       handleDeletePrompt,

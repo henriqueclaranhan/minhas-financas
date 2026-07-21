@@ -7,7 +7,11 @@ export class UserService {
     await setDoc(doc(db, 'users', uid), { initialBalance: val }, { merge: true });
   }
 
-  static subscribeToInitialBalance(uid: string, onUpdate: (balance: number | null) => void): () => void {
+  static subscribeToInitialBalance(
+    uid: string,
+    onUpdate: (balance: number | null) => void,
+    onError: (error: Error) => void = () => undefined,
+  ): () => void {
     if (!uid) throw new Error("User ID is required");
     const unsub = onSnapshot(doc(db, 'users', uid), (docSnap: any) => {
       if (docSnap.exists()) {
@@ -20,7 +24,7 @@ export class UserService {
       } else {
         onUpdate(null);
       }
-    });
+    }, onError);
     return unsub;
   }
 }

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { endOfMonth, endOfYear, format, startOfMonth, startOfYear } from 'date-fns';
 import { useLocation } from 'react-router-dom';
 import { FilterType, TransactionType } from '../../../enums/FinanceEnums';
 import type { Transaction } from '../../../types';
@@ -9,7 +10,7 @@ import { useTemporalFilter } from '../../../hooks/useTemporalFilter';
 import { TemporalFilterMode } from '../../../enums/UIEnums';
 
 export function useTransactionsViewModel() {
-  const { transactions, addTransaction, updateTransaction, deleteTransaction } = useFinance();
+  const { transactions, addTransaction, updateTransaction, deleteTransaction, hasMoreTransactions, loadMoreTransactions } = useFinance();
   const temporal = useTemporalFilter(TemporalFilterMode.MONTH);
   const { matchesDate } = temporal.actions;
   
@@ -32,7 +33,21 @@ export function useTransactionsViewModel() {
   const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
   const [transactionToDelete, setTransactionToDelete] = useState<string | null>(null);
 
-  const expandedTransactions = useMemo(() => expandTransactions(transactions), [transactions]);
+  const expansionPeriod = useMemo(() => {
+    if (temporal.state.mode === TemporalFilterMode.MONTH) {
+      const date = new Date(temporal.state.year, temporal.state.month, 1);
+      return { startDate: format(startOfMonth(date), 'yyyy-MM-dd'), endDate: format(endOfMonth(date), 'yyyy-MM-dd') };
+    }
+    if (temporal.state.mode === TemporalFilterMode.YEAR) {
+      const date = new Date(temporal.state.year, 0, 1);
+      return { startDate: format(startOfYear(date), 'yyyy-MM-dd'), endDate: format(endOfYear(date), 'yyyy-MM-dd') };
+    }
+    return { startDate: temporal.state.startDate, endDate: temporal.state.endDate };
+  }, [temporal.state.endDate, temporal.state.mode, temporal.state.month, temporal.state.startDate, temporal.state.year]);
+  const expandedTransactions = useMemo(
+    () => expandTransactions(transactions, expansionPeriod),
+    [expansionPeriod, transactions],
+  );
 
   const periodFiltered = useMemo(() => expandedTransactions.filter(t => {
     const matchesPeriod = matchesDate(t.date);
@@ -118,6 +133,7 @@ export function useTransactionsViewModel() {
       tempCategoryFilter,
       editingTransaction,
       transactionToDelete,
+      hasMoreTransactions,
       filterLabel: temporal.state.label,
       temporal: temporal.state
     },
@@ -134,6 +150,7 @@ export function useTransactionsViewModel() {
       openNewModal,
       openEditModal,
       confirmDelete,
+      loadMoreTransactions,
       handleOpenFilters,
       handleApplyFilters,
       handleResetFilters,

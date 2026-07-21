@@ -62,6 +62,9 @@ export function PlannedExpensesPage() {
           onDelete={actions.handleDeletePrompt}
         />
       </div>
+      {state.hasMorePlannedExpenses && (
+        <button className="btn" onClick={actions.loadMorePlannedExpenses}>{t('common.loadMore')}</button>
+      )}
 
       <button className="btn btn-primary fab hide-on-desktop" onClick={actions.openNewModal}>
         <Plus size={28} />

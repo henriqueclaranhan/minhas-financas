@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { Transaction, PlannedExpense } from '../types';
 import { useAuth } from './AuthContext';
 import { TransactionService } from '../services/TransactionService';
@@ -21,9 +21,22 @@ interface FinanceContextData {
   deletePlannedExpense: (id: string) => Promise<void>;
   exportData: () => void;
   importData: (jsonData: string) => Promise<boolean>;
-  clearData: () => void;
+  clearData: () => Promise<void>;
   isLoading: boolean;
+  error: FinanceError | null;
+  retry: () => void;
+  hasMoreTransactions: boolean;
+  hasMorePlannedExpenses: boolean;
+  loadMoreTransactions: () => void;
+  loadMorePlannedExpenses: () => void;
 }
+
+export interface FinanceError {
+  source: 'user' | 'transactions' | 'plannedExpenses';
+  message: string;
+}
+
+const PAGE_SIZE = 250;
 
 const FinanceContext = createContext<FinanceContextData>({} as FinanceContextData);
 
@@ -34,30 +47,57 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
   const [initialBalance, setInitialBalanceState] = useState<number | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [plannedExpenses, setPlannedExpenses] = useState<PlannedExpense[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loadingUser, setLoadingUser] = useState(true);
+  const [loadingTransactions, setLoadingTransactions] = useState(true);
+  const [loadingPlans, setLoadingPlans] = useState(true);
+  const [error, setError] = useState<FinanceError | null>(null);
+  const [retryGeneration, setRetryGeneration] = useState(0);
+  const [transactionLimit, setTransactionLimit] = useState(PAGE_SIZE);
+  const [plannedExpenseLimit, setPlannedExpenseLimit] = useState(PAGE_SIZE);
+  const [hasMoreTransactions, setHasMoreTransactions] = useState(false);
+  const [hasMorePlannedExpenses, setHasMorePlannedExpenses] = useState(false);
 
   useEffect(() => {
     if (!uid) {
       setInitialBalanceState(null);
       setTransactions([]);
       setPlannedExpenses([]);
-      setIsLoading(false);
+      setLoadingUser(false);
+      setLoadingTransactions(false);
+      setLoadingPlans(false);
+      setError(null);
       return;
     }
 
-    setIsLoading(true);
+    setLoadingUser(true);
+    setLoadingTransactions(true);
+    setLoadingPlans(true);
+    setError(null);
 
     const unsubUser = UserService.subscribeToInitialBalance(uid, (val) => {
       setInitialBalanceState(val);
-      setIsLoading(false);
+      setLoadingUser(false);
+    }, listenerError => {
+      setError({ source: 'user', message: listenerError.message });
+      setLoadingUser(false);
     });
 
-    const unsubTx = TransactionService.subscribeToTransactions(uid, (txs) => {
+    const unsubTx = TransactionService.subscribeToTransactions(uid, transactionLimit, (txs, hasMore) => {
       setTransactions(txs);
+      setHasMoreTransactions(hasMore);
+      setLoadingTransactions(false);
+    }, listenerError => {
+      setError({ source: 'transactions', message: listenerError.message });
+      setLoadingTransactions(false);
     });
 
-    const unsubPlan = PlannedExpenseService.subscribeToPlannedExpenses(uid, (plans) => {
+    const unsubPlan = PlannedExpenseService.subscribeToPlannedExpenses(uid, plannedExpenseLimit, (plans, hasMore) => {
       setPlannedExpenses(plans);
+      setHasMorePlannedExpenses(hasMore);
+      setLoadingPlans(false);
+    }, listenerError => {
+      setError({ source: 'plannedExpenses', message: listenerError.message });
+      setLoadingPlans(false);
     });
 
     return () => {
@@ -65,75 +105,88 @@ export function FinanceProvider({ children }: { children: React.ReactNode }) {
       unsubTx();
       unsubPlan();
     };
-  }, [uid]);
+  }, [plannedExpenseLimit, retryGeneration, transactionLimit, uid]);
 
-  const setInitialBalance = async (val: number) => {
+  const setInitialBalance = useCallback(async (val: number) => {
     if (!uid) return;
     await UserService.updateInitialBalance(uid, val);
-  };
+  }, [uid]);
 
-  const addTransaction = async (t: Omit<Transaction, 'id'>) => {
+  const addTransaction = useCallback(async (t: Omit<Transaction, 'id'>) => {
     if (!uid) return;
     await TransactionService.addTransaction(uid, t);
-  };
+  }, [uid]);
 
-  const updateTransaction = async (id: string, updatedData: Partial<Transaction>) => {
+  const updateTransaction = useCallback(async (id: string, updatedData: Partial<Transaction>) => {
     if (!uid) return;
     await TransactionService.updateTransaction(uid, id, updatedData);
-  };
+  }, [uid]);
 
-  const deleteTransaction = async (id: string) => {
+  const deleteTransaction = useCallback(async (id: string) => {
     if (!uid) return;
     await TransactionService.deleteTransaction(uid, id);
-  };
+  }, [uid]);
 
-  const addPlannedExpense = async (pe: Omit<PlannedExpense, 'id'>) => {
+  const addPlannedExpense = useCallback(async (pe: Omit<PlannedExpense, 'id'>) => {
     if (!uid) return;
     await PlannedExpenseService.addPlannedExpense(uid, pe);
-  };
+  }, [uid]);
 
-  const updatePlannedExpense = async (id: string, updatedData: Partial<PlannedExpense>) => {
+  const updatePlannedExpense = useCallback(async (id: string, updatedData: Partial<PlannedExpense>) => {
     if (!uid) return;
     await PlannedExpenseService.updatePlannedExpense(uid, id, updatedData);
-  };
+  }, [uid]);
 
-  const confirmPlannedExpense = async (id: string, transactionData: Omit<Transaction, 'id'>) => {
+  const confirmPlannedExpense = useCallback(async (id: string, transactionData: Omit<Transaction, 'id'>) => {
     if (!uid) return;
     await PlannedExpenseService.confirmPlannedExpense(uid, id, transactionData);
-  };
+  }, [uid]);
 
-  const rejectPlannedExpense = async (id: string) => {
+  const rejectPlannedExpense = useCallback(async (id: string) => {
     if (!uid) return;
     await PlannedExpenseService.rejectPlannedExpense(uid, id);
-  };
+  }, [uid]);
 
-  const deletePlannedExpense = async (id: string) => {
+  const deletePlannedExpense = useCallback(async (id: string) => {
     if (!uid) return;
     await PlannedExpenseService.deletePlannedExpense(uid, id);
-  };
+  }, [uid]);
 
-  const exportData = () => {
+  const exportData = useCallback(() => {
     DataSyncService.exportData(initialBalance, transactions, plannedExpenses);
-  };
+  }, [initialBalance, plannedExpenses, transactions]);
 
-  const importData = async (jsonData: string) => {
+  const importData = useCallback(async (jsonData: string) => {
     if (!uid) return false;
     return DataSyncService.importData(uid, jsonData);
-  };
+  }, [uid]);
 
-  const clearData = async () => {
+  const clearData = useCallback(async () => {
     if (!uid) return;
-    await DataSyncService.clearData(uid, transactions, plannedExpenses);
-  };
+    await DataSyncService.clearData(uid);
+  }, [uid]);
+
+  const retry = useCallback(() => setRetryGeneration(generation => generation + 1), []);
+  const loadMoreTransactions = useCallback(() => setTransactionLimit(current => current + PAGE_SIZE), []);
+  const loadMorePlannedExpenses = useCallback(() => setPlannedExpenseLimit(current => current + PAGE_SIZE), []);
+  const isLoading = loadingUser || loadingTransactions || loadingPlans;
+
+  const value = useMemo<FinanceContextData>(() => ({
+    initialBalance, setInitialBalance, transactions, plannedExpenses,
+    addTransaction, updateTransaction, deleteTransaction,
+    addPlannedExpense, updatePlannedExpense, confirmPlannedExpense,
+    rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData,
+    isLoading, error, retry, hasMoreTransactions, hasMorePlannedExpenses,
+    loadMoreTransactions, loadMorePlannedExpenses,
+  }), [
+    addPlannedExpense, addTransaction, clearData, confirmPlannedExpense, deletePlannedExpense,
+    deleteTransaction, error, exportData, hasMorePlannedExpenses, hasMoreTransactions, importData,
+    initialBalance, isLoading, loadMorePlannedExpenses, loadMoreTransactions, plannedExpenses,
+    rejectPlannedExpense, retry, setInitialBalance, transactions, updatePlannedExpense, updateTransaction,
+  ]);
 
   return (
-    <FinanceContext.Provider value={{
-      initialBalance, setInitialBalance, transactions, plannedExpenses,
-      addTransaction, updateTransaction, deleteTransaction,
-      addPlannedExpense, updatePlannedExpense, confirmPlannedExpense,
-      rejectPlannedExpense, deletePlannedExpense, exportData, importData, clearData,
-      isLoading
-    }}>
+    <FinanceContext.Provider value={value}>
       {children}
     </FinanceContext.Provider>
   );

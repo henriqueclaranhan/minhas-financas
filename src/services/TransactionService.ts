@@ -1,4 +1,4 @@
-import { collection, doc, addDoc, updateDoc, deleteDoc, onSnapshot } from 'firebase/firestore';
+import { collection, doc, addDoc, updateDoc, deleteDoc, limit, onSnapshot, orderBy, query } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { Transaction } from '../types';
 
@@ -31,13 +31,23 @@ export class TransactionService {
   /**
    * Subscribes to real-time transaction updates
    */
-  static subscribeToTransactions(uid: string, onUpdate: (txs: Transaction[]) => void): () => void {
+  static subscribeToTransactions(
+    uid: string,
+    pageSize: number,
+    onUpdate: (txs: Transaction[], hasMore: boolean) => void,
+    onError: (error: Error) => void,
+  ): () => void {
     if (!uid) throw new Error("User ID is required");
-    const unsub = onSnapshot(collection(db, 'users', uid, 'transactions'), (snapshot: any) => {
+    const transactionQuery = query(
+      collection(db, 'users', uid, 'transactions'),
+      orderBy('date', 'desc'),
+      limit(pageSize),
+    );
+    const unsub = onSnapshot(transactionQuery, (snapshot: any) => {
       const txs: Transaction[] = [];
       snapshot.forEach((d: any) => txs.push({ ...d.data(), id: d.id } as Transaction));
-      onUpdate(txs);
-    });
+      onUpdate(txs, snapshot.size === pageSize);
+    }, onError);
     return unsub;
   }
 }

@@ -123,6 +123,18 @@ describe('financeUtils', () => {
       expect(expanded[0].amount).toBe(300);
       expect(expanded[0].isInstallment).toBeUndefined();
     });
+
+    it('only materializes installments that intersect the requested period', () => {
+      const transactions: Transaction[] = [{
+        id: 'period-1', description: 'Laptop', amount: 1200, date: '2026-01-10',
+        paymentMethod: PaymentMethod.CREDIT, type: TransactionType.EXPENSE, installments: 12,
+      }];
+
+      const expanded = expandTransactions(transactions, { startDate: '2026-07-01', endDate: '2026-07-31' });
+
+      expect(expanded).toHaveLength(1);
+      expect(expanded[0]).toMatchObject({ date: '2026-07-10', installmentNumber: 6 });
+    });
   });
 
   describe('expandPlannedExpenses', () => {
