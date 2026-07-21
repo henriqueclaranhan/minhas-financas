@@ -7,7 +7,7 @@
 ## 2. Architecture
 
 ### 2.1 Modal presentation
-At the canonical `768px` breakpoint, the shared modal keeps its top corners and side borders, removes the bottom border, and uses a dedicated translate-only bottom-sheet entrance. Reduced-motion users receive no entrance animation.
+At the canonical `768px` breakpoint, the shared modal keeps its top corners and side borders, removes the bottom border, and uses dedicated translate-only bottom-sheet entrance and exit animations. Entrance lasts 250 ms while exit uses a faster 150 ms response. The shared component retains the portal, frozen content, and scroll lock during its closing phase, then restores the document after the animation. Reopening during that phase cancels the pending removal. Reduced-motion users receive no transition delay or animation.
 
 ### 2.2 PWA metadata
 The static Vite PWA manifest uses `Minhas Finanças` for both `name` and `short_name`. Manifest metadata cannot reliably follow the authenticated locale preference because installation metadata is fetched outside React state and may be cached by the browser.
@@ -20,4 +20,5 @@ The global mobile stylesheet applies `user-select: none` to the document body an
 
 ## 3. Verification
 - Unit-test route scroll reset at mobile and desktop viewport sizes.
+- Unit-test delayed modal removal, closing state, and rapid reopening.
 - Run the application test suite, lint, and production build.

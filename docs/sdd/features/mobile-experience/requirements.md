@@ -16,6 +16,8 @@ Refine shared mobile behavior for bottom-sheet modals, PWA installation metadata
 - [x] Client-side pathname changes reset the mobile document scroll position.
 - [x] Mobile text selection is disabled globally except for text inputs, textareas, and editable content.
 - [x] Desktop selection behavior remains unchanged.
+- [x] Shared modals animate both entrance and exit on mobile before the portal is removed.
+- [x] Modal content and document scroll locking remain stable until the exit animation completes.
 
 ## Constraints
 - The installed PWA name is static manifest metadata and does not depend on authenticated application preferences.

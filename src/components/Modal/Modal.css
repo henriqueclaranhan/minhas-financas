@@ -13,6 +13,12 @@
   z-index: 1000;
   padding: var(--spacing-md);
   overscroll-behavior: none;
+  animation: modal-overlay-enter 0.25s ease-out;
+}
+
+.modal-overlay.is-closing {
+  pointer-events: none;
+  animation: modal-overlay-exit 0.15s ease-in forwards;
 }
 
 .modal-content {
@@ -25,7 +31,11 @@
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-  animation: modal-slide-up 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: modal-slide-up 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-overlay.is-closing .modal-content {
+  animation: modal-slide-down 0.15s cubic-bezier(0.4, 0, 1, 1) forwards;
 }
 
 .modal-header {
@@ -77,6 +87,23 @@
   }
 }
 
+@keyframes modal-slide-down {
+  to {
+    opacity: 0;
+    transform: translateY(20px) scale(0.97);
+  }
+}
+
+@keyframes modal-overlay-enter {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modal-overlay-exit {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
 @media (max-width: 768px) {
   .modal-overlay {
     align-items: flex-end;
@@ -93,6 +120,10 @@
     animation-name: modal-bottom-sheet-enter;
     animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
   }
+
+  .modal-overlay.is-closing .modal-content {
+    animation-name: modal-bottom-sheet-exit;
+  }
 }
 
 @keyframes modal-bottom-sheet-enter {
@@ -104,7 +135,17 @@
   }
 }
 
+@keyframes modal-bottom-sheet-exit {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
+  .modal-overlay,
   .modal-content {
     animation: none;
   }
