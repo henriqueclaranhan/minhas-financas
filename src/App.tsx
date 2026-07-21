@@ -14,6 +14,7 @@ import { ProfileSettingsPage } from './pages/ProfileSettingsPage/ProfileSettings
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { PrivacyPolicyPage } from './pages/PrivacyPolicyPage/PrivacyPolicyPage';
 import { CategoryExpensesPage } from './pages/CategoryExpensesPage';
+import { SeoManager } from './components/SeoManager';
 import './App.css';
 
 const router = createBrowserRouter([
@@ -48,6 +49,7 @@ function AppContent() {
     return (
       <ThemeProvider>
         <LocaleProvider>
+          <SeoManager isAuthenticated={false} />
           <RouterProvider router={unauthRouter} />
         </LocaleProvider>
       </ThemeProvider>
@@ -57,6 +59,7 @@ function AppContent() {
   return (
     <ThemeProvider>
       <LocaleProvider>
+        <SeoManager isAuthenticated={true} />
         <FinanceProvider>
           <OnboardingWizard />
           <RouterProvider router={router} />

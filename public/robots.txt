@@ -1,7 +1,4 @@
 User-agent: *
 Allow: /
-Disallow: /transactions
-Disallow: /planned
-Disallow: /credit
-Disallow: /forecast
-Disallow: /settings
+
+Sitemap: https://financas.claranhan.com.br/sitemap.xml

@@ -107,12 +107,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     document.documentElement.lang = locale;
-    document.title = t('seo.title') || 'Minhas Finanças';
-    const metaDesc = document.querySelector('meta[name="description"]');
-    if (metaDesc) {
-      metaDesc.setAttribute('content', t('seo.description') || 'Gerenciador de finanças pessoais focado em usabilidade e desempenho.');
-    }
-  }, [locale, t]);
+  }, [locale]);
 
   return (
     <LocaleContext.Provider value={{ currency, locale, formatCurrency, setCurrency, setLocale, t }}>

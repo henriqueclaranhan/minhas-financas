@@ -5,6 +5,8 @@ type TranslationValues = Record<string, string | number>;
 const ptBR: Record<string, string> = {
 	"seo.title": "Minhas Finanças | Controle Financeiro",
 	"seo.description": "Gerenciador de finanças pessoais focado em usabilidade e desempenho. Controle seu dinheiro e alcance seus objetivos.",
+	"seo.privacyTitle": "Política de Privacidade | Minhas Finanças",
+	"seo.privacyDescription": "Saiba como o Minhas Finanças protege e utiliza seus dados pessoais.",
 	"app.name": "Minhas Finanças",
 	"common.back": "Voltar",
 	"common.cancel": "Cancelar",
@@ -255,6 +257,8 @@ const enUS: Record<string, string> = {
 	...ptBR,
 	"seo.title": "My Finances | Financial Tracker",
 	"seo.description": "Personal finance manager focused on usability and performance. Track your money and achieve your goals.",
+	"seo.privacyTitle": "Privacy Policy | My Finances",
+	"seo.privacyDescription": "Learn how My Finances protects and uses your personal data.",
 	"app.name": "My Finances",
 	"common.back": "Back",
 	"common.cancel": "Cancel",
