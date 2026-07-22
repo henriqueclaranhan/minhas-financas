@@ -20,6 +20,5 @@
 ## Business Rules
 
 - Confirmed expenses use materialized competence entries and the existing Credit/Boleto offsets.
-- Planning uses pending expanded planned expenses and the same active detailed filters as its summary card.
+- Planning uses pending expanded planned expenses, including every recurring occurrence in the selected period, and the same active detailed filters as its summary card.
 - Forecast values come from `calculateProjections`; planned expense inclusion follows the source toggle, and confirmed versus planned values must sum to the displayed forecast expense total.
-

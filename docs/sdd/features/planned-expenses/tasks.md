@@ -6,3 +6,4 @@
 - [x] 6. Add a URL-persisted payment-method filter to the planning detail filters and aggregate summaries.
 - [x] 7. Standardize major-section spacing with the shared page stack.
 - [x] 8. Adopt the compact unframed period context bar.
+- [x] 9. Expand recurring plans across the complete selected period and verify reconciliation.

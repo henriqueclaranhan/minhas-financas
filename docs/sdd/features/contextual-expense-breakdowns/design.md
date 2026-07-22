@@ -16,7 +16,7 @@ All routes serialize Month, Year, or custom Period state. Planning additionally 
 
 - Extend the breakdown path utilities to accept a destination and optional context parameters.
 - Keep confirmed-expense aggregation in the existing competence-entry path.
-- Build planning entries with `expandPlannedExpenses`, the pending-status rule, and the same detailed-filter predicates as the Planning summary.
+- Build planning entries with `expandPlannedExpenses`, including all recurring occurrences through the selected period, the pending-status rule, and the same detailed-filter predicates as the Planning summary.
 - Calculate forecast confirmed and total monthly series through `calculateProjections`; their expense difference is the planned group, preventing a duplicated projection formula.
 - Expose a shared `ExpenseBreakdownGroup` model consumed by the existing responsive view.
 

@@ -18,3 +18,4 @@ Manage future and recurring financial commitments.
 - [x] Period totals remain exact and independent from the pages currently rendered.
 - [x] Planning can be filtered by payment method, with all methods selected by default.
 - [x] Payment method combines with period, type, search, and category filters; Apply and Reset control the active URL-persisted selection.
+- [x] A pending recurring plan contributes every occurrence that falls within the selected period, according to its recurrence interval.

@@ -70,30 +70,50 @@ export function expandPlannedExpenses(expenses: PlannedExpense[], period?: IsoPe
   const expanded: ExpandedPlannedExpense[] = [];
   
   for (const p of expenses) {
-    if (p.installments && p.installments > 1) {
-      const parsedDate = parseISO(p.dueDate);
-      const installmentAmount = p.amount / p.installments;
-      const isCredit = p.paymentMethod === PaymentMethod.CREDIT;
-      
-      for (let i = 1; i <= p.installments; i++) {
-        const offset = isCredit ? i : (i - 1);
-        const nextDate = addMonths(parsedDate, offset);
-        const installmentDate = format(nextDate, 'yyyy-MM-dd');
-        if (!intersectsPeriod(installmentDate, period)) continue;
-        expanded.push({
-          ...p,
-          dueDate: installmentDate,
-          amount: installmentAmount,
-          isInstallment: true,
-          installmentNumber: i,
-          totalInstallments: p.installments,
-          originalAmount: p.amount,
-          originalId: p.id,
-          id: `${p.id}-inst-${i}`
-        });
+    const sourceId = p.id ?? `${p.description}-${p.dueDate}`;
+    const occurrenceDates = [p.dueDate];
+    if (p.isRecurring && period) {
+      occurrenceDates.length = 0;
+      let occurrenceDate = parseISO(p.dueDate);
+      while (format(occurrenceDate, 'yyyy-MM-dd') <= period.endDate) {
+        occurrenceDates.push(format(occurrenceDate, 'yyyy-MM-dd'));
+        occurrenceDate = addMonths(occurrenceDate, p.recurrenceInterval || 1);
       }
-    } else {
-      if (intersectsPeriod(p.dueDate, period)) expanded.push(p);
+    }
+
+    for (const occurrenceDate of occurrenceDates) {
+      if (p.installments && p.installments > 1) {
+        const parsedDate = parseISO(occurrenceDate);
+        const installmentAmount = p.amount / p.installments;
+        const isCredit = p.paymentMethod === PaymentMethod.CREDIT;
+
+        for (let i = 1; i <= p.installments; i++) {
+          const offset = isCredit ? i : (i - 1);
+          const nextDate = addMonths(parsedDate, offset);
+          const installmentDate = format(nextDate, 'yyyy-MM-dd');
+          if (!intersectsPeriod(installmentDate, period)) continue;
+          expanded.push({
+            ...p,
+            dueDate: installmentDate,
+            amount: installmentAmount,
+            isInstallment: true,
+            installmentNumber: i,
+            totalInstallments: p.installments,
+            originalAmount: p.amount,
+            originalId: p.id,
+            id: p.isRecurring
+              ? `${sourceId}-rec-${occurrenceDate}-inst-${i}`
+              : `${sourceId}-inst-${i}`
+          });
+        }
+      } else if (intersectsPeriod(occurrenceDate, period)) {
+        expanded.push(p.isRecurring ? {
+          ...p,
+          dueDate: occurrenceDate,
+          originalId: p.id,
+          id: `${sourceId}-rec-${occurrenceDate}`,
+        } : p);
+      }
     }
   }
   

@@ -189,5 +189,59 @@ describe('financeUtils', () => {
       expect(expanded[5].dueDate).toBe('2026-10-10');
       expect(expanded[5].installmentNumber).toBe(6);
     });
+
+    it('materializes every recurring occurrence inside the requested period', () => {
+      const expenses: PlannedExpense[] = [{
+        id: 'subscription',
+        description: 'Subscription',
+        amount: 50,
+        dueDate: '2026-01-15',
+        paymentMethod: PaymentMethod.PIX,
+        type: TransactionType.EXPENSE,
+        installments: 1,
+        isRecurring: true,
+        recurrenceInterval: 2,
+        status: ExpenseStatus.PENDING,
+      }];
+
+      const expanded = expandPlannedExpenses(expenses, {
+        startDate: '2026-02-01',
+        endDate: '2026-07-31',
+      });
+
+      expect(expanded.map(item => item.dueDate)).toEqual([
+        '2026-03-15',
+        '2026-05-15',
+        '2026-07-15',
+      ]);
+      expect(expanded.every(item => item.amount === 50 && item.originalId === 'subscription')).toBe(true);
+      expect(new Set(expanded.map(item => item.id)).size).toBe(3);
+    });
+
+    it('applies installment offsets to each recurring occurrence', () => {
+      const expenses: PlannedExpense[] = [{
+        id: 'recurring-credit',
+        description: 'Recurring course',
+        amount: 200,
+        dueDate: '2026-01-10',
+        paymentMethod: PaymentMethod.CREDIT,
+        type: TransactionType.EXPENSE,
+        installments: 2,
+        isRecurring: true,
+        recurrenceInterval: 1,
+        status: ExpenseStatus.PENDING,
+      }];
+
+      const expanded = expandPlannedExpenses(expenses, {
+        startDate: '2026-03-01',
+        endDate: '2026-03-31',
+      });
+
+      expect(expanded).toHaveLength(2);
+      expect(expanded.map(item => [item.dueDate, item.installmentNumber, item.amount])).toEqual([
+        ['2026-03-10', 2, 100],
+        ['2026-03-10', 1, 100],
+      ]);
+    });
   });
 });
