@@ -48,9 +48,7 @@ export function PlannedExpensesPage() {
       <div className="page-section-stack">
         <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
 
-        <div className="glass-panel filter-tabs-panel temporal-filter-panel">
-          <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
-        </div>
+        <PeriodContext label={state.filterLabel} onChange={actions.temporal.open} />
 
         <PeriodSummaryCards
           income={state.totalIncome}

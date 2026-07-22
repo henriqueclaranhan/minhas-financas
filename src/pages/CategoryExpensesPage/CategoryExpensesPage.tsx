@@ -50,9 +50,7 @@ export function CategoryExpensesPage() {
       />
 
       <div className="page-section-stack">
-        <div className="glass-panel category-expenses-filter-panel">
-          <PeriodContext label={state.periodLabel} onAdjust={actions.handleOpenFilters} />
-        </div>
+        <PeriodContext label={state.periodLabel} onChange={actions.handleOpenFilters} />
 
         <CategoryExpenseSummaryCards
           formattedTotalExpense={state.formattedTotalExpense}

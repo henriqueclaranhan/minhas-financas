@@ -24,7 +24,7 @@
 - **Entry point:** Add a translated detail action to `ExpensesByCategoryChart` on Home. The shared chart receives an optional header action so its other usages remain unchanged.
 - **Navigation:** Add a translated Categories entry to the secondary navigation group in `Layout`; use `showBackButton={true}` without `forceShowBackButtonOnDesktop`.
 - **Responsive layout:** The chart uses the shared expanded variant with reduced lateral padding, a larger donut, and increased legend row spacing; it receives more width than the ranked breakdown on desktop and stacks above it on mobile. Use the canonical `768px` breakpoint and existing design tokens.
-- **Vertical rhythm:** The period panel, summary cards, and analysis content use the shared `page-section-stack`, with `--spacing-lg` owned by the page rather than component margins.
+- **Vertical rhythm:** The compact unframed period context bar, summary cards, and analysis content use the shared `page-section-stack`, with `--spacing-lg` owned by the page rather than component margins.
 
 ### 2.2 ViewModel
 
@@ -60,7 +60,7 @@
 4. The ViewModel exposes presentation-ready category data and total.
 5. The View renders the shared chart, ranked breakdown, active period, and empty state.
 
-The active period uses the shared primary period context with a direct Adjust action.
+The active period uses the shared primary period context with a direct Change period action.
 
 ## 4. Internationalization
 

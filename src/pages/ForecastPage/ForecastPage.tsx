@@ -47,12 +47,10 @@ export function ForecastPage() {
       />
 
       <div className="forecast-content page-section-stack">
-        <div className="glass-panel filter-tabs-panel temporal-filter-panel">
-          <PeriodContext
-            label={temporal.label}
-            onAdjust={temporalActions.open}
-          />
-        </div>
+        <PeriodContext
+          label={temporal.label}
+          onChange={temporalActions.open}
+        />
 
         <PeriodSummaryCards
           income={totalIncome}

@@ -5,3 +5,4 @@
 - [x] Add explanatory period copy and installment metadata to desktop and mobile rows.
 - [x] Add regression tests for credit visibility and competence totals.
 - [x] Standardize major-section spacing with the shared page stack.
+- [x] Adopt the compact period context and keep the competence note inside the shared surface.

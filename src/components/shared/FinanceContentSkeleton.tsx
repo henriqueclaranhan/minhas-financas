@@ -21,7 +21,7 @@ function Controls({ pills = 3, panel = true }: { pills?: number; panel?: boolean
 
 function Period() {
   return (
-    <div className="glass-panel finance-skeleton-period" aria-hidden="true">
+    <div className="finance-skeleton-period" aria-hidden="true">
       <div><Block className="finance-skeleton-caption" /><Block className="finance-skeleton-period-value" /></div>
       <Block className="finance-skeleton-button" />
     </div>

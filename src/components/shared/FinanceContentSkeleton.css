@@ -4,7 +4,7 @@
 .finance-skeleton-controls { min-height: 58px; display: flex; align-items: center; gap: var(--spacing-sm); padding: var(--spacing-sm); }
 .finance-skeleton-controls-bare { min-height: 38px; padding: 0; }
 .finance-skeleton-pill { width: 120px; height: 38px; border-radius: var(--radius-md); }
-.finance-skeleton-period { min-height: 88px; display: flex; align-items: center; justify-content: space-between; }
+.finance-skeleton-period { min-height: 56px; display: flex; align-items: center; justify-content: space-between; padding: var(--spacing-sm) 0 var(--spacing-md); border-bottom: 1px solid var(--clr-border); }
 .finance-skeleton-caption { width: 84px; height: 11px; margin-bottom: var(--spacing-sm); }
 .finance-skeleton-period-value { width: 180px; height: 22px; }
 .finance-skeleton-button { width: 42px; height: 42px; border-radius: var(--radius-md); }

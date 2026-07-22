@@ -1,19 +1,21 @@
 .period-context {
+  padding-top: var(--spacing-sm);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--clr-border);
+}
+
+.period-context-main {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  border: 1px solid var(--clr-border);
-  border-radius: var(--radius-lg);
-  background: var(--clr-surface-alt);
 }
 
 .period-context-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   border-radius: var(--radius-md);
   color: var(--clr-primary);
@@ -52,14 +54,17 @@
   gap: var(--spacing-xs);
   flex-shrink: 0;
   color: var(--clr-primary);
-  background: var(--clr-surface);
+  background: var(--clr-surface-alt);
+}
+
+.period-context-description {
+  margin-top: var(--spacing-sm);
+  padding-left: calc(36px + var(--spacing-md));
+  color: var(--clr-text-secondary);
+  font-size: var(--text-xs);
 }
 
 @media (max-width: 768px) {
-  .period-context {
-    align-items: center;
-  }
-
   .period-context-action {
     width: 40px;
     height: 40px;
@@ -69,5 +74,9 @@
 
   .period-context-action span {
     display: none;
+  }
+
+  .period-context-description {
+    padding-left: 0;
   }
 }

@@ -1,3 +1,4 @@
 - [x] Add the shared temporal filter with full current year as the default invoice range.
 - [x] Align the current invoice month to the left edge of the chart viewport on mobile and cover the behavior with a UI test.
 - [x] Standardize major-section spacing with the shared page stack.
+- [x] Adopt the compact unframed period context bar.

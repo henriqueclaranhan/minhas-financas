@@ -1,6 +1,7 @@
 # Tasks: Expense Breakdown
 
 - [x] Add URL-initialized temporal filtering and period serialization.
+- [x] Adopt the compact unframed period context bar and shared page stack.
 - [x] Build the expense breakdown ViewModel from the existing competence projection.
 - [x] Build the responsive reconciliation and ledger page.
 - [x] Add the authenticated route and entry links from Dashboard and Transactions.

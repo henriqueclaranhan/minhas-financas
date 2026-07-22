@@ -63,9 +63,7 @@ export function CreditCardPage() {
       />
 
       <div className="page-section-stack">
-        <div className="glass-panel filter-tabs-panel temporal-filter-panel">
-          <PeriodContext label={state.temporal.label} onAdjust={actions.temporal.open} />
-        </div>
+        <PeriodContext label={state.temporal.label} onChange={actions.temporal.open} />
 
         <div className="glass-panel p-lg">
           <h3 className="credit-card-chart-title mb-md">{t('invoices.chartTitle')}</h3>

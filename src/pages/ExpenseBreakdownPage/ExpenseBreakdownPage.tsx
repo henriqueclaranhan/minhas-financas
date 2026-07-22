@@ -126,68 +126,68 @@ export function ExpenseBreakdownPage() {
         forceShowBackButtonOnDesktop
       />
 
-      <div className="glass-panel temporal-filter-panel expense-breakdown-period">
-        <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
-      </div>
+      <div className="page-section-stack">
+        <PeriodContext label={state.filterLabel} onChange={actions.temporal.open} />
 
-      <section className="glass-panel expense-reconciliation" aria-labelledby="expense-reconciliation-title">
-        <div className="expense-reconciliation-total">
-          <span id="expense-reconciliation-title">{t('expenseBreakdown.totalLabel')}</span>
-          <strong>{formatCurrency(state.total)}</strong>
-          <p>{t('expenseBreakdown.totalDescription')}</p>
-        </div>
-
-        <div className="expense-equation" aria-label={t('expenseBreakdown.equationLabel', {
-          total: formatCurrency(state.total),
-          payments: formatCurrency(state.paymentsTotal),
-          credit: formatCurrency(state.creditTotal),
-        })}>
-          <div className="expense-equation-term">
-            <span>{t('expenseBreakdown.payments')}</span>
-            <strong>{formatCurrency(state.paymentsTotal)}</strong>
-          </div>
-          <Plus size={18} aria-hidden="true" />
-          <div className="expense-equation-term">
-            <span>{t('expenseBreakdown.creditInstallments')}</span>
-            <strong>{formatCurrency(state.creditTotal)}</strong>
-          </div>
-          <Equal size={18} aria-hidden="true" />
-          <div className="expense-equation-term expense-equation-result">
-            <span>{t('expenseBreakdown.total')}</span>
+        <section className="glass-panel expense-reconciliation" aria-labelledby="expense-reconciliation-title">
+          <div className="expense-reconciliation-total">
+            <span id="expense-reconciliation-title">{t('expenseBreakdown.totalLabel')}</span>
             <strong>{formatCurrency(state.total)}</strong>
+            <p>{t('expenseBreakdown.totalDescription')}</p>
           </div>
-        </div>
 
-        <div className="expense-composition-rail" aria-hidden="true">
-          <span className="expense-composition-payments" style={{ width: `${state.paymentsShare}%` }} />
-          <span className="expense-composition-credit" style={{ width: `${100 - state.paymentsShare}%` }} />
-        </div>
-      </section>
+          <div className="expense-equation" aria-label={t('expenseBreakdown.equationLabel', {
+            total: formatCurrency(state.total),
+            payments: formatCurrency(state.paymentsTotal),
+            credit: formatCurrency(state.creditTotal),
+          })}>
+            <div className="expense-equation-term">
+              <span>{t('expenseBreakdown.payments')}</span>
+              <strong>{formatCurrency(state.paymentsTotal)}</strong>
+            </div>
+            <Plus size={18} aria-hidden="true" />
+            <div className="expense-equation-term">
+              <span>{t('expenseBreakdown.creditInstallments')}</span>
+              <strong>{formatCurrency(state.creditTotal)}</strong>
+            </div>
+            <Equal size={18} aria-hidden="true" />
+            <div className="expense-equation-term expense-equation-result">
+              <span>{t('expenseBreakdown.total')}</span>
+              <strong>{formatCurrency(state.total)}</strong>
+            </div>
+          </div>
 
-      {state.total === 0 ? (
-        <div className="glass-panel expense-breakdown-empty">
-          <ReceiptText size={28} aria-hidden="true" />
-          <h2>{t('expenseBreakdown.emptyTitle')}</h2>
-          <p>{t('expenseBreakdown.emptyDescription')}</p>
-        </div>
-      ) : (
-        <div className="expense-ledgers">
-          <LedgerSection
-            title={t('expenseBreakdown.payments')}
-            description={t('expenseBreakdown.paymentsDescription')}
-            total={state.paymentsTotal}
-            items={state.payments}
-            kind="payments"
-          />
-          <LedgerSection
-            title={t('expenseBreakdown.creditInstallments')}
-            description={t('expenseBreakdown.creditDescription')}
-            total={state.creditTotal}
-            items={state.creditInstallments}
-            kind="credit"
-          />
-        </div>
-      )}
+          <div className="expense-composition-rail" aria-hidden="true">
+            <span className="expense-composition-payments" style={{ width: `${state.paymentsShare}%` }} />
+            <span className="expense-composition-credit" style={{ width: `${100 - state.paymentsShare}%` }} />
+          </div>
+        </section>
+
+        {state.total === 0 ? (
+          <div className="glass-panel expense-breakdown-empty">
+            <ReceiptText size={28} aria-hidden="true" />
+            <h2>{t('expenseBreakdown.emptyTitle')}</h2>
+            <p>{t('expenseBreakdown.emptyDescription')}</p>
+          </div>
+        ) : (
+          <div className="expense-ledgers">
+            <LedgerSection
+              title={t('expenseBreakdown.payments')}
+              description={t('expenseBreakdown.paymentsDescription')}
+              total={state.paymentsTotal}
+              items={state.payments}
+              kind="payments"
+            />
+            <LedgerSection
+              title={t('expenseBreakdown.creditInstallments')}
+              description={t('expenseBreakdown.creditDescription')}
+              total={state.creditTotal}
+              items={state.creditInstallments}
+              kind="credit"
+            />
+          </div>
+        )}
+      </div>
 
       <TemporalFilterModal
         isOpen={state.temporal.isOpen}

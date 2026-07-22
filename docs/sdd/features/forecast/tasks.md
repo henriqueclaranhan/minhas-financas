@@ -7,3 +7,4 @@
 - [x] **Task 5:** Align the spacing between forecast filters and the content below.
 - [x] **Task 6:** Make vertical-axis currency labels resilient to large projected balances.
 - [x] **Task 7:** Standardize major-section spacing with the shared page stack.
+- [x] **Task 8:** Adopt the compact unframed period context bar.

@@ -2,14 +2,6 @@
   padding-bottom: var(--spacing-xl);
 }
 
-.category-expenses-filter-panel {
-  padding: var(--spacing-lg);
-}
-
-.category-expenses-filter-panel .period-context {
-  margin: 0;
-}
-
 .category-expenses-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
@@ -112,10 +104,6 @@
 }
 
 @media (max-width: 768px) {
-  .category-expenses-filter-panel {
-    padding: var(--spacing-md);
-  }
-
   .category-expenses-grid {
     grid-template-columns: 1fr;
     gap: var(--spacing-lg);

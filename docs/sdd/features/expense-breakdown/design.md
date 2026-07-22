@@ -19,7 +19,7 @@
 
 - Uses `PageHeader` with back navigation on desktop and mobile.
 - Relies on the shared safe-back behavior: traverse a prior React Router entry when available, otherwise replace the current route with Home.
-- Uses `PeriodContext` and `TemporalFilterModal` for Month, Year, and custom Period selection.
+- Uses the compact unframed `PeriodContext` bar and `TemporalFilterModal` for Month, Year, and custom Period selection, without a panel surface or wrapper.
 - Renders a reconciliation hero followed by payment and credit-installment ledgers.
 - Uses one responsive DOM representation so hidden duplicate lists do not add interaction work.
 

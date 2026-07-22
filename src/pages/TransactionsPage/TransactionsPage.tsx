@@ -48,10 +48,11 @@ export function TransactionsPage() {
       <div className="page-section-stack">
         <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
 
-        <div className="glass-panel filter-tabs-panel temporal-filter-panel">
-          <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
-          <p className="transactions-period-note">{t('transactions.periodCalculationNote')}</p>
-        </div>
+        <PeriodContext
+          label={state.filterLabel}
+          description={t('transactions.periodCalculationNote')}
+          onChange={actions.temporal.open}
+        />
 
         <PeriodSummaryCards
           income={state.totalIncome}

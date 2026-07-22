@@ -97,11 +97,11 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Modal filters MUST keep temporary values separate from active values. Changes take effect only through the Apply action.
 - Reset MUST restore every detailed filter to that page's documented default.
 - Active filters SHOULD be shown as compact labels with semantic icons.
-- The active date period MUST be presented as the primary filter context with a visible label, strong value, and filter action. Payment method and category remain secondary compact labels.
-- On mobile, the period adjustment action uses its icon-only variant with a translated accessible label to preserve space and hierarchy.
-- Temporal filters are isolated in the page-level period panel and MUST offer Month, Year, and custom Period modes.
+- The active date period MUST use the shared `PeriodContext` as a compact unframed context bar with `--spacing-sm` of top breathing room, a subtle bottom divider, visible label, strong value, and direct Change period action. Pages MUST NOT apply a panel surface or wrap it in another panel. Payment method and category remain secondary compact labels.
+- On mobile, the Change period action uses its icon-only variant with the same translated accessible label to preserve space and hierarchy.
+- Temporal filters open from `PeriodContext` and MUST offer Month, Year, and custom Period modes.
 - Search and characteristic filters belong immediately before the table, list, or chart they affect. Their filter action opens a separate modal that does not contain date controls.
-- Type tabs remain the first page control and use the standard major-section spacing. Period context cards do not add their own external margin.
+- Type tabs remain the first page control and use the standard major-section spacing. `PeriodContext` does not add its own external margin; the page stack owns its separation from adjacent sections.
 - Filter modal action rows use `--spacing-lg` above Reset and Apply actions.
 - Search and all active filters combine using logical AND unless a feature specification explicitly defines otherwise.
 
