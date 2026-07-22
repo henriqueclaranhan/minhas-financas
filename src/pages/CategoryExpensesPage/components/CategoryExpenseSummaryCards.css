@@ -12,6 +12,20 @@
   padding: var(--spacing-lg);
 }
 
+.category-summary-card-link {
+  position: relative;
+  padding-right: calc(var(--spacing-lg) + 24px);
+  color: inherit;
+  text-decoration: none;
+}
+
+.category-summary-card-chevron {
+  position: absolute;
+  top: var(--spacing-lg);
+  right: var(--spacing-lg);
+  color: var(--clr-text-secondary);
+}
+
 .category-summary-card-header {
   display: flex;
   align-items: center;
@@ -78,6 +92,17 @@
 
   .category-summary-card {
     padding: var(--spacing-md);
+  }
+
+  .category-summary-card-link {
+    padding-right: calc(var(--spacing-md) + 24px);
+  }
+
+  .category-summary-card-chevron {
+    top: var(--spacing-sm);
+    right: var(--spacing-sm);
+    width: 1rem;
+    height: 1rem;
   }
 
   .category-summary-card-icon {

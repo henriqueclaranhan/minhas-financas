@@ -8,6 +8,8 @@
     { "source": "/forecast", "destination": "/app.html" },
     { "source": "/categories", "destination": "/app.html" },
     { "source": "/expenses/breakdown", "destination": "/app.html" },
+    { "source": "/planned/breakdown", "destination": "/app.html" },
+    { "source": "/forecast/breakdown", "destination": "/app.html" },
     { "source": "/settings", "destination": "/app.html" },
     { "source": "/settings/data", "destination": "/app.html" },
     { "source": "/settings/profile", "destination": "/app.html" }

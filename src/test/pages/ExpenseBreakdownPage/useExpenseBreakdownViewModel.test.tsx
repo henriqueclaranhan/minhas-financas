@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { renderHook } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { PaymentMethod, TransactionType } from '../../../enums/FinanceEnums';
+import { ExpenseStatus, PaymentMethod, TransactionType } from '../../../enums/FinanceEnums';
 import { useExpenseBreakdownViewModel } from '../../../pages/ExpenseBreakdownPage/hooks/useExpenseBreakdownViewModel';
 import { useFinance } from '../../../store/FinanceContext';
 
@@ -43,5 +43,29 @@ describe('useExpenseBreakdownViewModel', () => {
     expect(result.current.state.creditTotal).toBe(300);
     expect(result.current.state.total).toBe(500);
     expect(result.current.state.paymentsShare).toBe(40);
+  });
+
+  it('reconciles filtered one-time and recurring plans for the planning context', () => {
+    vi.mocked(useFinance).mockReturnValue({
+      transactions: [],
+      plannedExpenses: [
+        { id: 'one-time', description: 'Market', amount: 150, dueDate: '2026-07-12', isRecurring: false, recurrenceInterval: 1, status: ExpenseStatus.PENDING, type: TransactionType.EXPENSE, paymentMethod: PaymentMethod.PIX, category: 'food' },
+        { id: 'recurring', description: 'Market subscription', amount: 50, dueDate: '2026-07-05', isRecurring: true, recurrenceInterval: 1, status: ExpenseStatus.PENDING, type: TransactionType.EXPENSE, paymentMethod: PaymentMethod.PIX, category: 'food' },
+        { id: 'ignored', description: 'Rent', amount: 900, dueDate: '2026-07-10', isRecurring: false, recurrenceInterval: 1, status: ExpenseStatus.PENDING, type: TransactionType.EXPENSE, paymentMethod: PaymentMethod.PIX, category: 'housing' },
+      ],
+    } as any);
+    const planningWrapper = ({ children }: { children: ReactNode }) => (
+      <MemoryRouter initialEntries={['/planned/breakdown?mode=month&year=2026&month=7&search=market&category=food&method=pix']}>
+        {children}
+      </MemoryRouter>
+    );
+
+    const { result } = renderHook(() => useExpenseBreakdownViewModel('planned'), { wrapper: planningWrapper });
+
+    expect(result.current.state.groups.map(group => [group.key, group.total])).toEqual([
+      ['oneTime', 150],
+      ['recurring', 50],
+    ]);
+    expect(result.current.state.total).toBe(200);
   });
 });

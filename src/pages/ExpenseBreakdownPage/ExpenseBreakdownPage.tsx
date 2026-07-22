@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import { ChevronDown, CreditCard, Equal, Plus, ReceiptText, WalletCards } from 'lucide-react';
+import { CalendarClock, CheckCircle2, ChevronDown, CreditCard, Equal, Plus, ReceiptText, Repeat2, WalletCards } from 'lucide-react';
 import { PageHeader } from '../../components/shared/PageHeader';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
@@ -7,29 +7,45 @@ import { PaymentMethod } from '../../enums/FinanceEnums';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useLocale } from '../../store/LocaleContext';
 import { getCategoryIcon } from '../../utils/categoryIcons';
-import type { ExpenseBreakdownItem } from './hooks/useExpenseBreakdownViewModel';
+import type { ExpenseBreakdownGroup, ExpenseBreakdownGroupKey, ExpenseBreakdownVariant } from './hooks/useExpenseBreakdownViewModel';
 import { useExpenseBreakdownViewModel } from './hooks/useExpenseBreakdownViewModel';
 import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 import './ExpenseBreakdownPage.css';
 
 interface LedgerSectionProps {
-  title: string;
-  description: string;
-  total: number;
-  items: ExpenseBreakdownItem[];
-  kind: 'payments' | 'credit';
+  group: ExpenseBreakdownGroup;
 }
 
-function LedgerSection({ title, description, total, items, kind }: LedgerSectionProps) {
+const groupCopy: Record<ExpenseBreakdownGroupKey, { title: string; description: string; empty: string }> = {
+  payments: { title: 'expenseBreakdown.payments', description: 'expenseBreakdown.paymentsDescription', empty: 'expenseBreakdown.paymentsEmpty' },
+  credit: { title: 'expenseBreakdown.creditInstallments', description: 'expenseBreakdown.creditDescription', empty: 'expenseBreakdown.creditEmpty' },
+  oneTime: { title: 'expenseBreakdown.oneTimePlans', description: 'expenseBreakdown.oneTimePlansDescription', empty: 'expenseBreakdown.oneTimePlansEmpty' },
+  recurring: { title: 'expenseBreakdown.recurringPlans', description: 'expenseBreakdown.recurringPlansDescription', empty: 'expenseBreakdown.recurringPlansEmpty' },
+  confirmed: { title: 'expenseBreakdown.confirmedForecast', description: 'expenseBreakdown.confirmedForecastDescription', empty: 'expenseBreakdown.confirmedForecastEmpty' },
+  planned: { title: 'expenseBreakdown.plannedForecast', description: 'expenseBreakdown.plannedForecastDescription', empty: 'expenseBreakdown.plannedForecastEmpty' },
+};
+
+function GroupIcon({ kind }: { kind: ExpenseBreakdownGroupKey }) {
+  if (kind === 'credit') return <CreditCard size={20} />;
+  if (kind === 'recurring') return <Repeat2 size={20} />;
+  if (kind === 'confirmed') return <CheckCircle2 size={20} />;
+  if (kind === 'planned') return <CalendarClock size={20} />;
+  if (kind === 'oneTime') return <ReceiptText size={20} />;
+  return <WalletCards size={20} />;
+}
+
+function LedgerSection({ group }: LedgerSectionProps) {
   const { formatCurrency, locale, t } = useLocale();
   const isMobile = useIsMobile(769);
   const [isExpanded, setIsExpanded] = useState(true);
   const contentId = useId();
+  const copy = groupCopy[group.key];
+  const title = t(copy.title);
   const formatter = new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short' });
   const originalDateFormatter = new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   return (
-    <section className={`glass-panel expense-ledger expense-ledger-${kind}`}>
+    <section className={`glass-panel expense-ledger expense-ledger-${group.key}`}>
       <div className="expense-ledger-header">
         {isMobile && (
           <button
@@ -43,14 +59,14 @@ function LedgerSection({ title, description, total, items, kind }: LedgerSection
         )}
         <div className="expense-ledger-heading">
           <span className="expense-ledger-icon" aria-hidden="true">
-            {kind === 'credit' ? <CreditCard size={20} /> : <WalletCards size={20} />}
+            <GroupIcon kind={group.key} />
           </span>
           <div>
             <h2>{title}</h2>
-            <p>{description}</p>
+            <p>{t(copy.description)}</p>
           </div>
         </div>
-        <strong>{formatCurrency(total)}</strong>
+        <strong>{formatCurrency(group.total)}</strong>
         <ChevronDown className="expense-ledger-chevron" size={20} aria-hidden="true" />
       </div>
 
@@ -60,11 +76,11 @@ function LedgerSection({ title, description, total, items, kind }: LedgerSection
         aria-hidden={isMobile && !isExpanded}
       >
         <div className="expense-ledger-content-inner">
-          {items.length === 0 ? (
-            <div className="expense-ledger-empty">{t(`expenseBreakdown.${kind}Empty`)}</div>
+          {group.items.length === 0 ? (
+            <div className="expense-ledger-empty">{t(copy.empty)}</div>
           ) : (
             <ul className="expense-ledger-list">
-              {items.map(item => (
+              {group.items.map(item => (
                 <li key={item.id} className="expense-ledger-row">
                   <time dateTime={item.competenceDate} className="expense-ledger-date">
                     {formatter.format(new Date(`${item.competenceDate}T12:00:00`))}
@@ -75,17 +91,21 @@ function LedgerSection({ title, description, total, items, kind }: LedgerSection
                   <div className="expense-ledger-copy">
                     <strong>{item.description}</strong>
                     <span>
-                      {kind === 'credit'
+                      {group.key === 'credit'
                         ? t('expenseBreakdown.creditEntryMeta', {
                             current: item.installmentNumber,
                             total: item.totalInstallments,
                             date: originalDateFormatter.format(new Date(`${item.originalDate}T12:00:00`)),
                           })
-                        : t('expenseBreakdown.paymentEntryMeta', {
-                            method: Object.values(PaymentMethod).includes(item.paymentMethod as PaymentMethod)
-                              ? t(`form.${item.paymentMethod}`)
-                              : item.paymentMethod,
-                          })}
+                        : group.key === 'recurring'
+                          ? t('expenseBreakdown.recurringEntryMeta', { interval: item.recurrenceInterval ?? 1 })
+                          : group.key === 'confirmed' || group.key === 'planned'
+                            ? t('expenseBreakdown.forecastMonthMeta')
+                            : t('expenseBreakdown.paymentEntryMeta', {
+                                method: Object.values(PaymentMethod).includes(item.paymentMethod as PaymentMethod)
+                                  ? t(`form.${item.paymentMethod}`)
+                                  : item.paymentMethod,
+                              })}
                     </span>
                   </div>
                   <strong className="expense-ledger-amount">{formatCurrency(item.amount)}</strong>
@@ -99,16 +119,21 @@ function LedgerSection({ title, description, total, items, kind }: LedgerSection
   );
 }
 
-export function ExpenseBreakdownPage() {
-  const { state, actions } = useExpenseBreakdownViewModel();
+interface ExpenseBreakdownPageProps {
+  variant?: ExpenseBreakdownVariant;
+}
+
+export function ExpenseBreakdownPage({ variant = 'confirmed' }: ExpenseBreakdownPageProps) {
+  const { state, actions } = useExpenseBreakdownViewModel(variant);
   const { formatCurrency, t } = useLocale();
+  const [primaryGroup, secondaryGroup] = state.groups;
 
   if (state.isLoading) {
     return (
       <div className="animate-fade-in expense-breakdown-page">
         <PageHeader
-          title={t('expenseBreakdown.title')}
-          description={t('expenseBreakdown.description')}
+          title={t(state.config.titleKey)}
+          description={t(state.config.descriptionKey)}
           showBackButton
           forceShowBackButtonOnDesktop
         />
@@ -120,10 +145,11 @@ export function ExpenseBreakdownPage() {
   return (
     <div className="animate-fade-in expense-breakdown-page">
       <PageHeader
-        title={t('expenseBreakdown.title')}
-        description={t('expenseBreakdown.description')}
+        title={t(state.config.titleKey)}
+        description={t(state.config.descriptionKey)}
         showBackButton
         forceShowBackButtonOnDesktop
+        backFallback={state.backFallback}
       />
 
       <div className="page-section-stack">
@@ -131,24 +157,26 @@ export function ExpenseBreakdownPage() {
 
         <section className="glass-panel expense-reconciliation" aria-labelledby="expense-reconciliation-title">
           <div className="expense-reconciliation-total">
-            <span id="expense-reconciliation-title">{t('expenseBreakdown.totalLabel')}</span>
+            <span id="expense-reconciliation-title">{t(state.config.totalLabelKey)}</span>
             <strong>{formatCurrency(state.total)}</strong>
-            <p>{t('expenseBreakdown.totalDescription')}</p>
+            <p>{t(state.config.totalDescriptionKey)}</p>
           </div>
 
           <div className="expense-equation" aria-label={t('expenseBreakdown.equationLabel', {
             total: formatCurrency(state.total),
-            payments: formatCurrency(state.paymentsTotal),
-            credit: formatCurrency(state.creditTotal),
+            first: formatCurrency(primaryGroup.total),
+            second: formatCurrency(secondaryGroup.total),
+            firstLabel: t(groupCopy[primaryGroup.key].title),
+            secondLabel: t(groupCopy[secondaryGroup.key].title),
           })}>
             <div className="expense-equation-term">
-              <span>{t('expenseBreakdown.payments')}</span>
-              <strong>{formatCurrency(state.paymentsTotal)}</strong>
+              <span>{t(groupCopy[primaryGroup.key].title)}</span>
+              <strong>{formatCurrency(primaryGroup.total)}</strong>
             </div>
             <Plus size={18} aria-hidden="true" />
             <div className="expense-equation-term">
-              <span>{t('expenseBreakdown.creditInstallments')}</span>
-              <strong>{formatCurrency(state.creditTotal)}</strong>
+              <span>{t(groupCopy[secondaryGroup.key].title)}</span>
+              <strong>{formatCurrency(secondaryGroup.total)}</strong>
             </div>
             <Equal size={18} aria-hidden="true" />
             <div className="expense-equation-term expense-equation-result">
@@ -158,33 +186,21 @@ export function ExpenseBreakdownPage() {
           </div>
 
           <div className="expense-composition-rail" aria-hidden="true">
-            <span className="expense-composition-payments" style={{ width: `${state.paymentsShare}%` }} />
-            <span className="expense-composition-credit" style={{ width: `${100 - state.paymentsShare}%` }} />
+            <span className="expense-composition-payments" style={{ width: `${state.primaryShare}%` }} />
+            <span className="expense-composition-credit" style={{ width: `${100 - state.primaryShare}%` }} />
           </div>
         </section>
 
         {state.total === 0 ? (
           <div className="glass-panel expense-breakdown-empty">
             <ReceiptText size={28} aria-hidden="true" />
-            <h2>{t('expenseBreakdown.emptyTitle')}</h2>
-            <p>{t('expenseBreakdown.emptyDescription')}</p>
+            <h2>{t(state.config.emptyTitleKey)}</h2>
+            <p>{t(state.config.emptyDescriptionKey)}</p>
           </div>
         ) : (
           <div className="expense-ledgers">
-            <LedgerSection
-              title={t('expenseBreakdown.payments')}
-              description={t('expenseBreakdown.paymentsDescription')}
-              total={state.paymentsTotal}
-              items={state.payments}
-              kind="payments"
-            />
-            <LedgerSection
-              title={t('expenseBreakdown.creditInstallments')}
-              description={t('expenseBreakdown.creditDescription')}
-              total={state.creditTotal}
-              items={state.creditInstallments}
-              kind="credit"
-            />
+            <LedgerSection group={primaryGroup} />
+            <LedgerSection group={secondaryGroup} />
           </div>
         )}
       </div>

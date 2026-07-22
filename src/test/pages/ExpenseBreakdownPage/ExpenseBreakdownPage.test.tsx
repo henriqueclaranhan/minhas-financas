@@ -12,11 +12,23 @@ describe('ExpenseBreakdownPage', () => {
   it('shows a reconciled total and the entries that compose it', () => {
     vi.mocked(useExpenseBreakdownViewModel).mockReturnValue({
       state: {
+        variant: 'confirmed',
+        config: {
+          parentPath: '/transactions', titleKey: 'expenseBreakdown.title', descriptionKey: 'expenseBreakdown.description',
+          totalLabelKey: 'expenseBreakdown.totalLabel', totalDescriptionKey: 'expenseBreakdown.totalDescription',
+          emptyTitleKey: 'expenseBreakdown.emptyTitle', emptyDescriptionKey: 'expenseBreakdown.emptyDescription',
+        },
+        backFallback: '/transactions?mode=month&year=2026&month=7',
         payments: [{ id: 'pix', description: 'Mercado', amount: 100, competenceDate: '2026-07-12', originalDate: '2026-07-12', paymentMethod: PaymentMethod.PIX, installmentNumber: 1, totalInstallments: 1 }],
         creditInstallments: [{ id: 'credit-inst-1', description: 'Notebook', amount: 300, competenceDate: '2026-07-10', originalDate: '2026-06-10', paymentMethod: PaymentMethod.CREDIT, installmentNumber: 1, totalInstallments: 2 }],
         paymentsTotal: 100,
         creditTotal: 300,
         total: 400,
+        groups: [
+          { key: 'payments', total: 100, items: [{ id: 'pix', description: 'Mercado', amount: 100, competenceDate: '2026-07-12', originalDate: '2026-07-12', paymentMethod: PaymentMethod.PIX, installmentNumber: 1, totalInstallments: 1 }] },
+          { key: 'credit', total: 300, items: [{ id: 'credit-inst-1', description: 'Notebook', amount: 300, competenceDate: '2026-07-10', originalDate: '2026-06-10', paymentMethod: PaymentMethod.CREDIT, installmentNumber: 1, totalInstallments: 2 }] },
+        ],
+        primaryShare: 25,
         paymentsShare: 25,
         filterLabel: 'Julho de 2026',
         temporal: {

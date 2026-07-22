@@ -1,4 +1,5 @@
-import { Medal, TrendingDown } from 'lucide-react';
+import { ChevronRight, Medal, TrendingDown } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import type { CategoryExpenseData } from '../../../utils/categoryExpenseUtils';
 import { getCategoryIcon } from '../../../utils/categoryIcons';
 import { useLocale } from '../../../store/LocaleContext';
@@ -9,6 +10,7 @@ interface CategoryExpenseSummaryCardsProps {
   formatCurrency: (value: number) => string;
   topCategory?: CategoryExpenseData;
   secondCategory?: CategoryExpenseData;
+  expenseHref: string;
 }
 
 interface CategoryCardProps {
@@ -46,12 +48,17 @@ export function CategoryExpenseSummaryCards({
   formatCurrency,
   topCategory,
   secondCategory,
+  expenseHref,
 }: CategoryExpenseSummaryCardsProps) {
   const { t } = useLocale();
 
   return (
     <div className="category-summary-cards">
-      <div className="glass-panel category-summary-card total">
+      <Link
+        to={expenseHref}
+        className="glass-panel category-summary-card category-summary-card-link total hover-lift"
+        aria-label={`${t('categoryExpenses.total')}: ${formattedTotalExpense}`}
+      >
         <div className="category-summary-card-header">
           <div className="category-summary-card-icon danger">
             <TrendingDown size={20} aria-hidden="true" />
@@ -59,7 +66,8 @@ export function CategoryExpenseSummaryCards({
           <span className="category-summary-card-title">{t('categoryExpenses.total')}</span>
         </div>
         <div className="category-summary-card-value value-danger">{formattedTotalExpense}</div>
-      </div>
+        <ChevronRight className="category-summary-card-chevron" size={20} aria-hidden="true" />
+      </Link>
 
       <CategoryCard
         category={topCategory}

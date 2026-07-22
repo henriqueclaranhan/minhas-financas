@@ -2,6 +2,8 @@ import { describe, expect, it } from 'vitest';
 import { TemporalFilterMode } from '../../enums/UIEnums';
 import {
   buildExpenseBreakdownPath,
+  buildForecastExpenseBreakdownPath,
+  buildPlannedExpenseBreakdownPath,
   getExpenseBreakdownIsoPeriod,
   parseExpenseBreakdownPeriod,
 } from '../../utils/expenseBreakdownUtils';
@@ -22,6 +24,26 @@ describe('expenseBreakdownUtils', () => {
       month: 6,
       year: 2026,
     });
+  });
+
+  it('preserves planning filters and forecast toggles in contextual paths', () => {
+    const period = {
+      mode: TemporalFilterMode.MONTH,
+      month: 6,
+      year: 2026,
+      startDate: '2026-07-01',
+      endDate: '2026-07-31',
+    };
+
+    expect(buildPlannedExpenseBreakdownPath(period, {
+      search: 'Cartão mercado',
+      category: 'food',
+      method: 'credit',
+    })).toBe('/planned/breakdown?mode=month&year=2026&month=7&search=Cart%C3%A3o+mercado&category=food&method=credit');
+    expect(buildForecastExpenseBreakdownPath(period, {
+      includePlannedIncome: true,
+      includePlannedExpense: false,
+    })).toBe('/forecast/breakdown?mode=month&year=2026&month=7&plannedExpense=false');
   });
 
   it('resolves year and custom periods to ISO boundaries', () => {

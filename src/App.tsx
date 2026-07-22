@@ -33,6 +33,8 @@ const router = createBrowserRouter([
       { path: "/forecast", element: <ForecastPage /> },
       { path: "/categories", element: <CategoryExpensesPage /> },
       { path: "/expenses/breakdown", element: <ExpenseBreakdownPage /> },
+      { path: "/planned/breakdown", element: <ExpenseBreakdownPage variant="planned" /> },
+      { path: "/forecast/breakdown", element: <ExpenseBreakdownPage variant="forecast" /> },
       { path: "/settings", element: <SettingsPage /> },
       { path: "/settings/data", element: <DataSettingsPage /> },
       { path: "/settings/profile", element: <ProfileSettingsPage /> },

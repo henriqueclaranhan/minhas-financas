@@ -17,6 +17,7 @@ import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 import { LazyLoadSentinel } from '../../components/shared/LazyLoadSentinel';
 import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
+import { buildPlannedExpenseBreakdownPath } from '../../utils/expenseBreakdownUtils';
 import './PlannedExpensesPage.css';
 
 export function PlannedExpensesPage() {
@@ -53,6 +54,11 @@ export function PlannedExpensesPage() {
         <PeriodSummaryCards
           income={state.totalIncome}
           expense={state.totalExpense}
+          expenseHref={buildPlannedExpenseBreakdownPath(state.temporal, {
+            search: state.searchQuery,
+            category: state.categoryFilter,
+            method: state.methodFilter,
+          })}
         />
 
         <FilterTabs

@@ -9,6 +9,7 @@ import './ForecastPage.css';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { TemporalFilterModal } from '../../components/shared/TemporalFilterModal';
 import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
+import { buildForecastExpenseBreakdownPath } from '../../utils/expenseBreakdownUtils';
 
 export function ForecastPage() {
   const { state, actions } = useForecastViewModel();
@@ -55,6 +56,10 @@ export function ForecastPage() {
         <PeriodSummaryCards
           income={totalIncome}
           expense={totalExpense}
+          expenseHref={buildForecastExpenseBreakdownPath(temporal, {
+            includePlannedIncome,
+            includePlannedExpense,
+          })}
         />
 
         <div className="glass-panel filter-tabs-panel forecast-projection-filters">

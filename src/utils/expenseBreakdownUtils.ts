@@ -10,6 +10,11 @@ export interface ExpenseBreakdownPeriod {
   endDate: string;
 }
 
+interface BreakdownPathOptions {
+  pathname?: string;
+  params?: Record<string, string | boolean | undefined>;
+}
+
 const ISO_DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export function getExpenseBreakdownIsoPeriod(period: ExpenseBreakdownPeriod) {
@@ -32,14 +37,40 @@ export function getExpenseBreakdownIsoPeriod(period: ExpenseBreakdownPeriod) {
   return { startDate: period.startDate, endDate: period.endDate };
 }
 
-export function buildExpenseBreakdownPath(period: ExpenseBreakdownPeriod) {
+export function buildExpenseBreakdownPath(period: ExpenseBreakdownPeriod, options: BreakdownPathOptions = {}) {
   const params = new URLSearchParams({ mode: period.mode, year: String(period.year) });
   if (period.mode === TemporalFilterMode.MONTH) params.set('month', String(period.month + 1));
   if (period.mode === TemporalFilterMode.PERIOD) {
     params.set('start', period.startDate);
     params.set('end', period.endDate);
   }
-  return `/expenses/breakdown?${params.toString()}`;
+  Object.entries(options.params ?? {}).forEach(([key, value]) => {
+    if (value !== undefined && value !== '' && value !== 'all') params.set(key, String(value));
+  });
+  return `${options.pathname ?? '/expenses/breakdown'}?${params.toString()}`;
+}
+
+export function buildPlannedExpenseBreakdownPath(
+  period: ExpenseBreakdownPeriod,
+  filters: { search?: string; category?: string; method?: string } = {},
+) {
+  return buildExpenseBreakdownPath(period, {
+    pathname: '/planned/breakdown',
+    params: filters,
+  });
+}
+
+export function buildForecastExpenseBreakdownPath(
+  period: ExpenseBreakdownPeriod,
+  options: { includePlannedIncome: boolean; includePlannedExpense: boolean },
+) {
+  return buildExpenseBreakdownPath(period, {
+    pathname: '/forecast/breakdown',
+    params: {
+      plannedIncome: options.includePlannedIncome ? undefined : false,
+      plannedExpense: options.includePlannedExpense ? undefined : false,
+    },
+  });
 }
 
 export function parseExpenseBreakdownPeriod(params: URLSearchParams): TemporalFilterInitialState {

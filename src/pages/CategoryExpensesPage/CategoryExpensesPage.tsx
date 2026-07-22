@@ -10,9 +10,11 @@ import { useCategoryExpensesViewModel } from './hooks/useCategoryExpensesViewMod
 import { formatPercentage } from '../../utils/numberFormatUtils';
 import { CategoryExpenseSummaryCards } from './components/CategoryExpenseSummaryCards';
 import './CategoryExpensesPage.css';
-import { CategoryExpenseFilterMode } from '../../enums/UIEnums';
+import { CategoryExpenseFilterMode, TemporalFilterMode } from '../../enums/UIEnums';
 import { PeriodContext } from '../../components/shared/PeriodContext';
 import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
+import { buildExpenseBreakdownPath } from '../../utils/expenseBreakdownUtils';
+import { format } from 'date-fns';
 
 export function CategoryExpensesPage() {
   const { t, locale } = useLocale();
@@ -57,6 +59,15 @@ export function CategoryExpensesPage() {
           formatCurrency={state.formatCurrency}
           topCategory={state.topCategory}
           secondCategory={state.secondCategory}
+          expenseHref={buildExpenseBreakdownPath({
+            mode: state.filterMode === CategoryExpenseFilterMode.MONTH
+              ? TemporalFilterMode.MONTH
+              : TemporalFilterMode.PERIOD,
+            month: state.selectedMonth,
+            year: state.selectedYear,
+            startDate: format(state.startDate, 'yyyy-MM-dd'),
+            endDate: format(state.endDate, 'yyyy-MM-dd'),
+          })}
         />
 
         {state.categoryData.length === 0 ? (
