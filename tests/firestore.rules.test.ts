@@ -68,6 +68,49 @@ describe('Firestore finance rules', () => {
     await assertFails(updateDoc(reference, { status: 'pending' }));
   });
 
+  it('allows recurring plans with a valid recurrence day', async () => {
+    const owner = environment.authenticatedContext('owner').firestore();
+    const reference = doc(owner, 'users/owner/plannedExpenses/lunch-plan');
+
+    await assertSucceeds(setDoc(reference, {
+      description: 'Marmita Trabalho',
+      amount: 105,
+      dueDate: '2026-08-01',
+      isRecurring: true,
+      recurrenceInterval: 1,
+      recurrenceDay: 1,
+      status: 'pending',
+      type: 'expense',
+      paymentMethod: 'credit',
+      installments: 1,
+      category: 'Alimentação',
+    }));
+  });
+
+  it('rejects recurrence days outside the calendar range', async () => {
+    const owner = environment.authenticatedContext('owner').firestore();
+    const invalidPlan = {
+      description: 'Rent',
+      amount: 1000,
+      dueDate: '2026-08-31',
+      isRecurring: true,
+      recurrenceInterval: 1,
+      status: 'pending',
+      type: 'expense',
+      paymentMethod: 'pix',
+      installments: 1,
+    };
+
+    await assertFails(setDoc(
+      doc(owner, 'users/owner/plannedExpenses/invalid-day-zero'),
+      { ...invalidPlan, recurrenceDay: 0 },
+    ));
+    await assertFails(setDoc(
+      doc(owner, 'users/owner/plannedExpenses/invalid-day-32'),
+      { ...invalidPlan, recurrenceDay: 32 },
+    ));
+  });
+
   it('rejects import progress beyond the declared total', async () => {
     const owner = environment.authenticatedContext('owner').firestore();
     await assertFails(setDoc(doc(owner, 'users/owner/importJobs/import-1'), {

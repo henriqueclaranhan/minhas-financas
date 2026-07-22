@@ -12,3 +12,4 @@
 - [x] Expansion, Forecast projection, confirmation, and rejection use the same recurrence calculation.
 - [x] Existing documents without `recurrenceDay` fall back to the day in `dueDate`.
 - [x] Imports accept and validate the optional recurrence anchor.
+- [x] Firestore accepts the optional recurrence anchor from 1 through 31 and rejects values outside that range.

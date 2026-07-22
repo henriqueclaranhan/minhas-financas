@@ -4,3 +4,4 @@
 - [x] 2. Add the shared clamped-month recurrence utility and model validation.
 - [x] 3. Adopt the shared calculation in expansion, projection, confirmation, and rejection.
 - [x] 4. Add regression coverage and complete verification.
+- [x] 5. Align Firestore rules with the recurrence anchor contract and cover recurring plan creation.

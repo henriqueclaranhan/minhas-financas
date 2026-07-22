@@ -40,13 +40,16 @@ service cloud.firestore {
         ])
         && data.keys().hasOnly([
           'description', 'amount', 'dueDate', 'isRecurring', 'recurrenceInterval', 'status',
-          'userId', 'type', 'paymentMethod', 'installments', 'category', 'sourcePlannedExpenseId'
+          'userId', 'type', 'paymentMethod', 'installments', 'category', 'sourcePlannedExpenseId',
+          'recurrenceDay'
         ])
         && data.description is string && data.description.size() > 0 && data.description.size() <= 200
         && data.amount is number && data.amount > 0
         && validDate(data.dueDate)
         && data.isRecurring is bool
         && data.recurrenceInterval is int && data.recurrenceInterval >= 1 && data.recurrenceInterval <= 120
+        && (!('recurrenceDay' in data)
+          || (data.recurrenceDay is int && data.recurrenceDay >= 1 && data.recurrenceDay <= 31))
         && data.status in ['pending', 'confirmed', 'cancelled']
         && (!('type' in data) || data.type in ['income', 'expense'])
         && (!('paymentMethod' in data) || data.paymentMethod in ['credit', 'debit', 'pix', 'cash', 'transfer', 'boleto'])
