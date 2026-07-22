@@ -1,3 +1,46 @@
+.page-header-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+}
+
+.page-header-primary-action {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.page-header-description {
+  margin-top: var(--spacing-xs);
+}
+
+.page-header-spacing {
+  height: var(--spacing-xl);
+  flex: none;
+}
+
+@media (min-width: 769px) {
+  .page-header-main {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    padding: var(--spacing-sm) 0;
+    background: var(--clr-background);
+  }
+
+  .page-header-main::before {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: 0;
+    height: var(--spacing-xl);
+    background: var(--clr-background);
+    content: '';
+    pointer-events: none;
+  }
+}
+
 @media (max-width: 768px) {
   .page-back-header {
     position: sticky;

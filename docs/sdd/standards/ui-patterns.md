@@ -69,6 +69,7 @@ Use existing shared components before creating page-local equivalents. Presentat
 - Page descriptions SHOULD explain the page's job in one concise sentence. They must not repeat the title.
 - Major sections inside a page use `h2`. Card and panel titles use `h3`. Heading levels MUST not be chosen for visual size alone.
 - A page-level primary action belongs in `PageHeader.primaryButton`. Do not create a second competing primary action beside the header.
+- On desktop web, the `PageHeader` title and primary action remain together in a sticky top row. Its supporting description remains in normal flow and scrolls away with the page content.
 - On mobile, when the header action is hidden, the equivalent frequent creation action SHOULD be exposed through the shared FAB pattern.
 - All user-facing copy MUST come from `useLocale()` and the translation dictionaries.
 

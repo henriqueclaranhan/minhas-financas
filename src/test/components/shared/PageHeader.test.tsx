@@ -36,4 +36,20 @@ describe('PageHeader safe back navigation', () => {
 
     expect(navigate).toHaveBeenCalledWith('/', { replace: true });
   });
+
+  it('keeps the title and action together while the description remains outside the sticky row', () => {
+    const action = vi.fn();
+    const { container } = render(
+      <PageHeader
+        title="Planejamento"
+        description="Organize suas despesas futuras."
+        primaryButton={{ label: 'Novo planejamento', onClick: action }}
+      />,
+    );
+    const stickyRow = container.querySelector('.page-header-main');
+
+    expect(stickyRow).toContainElement(screen.getByRole('heading', { name: 'Planejamento' }));
+    expect(stickyRow).toContainElement(screen.getByRole('button', { name: 'Novo planejamento' }));
+    expect(stickyRow).not.toContainElement(screen.getByText('Organize suas despesas futuras.'));
+  });
 });

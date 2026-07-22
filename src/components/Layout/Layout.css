@@ -198,6 +198,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
+  height: 100vh;
   padding: var(--spacing-xl);
   overflow-y: auto;
   overscroll-behavior-x: none;
@@ -262,6 +263,7 @@
   }
   
   .main-content {
+    height: auto;
     padding: var(--spacing-md);
     padding-bottom: 170px;
     overflow-y: visible;

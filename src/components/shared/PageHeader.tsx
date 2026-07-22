@@ -45,22 +45,20 @@ export function PageHeader({ title, description, primaryButton, showBackButton, 
         </header>
       )}
       
-      <header className="page-header" style={{ marginBottom: 'var(--spacing-xl)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1>{title}</h1>
-          {description && <p className="text-secondary" style={{ marginTop: 'var(--spacing-xs)' }}>{description}</p>}
-        </div>
+      <header className="page-header-main">
+        <h1>{title}</h1>
         
         {primaryButton && (
           <button 
-            className="btn btn-primary hover-glow hide-on-mobile" 
+            className="btn btn-primary hover-glow hide-on-mobile page-header-primary-action"
             onClick={primaryButton.onClick}
-            style={{ display: 'flex', alignItems: 'center' }}
           >
             {primaryButton.icon} {primaryButton.label}
           </button>
         )}
       </header>
+      {description && <p className="text-secondary page-header-description">{description}</p>}
+      <div className="page-header-spacing" aria-hidden="true" />
     </>
   );
 }
