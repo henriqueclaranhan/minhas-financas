@@ -12,3 +12,4 @@
 - [x] **Task 10:** Add ViewModel, page, and Home navigation tests.
 - [x] **Task 11:** Run lint, the full test suite, build, and update task status.
 - [x] **Task 12:** Replace the total summary with responsive cards for total expenses, the highest-spending category, and the second-highest-spending category.
+- [x] **Task 13:** Standardize major-section spacing with the shared page stack.

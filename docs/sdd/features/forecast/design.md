@@ -8,7 +8,7 @@
 ### 2.1 View (`ForecastPage.tsx`)
 - **Components:** Forecast Line Chart, Future Balance Table, Parameters Form (e.g., months ahead).
 - **Layout:** Chart-dominant layout with a data table below.
-- **Spacing:** The content wrapper does not add a flex gap; each panel uses the same component margins applied on other pages.
+- **Spacing:** The period context, summary cards, projection controls, and chart use the shared `page-section-stack` with the standard `--spacing-lg` major-section gap.
 - **Projection toggles:** Planned income and expense controls live in a dedicated panel immediately before the projection chart.
 - **Filter context:** The shared temporal panel supports Month, Year, and custom Period independently from projection characteristics.
 - **Summary order:** The forecast filter panel renders before the period summary cards and projection chart.

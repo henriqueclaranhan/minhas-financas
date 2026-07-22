@@ -6,3 +6,4 @@
 - [x] **Task 4:** Internationalize chart axes and labels.
 - [x] **Task 5:** Align the spacing between forecast filters and the content below.
 - [x] **Task 6:** Make vertical-axis currency labels resilient to large projected balances.
+- [x] **Task 7:** Standardize major-section spacing with the shared page stack.

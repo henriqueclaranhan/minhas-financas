@@ -45,41 +45,43 @@ export function TransactionsPage() {
         }}
       />
 
-      <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
+      <div className="page-section-stack">
+        <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
 
-      <div className="glass-panel filter-tabs-panel temporal-filter-panel">
-        <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
-        <p className="transactions-period-note">{t('transactions.periodCalculationNote')}</p>
-      </div>
+        <div className="glass-panel filter-tabs-panel temporal-filter-panel">
+          <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
+          <p className="transactions-period-note">{t('transactions.periodCalculationNote')}</p>
+        </div>
 
-      <PeriodSummaryCards
-        income={state.totalIncome}
-        expense={state.totalExpense}
-        expenseHref={buildExpenseBreakdownPath(state.temporal)}
-      />
-
-      <FilterTabs
-        searchQuery={state.searchQuery}
-        setSearchQuery={actions.setSearchQuery}
-        onOpenFilters={actions.handleOpenFilters}
-        activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
-        activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
-      />
-
-      <div className="glass-panel panel-no-padding mobile-list-panel">
-        <TransactionTable 
-          transactions={state.transactions}
-          onEdit={actions.openEditModal}
-          onDelete={(id) => {
-            actions.setTransactionToDelete(id);
-          }}
+        <PeriodSummaryCards
+          income={state.totalIncome}
+          expense={state.totalExpense}
+          expenseHref={buildExpenseBreakdownPath(state.temporal)}
         />
-        <LazyLoadSentinel
-          hasMore={state.hasMoreHistory}
-          isLoading={state.isLoadingHistory}
-          hasError={state.historyError}
-          onLoadMore={actions.loadMoreHistory}
+
+        <FilterTabs
+          searchQuery={state.searchQuery}
+          setSearchQuery={actions.setSearchQuery}
+          onOpenFilters={actions.handleOpenFilters}
+          activeMethodLabel={state.methodFilter !== 'all' ? state.methodFilter : undefined}
+          activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
         />
+
+        <div className="glass-panel panel-no-padding mobile-list-panel">
+          <TransactionTable
+            transactions={state.transactions}
+            onEdit={actions.openEditModal}
+            onDelete={(id) => {
+              actions.setTransactionToDelete(id);
+            }}
+          />
+          <LazyLoadSentinel
+            hasMore={state.hasMoreHistory}
+            isLoading={state.isLoadingHistory}
+            hasError={state.historyError}
+            onLoadMore={actions.loadMoreHistory}
+          />
+        </div>
       </div>
 
       {/* Mobile FAB */}

@@ -7,7 +7,7 @@
 ## 2. Architecture (MVVM)
 ### 2.1 View (`SettingsPage.tsx`)
 - **Components:** Settings Menu/Grid, Theme Toggle, Language Selector, Data destination, and `DataSettingsPage`.
-- **Layout:** The settings hub presents Data as a navigable row consistent with Profile and Privacy Policy. The nested Data screen owns export, import, import progress, and clear-data actions in one panel.
+- **Layout:** The settings hub presents Data as a navigable row consistent with Profile and Privacy Policy. The nested Data screen owns export, import, import progress, and clear-data actions in one panel. Conditional status, progress, and settings panels use the shared `page-section-stack` with the standard `--spacing-lg` major-section gap.
 
 ### 2.2 ViewModel (`useSettingsViewModel.ts` / Global Context)
 - **State:** Current theme, current language.

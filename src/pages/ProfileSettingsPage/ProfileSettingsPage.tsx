@@ -57,13 +57,14 @@ export function ProfileSettingsPage() {
         forceShowBackButtonOnDesktop={true}
       />
 
-      {status && (
-        <div className={`settings-status mb-lg ${status.type}`}>
-          {status.message}
-        </div>
-      )}
+      <div className="page-section-stack">
+        {status && (
+          <div className={`settings-status ${status.type}`}>
+            {status.message}
+          </div>
+        )}
 
-      <form onSubmit={handleSubmit} className="profile-sections-container">
+        <form onSubmit={handleSubmit} className="profile-sections-container">
 
         {/* Personal Info */}
         <section className="profile-section glass-panel">
@@ -183,7 +184,8 @@ export function ProfileSettingsPage() {
             )}
           </button>
         </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 }

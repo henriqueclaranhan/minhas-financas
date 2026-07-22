@@ -173,6 +173,22 @@ p {
 .mt-xl { margin-top: var(--spacing-xl); }
 .mt-0 { margin-top: 0; }
 
+/* Standard vertical rhythm between major page sections */
+.page-section-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.page-section-stack > .filter-type-tabs,
+.page-section-stack > .filter-tabs-panel,
+.page-section-stack > .period-summary-cards,
+.page-section-stack > .category-summary-cards,
+.page-section-stack > .settings-status,
+.page-section-stack > .settings-import-progress {
+  margin-bottom: 0;
+}
+
 .p-0 { padding: 0 !important; }
 .p-xs { padding: var(--spacing-xs); }
 .p-sm { padding: var(--spacing-sm); }

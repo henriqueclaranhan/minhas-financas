@@ -1,17 +1,8 @@
 .forecast-page {
   padding-bottom: var(--spacing-xl);
 }
-.forecast-content {
-  display: flex;
-  flex-direction: column;
-}
-
 .forecast-page .filter-tabs-container {
   margin-bottom: 0;
-}
-
-.forecast-page .period-summary-cards {
-  margin-bottom: var(--spacing-lg);
 }
 
 .forecast-checkbox-label {

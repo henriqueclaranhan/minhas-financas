@@ -10,7 +10,7 @@
 - **Layout:** List view similar to Transactions.
 - **Filter context:** A dedicated temporal panel supports Month, Year, and custom Period. Type and search remain next to the table, while category and payment method share the detailed filter modal. Active detailed filters appear as translated labels.
 - **Summary order:** Type tabs and the detailed filter panel render above the summary cards. Type tabs affect the list only; summary totals retain both planning types while respecting detailed filters.
-- **Spacing:** The filter-to-summary and summary-to-table gaps both use `--spacing-lg`.
+- **Spacing:** Type tabs, period context, summaries, list filters, and the table use the shared `page-section-stack` with the standard `--spacing-lg` major-section gap.
 - **Control order:** Type tabs remain at the top; temporal filtering precedes summaries, while search and category filtering sit below the cards next to the table.
 
 ### 2.2 ViewModel (`usePlannedExpensesViewModel.ts`)

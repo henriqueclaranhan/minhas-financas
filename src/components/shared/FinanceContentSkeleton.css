@@ -42,7 +42,7 @@
 .finance-skeleton-rail { width: 100%; height: 10px; border-radius: var(--radius-full); }
 @keyframes finance-skeleton-pulse { from { opacity: .45; } to { opacity: .9; } }
 @media (max-width: 768px) {
-  .finance-skeleton { gap: var(--spacing-md); }
+  .finance-skeleton { gap: var(--spacing-lg); }
   .finance-skeleton-summary-3, .finance-skeleton-summary-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .finance-skeleton-card { min-height: 112px; padding: 12px 8px; }
   .finance-skeleton-card-heading { flex-direction: column; }

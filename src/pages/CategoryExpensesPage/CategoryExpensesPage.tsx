@@ -49,54 +49,56 @@ export function CategoryExpensesPage() {
         showBackButton={true}
       />
 
-      <div className="glass-panel category-expenses-filter-panel">
-        <PeriodContext label={state.periodLabel} onAdjust={actions.handleOpenFilters} />
-      </div>
-
-      <CategoryExpenseSummaryCards
-        formattedTotalExpense={state.formattedTotalExpense}
-        formatCurrency={state.formatCurrency}
-        topCategory={state.topCategory}
-        secondCategory={state.secondCategory}
-      />
-
-      {state.categoryData.length === 0 ? (
-        <div className="glass-panel category-expenses-empty">
-          <Tags size={36} aria-hidden="true" />
-          <p>{t('categoryExpenses.empty')}</p>
+      <div className="page-section-stack">
+        <div className="glass-panel category-expenses-filter-panel">
+          <PeriodContext label={state.periodLabel} onAdjust={actions.handleOpenFilters} />
         </div>
-      ) : (
-        <div className="category-expenses-grid">
-          <ExpensesByCategoryChart
-            data={state.categoryData}
-            formatCurrency={state.formatCurrency}
-            showTotal={false}
-            variant="expanded"
-          />
 
-          <section className="glass-panel category-expenses-breakdown">
-            <h2 className="category-expenses-section-title">{t('categoryExpenses.breakdown')}</h2>
-            <ol className="category-expenses-list">
-              {state.categoryData.map((category) => (
-                <li key={category.category} className="category-expenses-item">
-                  <div className="category-expenses-item-icon" style={{ color: category.color }}>
-                    {getCategoryIcon(category.category)}
-                  </div>
-                  <div className="category-expenses-item-copy">
-                    <span className="category-expenses-item-name">{t(category.name)}</span>
-                    <span className="category-expenses-item-percent">
-                      {formatPercentage(category.percentage, locale)}
+        <CategoryExpenseSummaryCards
+          formattedTotalExpense={state.formattedTotalExpense}
+          formatCurrency={state.formatCurrency}
+          topCategory={state.topCategory}
+          secondCategory={state.secondCategory}
+        />
+
+        {state.categoryData.length === 0 ? (
+          <div className="glass-panel category-expenses-empty">
+            <Tags size={36} aria-hidden="true" />
+            <p>{t('categoryExpenses.empty')}</p>
+          </div>
+        ) : (
+          <div className="category-expenses-grid">
+            <ExpensesByCategoryChart
+              data={state.categoryData}
+              formatCurrency={state.formatCurrency}
+              showTotal={false}
+              variant="expanded"
+            />
+
+            <section className="glass-panel category-expenses-breakdown">
+              <h2 className="category-expenses-section-title">{t('categoryExpenses.breakdown')}</h2>
+              <ol className="category-expenses-list">
+                {state.categoryData.map((category) => (
+                  <li key={category.category} className="category-expenses-item">
+                    <div className="category-expenses-item-icon" style={{ color: category.color }}>
+                      {getCategoryIcon(category.category)}
+                    </div>
+                    <div className="category-expenses-item-copy">
+                      <span className="category-expenses-item-name">{t(category.name)}</span>
+                      <span className="category-expenses-item-percent">
+                        {formatPercentage(category.percentage, locale)}
+                      </span>
+                    </div>
+                    <span className="category-expenses-item-value">
+                      {state.formatCurrency(category.value)}
                     </span>
-                  </div>
-                  <span className="category-expenses-item-value">
-                    {state.formatCurrency(category.value)}
-                  </span>
-                </li>
-              ))}
-            </ol>
-          </section>
-        </div>
-      )}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </div>
+        )}
+      </div>
 
       <Modal
         isOpen={state.isFilterModalOpen}

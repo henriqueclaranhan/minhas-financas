@@ -75,7 +75,8 @@ Use existing shared components before creating page-local equivalents. Presentat
 ## 6. Layout, spacing, and surfaces
 
 - Use the spacing scale from `--spacing-xs` through `--spacing-2xl`.
-- The normal vertical gap between major page sections is `--spacing-xl`; related controls generally use `--spacing-sm` or `--spacing-md`.
+- The vertical gap between `PageHeader` and page content is `--spacing-xl`. Consecutive major sections use `--spacing-lg`; related controls generally use `--spacing-sm` or `--spacing-md`.
+- Consecutive major sections after `PageHeader` MUST use the shared `.page-section-stack` utility. The stack owns the external `--spacing-lg` gap; child panels, filters, summaries, and status blocks MUST NOT add competing bottom margins.
 - Use `.glass-panel` for the application's standard elevated surface.
 - Use `.panel-no-padding` when a table or list owns its internal spacing and must reach the panel edges.
 - Do not nest glass panels only for decoration. Nesting is acceptable when each surface represents a distinct interactive or informational group.

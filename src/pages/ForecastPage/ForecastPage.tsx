@@ -46,7 +46,7 @@ export function ForecastPage() {
         showBackButton={true}
       />
 
-      <div className="forecast-content">
+      <div className="forecast-content page-section-stack">
         <div className="glass-panel filter-tabs-panel temporal-filter-panel">
           <PeriodContext
             label={temporal.label}

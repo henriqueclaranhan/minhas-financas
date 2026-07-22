@@ -4,7 +4,6 @@
 
 .category-expenses-filter-panel {
   padding: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
 }
 
 .category-expenses-filter-panel .period-context {

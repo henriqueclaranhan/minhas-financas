@@ -45,40 +45,41 @@ export function PlannedExpensesPage() {
         }}
       />
 
-      <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
+      <div className="page-section-stack">
+        <FilterTypeTabs filter={state.filter} setFilter={actions.setFilter} />
 
-      <div className="glass-panel filter-tabs-panel temporal-filter-panel">
-        <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
-      </div>
+        <div className="glass-panel filter-tabs-panel temporal-filter-panel">
+          <PeriodContext label={state.filterLabel} onAdjust={actions.temporal.open} />
+        </div>
 
-      <PeriodSummaryCards
-        income={state.totalIncome}
-        expense={state.totalExpense}
-      />
-
-      <FilterTabs
-        searchQuery={state.searchQuery}
-        setSearchQuery={actions.setSearchQuery}
-        onOpenFilters={actions.handleOpenFilters}
-        activeMethodLabel={state.methodFilter !== 'all' ? t(`form.${state.methodFilter}`) : undefined}
-        activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
-      />
-
-
-      <div className="glass-panel panel-no-padding mobile-list-panel">
-        <PlannedExpenseTable 
-          expenses={state.pendingExpenses as PlannedExpense[]}
-          onConfirm={actions.handleConfirmPrompt}
-          onReject={actions.rejectAction}
-          onEdit={actions.openEditModal}
-          onDelete={actions.handleDeletePrompt}
+        <PeriodSummaryCards
+          income={state.totalIncome}
+          expense={state.totalExpense}
         />
-        <LazyLoadSentinel
-          hasMore={state.hasMoreHistory}
-          isLoading={state.isLoadingHistory}
-          hasError={state.historyError}
-          onLoadMore={actions.loadMoreHistory}
+
+        <FilterTabs
+          searchQuery={state.searchQuery}
+          setSearchQuery={actions.setSearchQuery}
+          onOpenFilters={actions.handleOpenFilters}
+          activeMethodLabel={state.methodFilter !== 'all' ? t(`form.${state.methodFilter}`) : undefined}
+          activeCategoryLabel={state.categoryFilter !== 'all' ? t(`categories.${state.categoryFilter}`) : undefined}
         />
+
+        <div className="glass-panel panel-no-padding mobile-list-panel">
+          <PlannedExpenseTable
+            expenses={state.pendingExpenses as PlannedExpense[]}
+            onConfirm={actions.handleConfirmPrompt}
+            onReject={actions.rejectAction}
+            onEdit={actions.openEditModal}
+            onDelete={actions.handleDeletePrompt}
+          />
+          <LazyLoadSentinel
+            hasMore={state.hasMoreHistory}
+            isLoading={state.isLoadingHistory}
+            hasError={state.historyError}
+            onLoadMore={actions.loadMoreHistory}
+          />
+        </div>
       </div>
 
       <button className="btn btn-primary fab hide-on-desktop" onClick={actions.openNewModal}>

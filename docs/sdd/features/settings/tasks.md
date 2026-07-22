@@ -6,3 +6,4 @@
 - [x] **Task 4:** Translate the settings menu itself.
 - [x] **Task 5:** Add a translated Data destination to the settings hub.
 - [x] **Task 6:** Move export, import, progress, and clear-data actions to `/settings/data`.
+- [x] **Task 7:** Standardize nested settings feedback and panel spacing with the shared page stack.

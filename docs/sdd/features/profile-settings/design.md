@@ -7,7 +7,7 @@
 ## 2. Architecture (MVVM)
 ### 2.1 View (`ProfileSettingsPage.tsx`)
 - **Components:** Avatar Uploader, Personal Info Form, Password Change Form.
-- **Layout:** Vertical stacked forms, with clear separation between profile data and security data.
+- **Layout:** Vertical stacked forms, with clear separation between profile data and security data. Conditional status feedback and the form use the shared `page-section-stack`; form sections retain the standard `--spacing-xl` gap.
 
 ### 2.2 ViewModel (`useProfileSettingsViewModel.ts`)
 - **State:** User profile data (name, email), loading/saving status, success/error messages.
