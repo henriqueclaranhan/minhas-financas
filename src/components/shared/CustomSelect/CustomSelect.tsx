@@ -57,6 +57,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           // Render upwards
           setDropdownStyle({
             position: 'fixed',
+            top: 'auto',
             bottom: window.innerHeight - rect.top + 4,
             left: rect.left,
             width: rect.width,
@@ -67,6 +68,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           setDropdownStyle({
             position: 'fixed',
             top: rect.bottom + 4,
+            bottom: 'auto',
             left: rect.left,
             width: rect.width,
             zIndex: 99999,
