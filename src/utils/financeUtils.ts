@@ -1,6 +1,7 @@
 import { addMonths, parseISO, format } from 'date-fns';
 import type { Transaction, PlannedExpense } from '../types';
 import { PaymentMethod, TransactionType } from '../enums/FinanceEnums';
+import { addMonthsAtRecurrenceDay, resolveRecurrenceDay } from './recurrenceUtils';
 
 export type ExpandedTransaction = Transaction & {
   isInstallment?: boolean;
@@ -72,12 +73,13 @@ export function expandPlannedExpenses(expenses: PlannedExpense[], period?: IsoPe
   for (const p of expenses) {
     const sourceId = p.id ?? `${p.description}-${p.dueDate}`;
     const occurrenceDates = [p.dueDate];
+    const recurrenceDay = p.isRecurring ? resolveRecurrenceDay(p.dueDate, p.recurrenceDay) : undefined;
     if (p.isRecurring && period) {
       occurrenceDates.length = 0;
       let occurrenceDate = parseISO(p.dueDate);
       while (format(occurrenceDate, 'yyyy-MM-dd') <= period.endDate) {
         occurrenceDates.push(format(occurrenceDate, 'yyyy-MM-dd'));
-        occurrenceDate = addMonths(occurrenceDate, p.recurrenceInterval || 1);
+        occurrenceDate = addMonthsAtRecurrenceDay(occurrenceDate, p.recurrenceInterval || 1, recurrenceDay!);
       }
     }
 
@@ -101,6 +103,7 @@ export function expandPlannedExpenses(expenses: PlannedExpense[], period?: IsoPe
             totalInstallments: p.installments,
             originalAmount: p.amount,
             originalId: p.id,
+            recurrenceDay,
             id: p.isRecurring
               ? `${sourceId}-rec-${occurrenceDate}-inst-${i}`
               : `${sourceId}-inst-${i}`
@@ -111,6 +114,7 @@ export function expandPlannedExpenses(expenses: PlannedExpense[], period?: IsoPe
           ...p,
           dueDate: occurrenceDate,
           originalId: p.id,
+          recurrenceDay,
           id: `${sourceId}-rec-${occurrenceDate}`,
         } : p);
       }

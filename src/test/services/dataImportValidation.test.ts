@@ -9,7 +9,7 @@ const validBackup = {
   }],
   plannedExpenses: [{
     id: 'plan-1', description: 'Rent', amount: 1000, dueDate: '2026-08-10',
-    isRecurring: true, recurrenceInterval: 1, status: 'pending', type: 'expense',
+    isRecurring: true, recurrenceInterval: 1, recurrenceDay: 10, status: 'pending', type: 'expense',
     paymentMethod: 'boleto', installments: 1, category: 'housing',
   }],
 };
@@ -37,6 +37,13 @@ describe('validateImportData', () => {
       ...validBackup,
       transactions: [validBackup.transactions[0], validBackup.transactions[0]],
     }))).toThrow(/duplicate document ID/);
+  });
+
+  it('rejects recurrence anchors outside calendar-day bounds', () => {
+    expect(() => validateImportData(JSON.stringify({
+      ...validBackup,
+      plannedExpenses: [{ ...validBackup.plannedExpenses[0], recurrenceDay: 32 }],
+    }))).toThrow(/recurrenceDay/);
   });
 
   it('rejects files above the configured size limit', () => {

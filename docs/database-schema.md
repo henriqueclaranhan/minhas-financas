@@ -191,6 +191,7 @@ interface PlannedExpenseDocument {
   dueDate: string;
   isRecurring: boolean;
   recurrenceInterval: number;
+  recurrenceDay?: number;
   status: ExpenseStatus;
   userId?: string;
   type?: TransactionType;
@@ -208,6 +209,7 @@ interface PlannedExpenseDocument {
 | `dueDate` | Yes | String shaped as `YYYY-MM-DD` | Base due date; imports also validate the calendar date. |
 | `isRecurring` | Yes | Boolean | Enables generation of the next occurrence after processing. |
 | `recurrenceInterval` | Yes | Integer from 1 to 120 | Interval between recurring occurrences, in months. |
+| `recurrenceDay` | No | Integer from 1 to 31 | Intended calendar day for recurrence. Shorter months use their final day; legacy documents fall back to the day in `dueDate`. |
 | `status` | Yes | `pending`, `confirmed`, or `cancelled` | Only pending entries may transition to another status. Processed entries cannot transition again. |
 | `userId` | No | Non-empty string, maximum 128 characters | Legacy-compatible field. Ownership is determined by the `users/{uid}` path, not this value. |
 | `type` | No | `income` or `expense` | Missing values are treated as expenses by current views. |

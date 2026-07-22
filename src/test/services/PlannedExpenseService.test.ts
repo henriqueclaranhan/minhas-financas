@@ -154,4 +154,19 @@ describe('PlannedExpenseService', () => {
     expect(transactionMock.update.mock.calls[0][1]).toEqual({ status: ExpenseStatus.CANCELLED });
     expect(transactionMock.set).toHaveBeenCalledTimes(1);
   });
+
+  it('preserves a month-end recurrence anchor when generating the next plan', async () => {
+    transactionMock.get.mockResolvedValueOnce({
+      exists: () => true,
+      data: () => ({ ...mockExpense, dueDate: '2026-01-31', recurrenceDay: 31 }),
+    });
+
+    await PlannedExpenseService.rejectPlannedExpense(mockUid, 'month-end');
+
+    expect(transactionMock.set.mock.calls[0][1]).toMatchObject({
+      dueDate: '2026-02-28',
+      recurrenceDay: 31,
+      status: ExpenseStatus.PENDING,
+    });
+  });
 });

@@ -3,6 +3,7 @@ import { ptBR, enUS } from 'date-fns/locale';
 import type { CompetenceEntry, PlannedExpense, Transaction } from '../types';
 import { TransactionType, ExpenseStatus, PaymentMethod } from '../enums/FinanceEnums';
 import { aggregateCompetenceEntries, type FinanceAggregate } from './financeAggregationUtils';
+import { addMonthsAtRecurrenceDay, resolveRecurrenceDay } from './recurrenceUtils';
 
 interface ProjectionOptions {
   transactions: Transaction[];
@@ -123,9 +124,10 @@ export function calculateProjections(options: ProjectionOptions) {
           addAmountToMonths(currentDateIter);
       } else {
         const limitDate = addMonths(endMonthDate, 1);
+        const recurrenceDay = resolveRecurrenceDay(pe.dueDate, pe.recurrenceDay);
         while (!isBefore(limitDate, currentDateIter)) {
           addAmountToMonths(currentDateIter);
-          currentDateIter = addMonths(currentDateIter, pe.recurrenceInterval || 1);
+          currentDateIter = addMonthsAtRecurrenceDay(currentDateIter, pe.recurrenceInterval || 1, recurrenceDay);
         }
       }
     }

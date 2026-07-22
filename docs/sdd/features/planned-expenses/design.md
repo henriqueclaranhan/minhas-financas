@@ -18,7 +18,7 @@
 - **Actions:** `addPlannedExpense`, `updatePlannedExpense`, `deletePlannedExpense`, `markAsPaid` (which converts it into an actual Transaction).
 - **Lazy-loaded list:** Source plans are queried in pages of 40 ordered by `dueDate, documentId`. Temporal changes reset the cursor, while the shared intersection sentinel requests subsequent pages. The query widens its lower date boundary by the maximum supported installment horizon, then the existing expansion utility retains only occurrences intersecting the selected period.
 - **Exact summaries:** Summary totals continue to use the complete active-plan working set and never depend on the loaded list window.
-- **Recurring expansion:** `expandPlannedExpenses` materializes every pending recurrence from its source due date through the selected period end. Each occurrence keeps the source plan ID for edit, confirm, reject, and delete actions; installment offsets are then applied independently to every occurrence.
+- **Recurring expansion:** `expandPlannedExpenses` materializes every pending recurrence from its source due date through the selected period end. `recurrenceDay` preserves the intended day across short months, falling back to the source due-date day for legacy records. Each occurrence keeps the source plan ID for edit, confirm, reject, and delete actions; installment offsets are then applied independently to every occurrence.
 - **Detailed filters:** Category and payment method keep temporary modal values until Apply, reset together to `all`, persist in `category` and `method` query parameters, and filter both the lazy-loaded list and the complete summary source with logical AND. Payment-method options reuse the same semantic icons as Transactions and the planning form.
 
 ### 2.3 Model

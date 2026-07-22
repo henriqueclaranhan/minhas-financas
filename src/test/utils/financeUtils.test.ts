@@ -218,6 +218,23 @@ describe('financeUtils', () => {
       expect(new Set(expanded.map(item => item.id)).size).toBe(3);
     });
 
+    it('returns to the anchored day after a shorter month', () => {
+      const expenses: PlannedExpense[] = [{
+        id: 'month-end', description: 'Month end', amount: 80, dueDate: '2026-01-31',
+        paymentMethod: PaymentMethod.PIX, type: TransactionType.EXPENSE, installments: 1,
+        isRecurring: true, recurrenceInterval: 1, recurrenceDay: 31, status: ExpenseStatus.PENDING,
+      }];
+
+      const expanded = expandPlannedExpenses(expenses, {
+        startDate: '2026-01-01',
+        endDate: '2026-04-30',
+      });
+
+      expect(expanded.map(item => item.dueDate)).toEqual([
+        '2026-01-31', '2026-02-28', '2026-03-31', '2026-04-30',
+      ]);
+    });
+
     it('applies installment offsets to each recurring occurrence', () => {
       const expenses: PlannedExpense[] = [{
         id: 'recurring-credit',

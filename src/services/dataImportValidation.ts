@@ -16,6 +16,7 @@ const transactionKeys = new Set([
 ]);
 const plannedExpenseKeys = new Set([
   'id', 'description', 'amount', 'dueDate', 'isRecurring', 'recurrenceInterval',
+  'recurrenceDay',
   'status', 'userId', 'type', 'paymentMethod', 'installments', 'category',
   'sourcePlannedExpenseId',
 ]);
@@ -96,6 +97,7 @@ function validatePlannedExpense(value: unknown, index: number): PlannedExpense {
   assertDate(value.dueDate, `${path}.dueDate`);
   if (typeof value.isRecurring !== 'boolean') throw new Error(`${path}.isRecurring must be boolean`);
   assertInteger(value.recurrenceInterval, `${path}.recurrenceInterval`, 1, 120);
+  if (value.recurrenceDay !== undefined) assertInteger(value.recurrenceDay, `${path}.recurrenceDay`, 1, 31);
   if (!expenseStatuses.has(value.status as never)) throw new Error(`${path}.status is unknown`);
   if (value.type !== undefined && !transactionTypes.has(value.type as never)) throw new Error(`${path}.type is unknown`);
   if (value.paymentMethod !== undefined && !paymentMethods.has(value.paymentMethod as never)) throw new Error(`${path}.paymentMethod is unknown`);

@@ -2,10 +2,10 @@ import { collection, doc, documentId, addDoc, updateDoc, deleteDoc, getDocs, lim
 import type { QueryConstraint } from 'firebase/firestore';
 import { db } from '../config/firebase';
 import type { PlannedExpense, Transaction } from '../types';
-import { addMonths, parseISO, format } from 'date-fns';
 import { ExpenseStatus } from '../enums/FinanceEnums';
 import { removeUndefinedFields } from './firestoreData';
 import { buildCompetenceEntries } from '../utils/competenceEntryUtils';
+import { getNextRecurrenceDate, resolveRecurrenceDay } from '../utils/recurrenceUtils';
 
 export class PlannedExpenseService {
   static readonly HISTORY_PAGE_SIZE = 40;
@@ -109,12 +109,14 @@ export class PlannedExpenseService {
       });
 
       if (expense.isRecurring) {
-        const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
+        const recurrenceDay = resolveRecurrenceDay(expense.dueDate, expense.recurrenceDay);
+        const nextDate = getNextRecurrenceDate(expense.dueDate, expense.recurrenceInterval, recurrenceDay);
         const { id: _ignoredId, ...nextExpense } = expense;
         void _ignoredId;
         firestoreTransaction.set(nextPlanRef, removeUndefinedFields({
           ...nextExpense,
-          dueDate: format(nextDate, 'yyyy-MM-dd'),
+          dueDate: nextDate,
+          recurrenceDay,
           status: ExpenseStatus.PENDING,
           sourcePlannedExpenseId: id,
         }));
@@ -139,12 +141,14 @@ export class PlannedExpenseService {
 
       firestoreTransaction.update(expenseRef, { status: ExpenseStatus.CANCELLED });
       if (expense.isRecurring) {
-        const nextDate = addMonths(parseISO(expense.dueDate), expense.recurrenceInterval);
+        const recurrenceDay = resolveRecurrenceDay(expense.dueDate, expense.recurrenceDay);
+        const nextDate = getNextRecurrenceDate(expense.dueDate, expense.recurrenceInterval, recurrenceDay);
         const { id: _ignoredId, ...nextExpense } = expense;
         void _ignoredId;
         firestoreTransaction.set(nextPlanRef, removeUndefinedFields({
           ...nextExpense,
-          dueDate: format(nextDate, 'yyyy-MM-dd'),
+          dueDate: nextDate,
+          recurrenceDay,
           status: ExpenseStatus.PENDING,
           sourcePlannedExpenseId: id,
         }));

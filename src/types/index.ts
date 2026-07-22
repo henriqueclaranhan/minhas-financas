@@ -34,6 +34,7 @@ export interface PlannedExpense {
   dueDate: string; // ISO format: YYYY-MM-DD
   isRecurring: boolean;
   recurrenceInterval: number; // in months (e.g. 1 for every month)
+  recurrenceDay?: number; // intended day of month; shorter months use their last day
   status: ExpenseStatus;
   userId?: string;
   type?: TransactionType;

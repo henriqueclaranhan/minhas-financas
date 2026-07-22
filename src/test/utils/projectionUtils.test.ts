@@ -75,4 +75,21 @@ describe('projectionUtils', () => {
     // Aug: Credit (100) -> 1400
     expect(result.data[3].saldo).toBe(1400);
   });
+
+  it('keeps the recurrence anchor after a shorter month', () => {
+    const result = calculateProjections({
+      transactions: [],
+      plannedExpenses: [{
+        id: 'month-end', description: 'Month end', amount: 100, dueDate: '2026-01-31',
+        paymentMethod: PaymentMethod.PIX, type: TransactionType.EXPENSE, status: ExpenseStatus.PENDING,
+        installments: 1, isRecurring: true, recurrenceInterval: 1, recurrenceDay: 31,
+      }],
+      initialBalance: 1000,
+      startDate: new Date('2026-02-01T12:00:00Z'),
+      endDate: new Date('2026-04-30T12:00:00Z'),
+      currentDate: new Date('2026-01-15T12:00:00Z'),
+    });
+
+    expect(result.data.map(month => month.expense)).toEqual([100, 100, 100]);
+  });
 });

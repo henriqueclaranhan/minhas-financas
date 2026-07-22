@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getDate, parseISO } from 'date-fns';
 import { Calendar, DollarSign, CreditCard, AlignLeft, Layers, Tag, RefreshCw } from 'lucide-react';
 import { CurrencyInput } from '../CurrencyInput';
 import { DateInput } from '../DateInput';
@@ -65,12 +66,18 @@ export function PlannedExpenseForm({ onSubmit, initialData, defaultType = Transa
     
     setIsSubmitting(true);
     try {
+      const recurrenceDay = isRecurring && dueDate
+        ? initialData?.recurrenceDay && dueDate === initialData.dueDate
+          ? initialData.recurrenceDay
+          : getDate(parseISO(dueDate))
+        : undefined;
       await onSubmit({
         description: trimmedDesc,
         amount: Number(amount),
         dueDate,
         isRecurring,
         recurrenceInterval: parseInt(recurrenceInterval) || 1,
+        recurrenceDay,
         status: ExpenseStatus.PENDING,
         type,
         paymentMethod,
