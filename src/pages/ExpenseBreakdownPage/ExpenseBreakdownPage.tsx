@@ -7,7 +7,7 @@ import { PaymentMethod } from '../../enums/FinanceEnums';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { useLocale } from '../../store/LocaleContext';
 import { getCategoryIcon } from '../../utils/categoryIcons';
-import type { ExpenseBreakdownGroup, ExpenseBreakdownGroupKey, ExpenseBreakdownVariant } from './hooks/useExpenseBreakdownViewModel';
+import type { ExpenseBreakdownGroup, ExpenseBreakdownGroupKey, ExpenseBreakdownItem, ExpenseBreakdownVariant } from './hooks/useExpenseBreakdownViewModel';
 import { useExpenseBreakdownViewModel } from './hooks/useExpenseBreakdownViewModel';
 import { FinanceContentSkeleton } from '../../components/shared/FinanceContentSkeleton';
 import './ExpenseBreakdownPage.css';
@@ -43,6 +43,30 @@ function LedgerSection({ group }: LedgerSectionProps) {
   const title = t(copy.title);
   const formatter = new Intl.DateTimeFormat(locale, { day: '2-digit', month: 'short' });
   const originalDateFormatter = new Intl.DateTimeFormat(locale, { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const getItemMeta = (item: ExpenseBreakdownItem) => {
+    if (group.key === 'credit') return t('expenseBreakdown.creditEntryMeta', {
+      current: item.installmentNumber,
+      total: item.totalInstallments,
+      date: originalDateFormatter.format(new Date(`${item.originalDate}T12:00:00`)),
+    });
+    const method = Object.values(PaymentMethod).includes(item.paymentMethod as PaymentMethod)
+      ? t(`form.${item.paymentMethod}`)
+      : item.paymentMethod;
+    const category = item.category ? t(`categories.${item.category}`) : t('expenseBreakdown.uncategorized');
+    if (group.key === 'recurring') return t('expenseBreakdown.recurringEntryMeta', {
+      interval: item.recurrenceInterval ?? 1,
+      day: item.recurrenceDay ?? new Date(`${item.originalDate}T12:00:00`).getDate(),
+      category,
+      method,
+      reference: item.planReference ?? '—',
+    });
+    if (group.key === 'oneTime') return t('expenseBreakdown.plannedEntryMeta', {
+      category,
+      method,
+    });
+    if (group.key === 'confirmed' || group.key === 'planned') return t('expenseBreakdown.forecastMonthMeta');
+    return t('expenseBreakdown.paymentEntryMeta', { method });
+  };
 
   return (
     <section className={`glass-panel expense-ledger expense-ledger-${group.key}`}>
@@ -90,23 +114,7 @@ function LedgerSection({ group }: LedgerSectionProps) {
                   </span>
                   <div className="expense-ledger-copy">
                     <strong>{item.description}</strong>
-                    <span>
-                      {group.key === 'credit'
-                        ? t('expenseBreakdown.creditEntryMeta', {
-                            current: item.installmentNumber,
-                            total: item.totalInstallments,
-                            date: originalDateFormatter.format(new Date(`${item.originalDate}T12:00:00`)),
-                          })
-                        : group.key === 'recurring'
-                          ? t('expenseBreakdown.recurringEntryMeta', { interval: item.recurrenceInterval ?? 1 })
-                          : group.key === 'confirmed' || group.key === 'planned'
-                            ? t('expenseBreakdown.forecastMonthMeta')
-                            : t('expenseBreakdown.paymentEntryMeta', {
-                                method: Object.values(PaymentMethod).includes(item.paymentMethod as PaymentMethod)
-                                  ? t(`form.${item.paymentMethod}`)
-                                  : item.paymentMethod,
-                              })}
-                    </span>
+                    <span>{getItemMeta(item)}</span>
                   </div>
                   <strong className="expense-ledger-amount">{formatCurrency(item.amount)}</strong>
                 </li>

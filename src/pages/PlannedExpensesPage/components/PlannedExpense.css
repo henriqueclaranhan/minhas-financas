@@ -77,6 +77,13 @@
   font-size: 1rem;
   color: var(--clr-text-primary);
 }
+.plan-reference {
+  margin-left: var(--spacing-xs);
+  color: var(--clr-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+  white-space: nowrap;
+}
 .mobile-badge-secondary {
   margin-left: 8px;
   font-size: 10px;

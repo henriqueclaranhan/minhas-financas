@@ -16,6 +16,7 @@ import {
 import { aggregateCompetenceEntries } from '../../../utils/financeAggregationUtils';
 import { expandPlannedExpenses } from '../../../utils/financeUtils';
 import { calculateProjections } from '../../../utils/projectionUtils';
+import { getPlanReference } from '../../../utils/planReferenceUtils';
 
 export type ExpenseBreakdownVariant = 'confirmed' | 'planned' | 'forecast';
 export type ExpenseBreakdownGroupKey = 'payments' | 'credit' | 'oneTime' | 'recurring' | 'confirmed' | 'planned';
@@ -32,6 +33,8 @@ export interface ExpenseBreakdownItem {
   installmentNumber: number;
   totalInstallments: number;
   recurrenceInterval?: number;
+  recurrenceDay?: number;
+  planReference?: string;
 }
 
 export interface ExpenseBreakdownGroup {
@@ -173,27 +176,32 @@ export function useExpenseBreakdownViewModel(variant: ExpenseBreakdownVariant = 
   ], [confirmedAggregate.creditExpense, confirmedAggregate.directExpense, confirmedItems]);
 
   const plannedGroups = useMemo<ExpenseBreakdownGroup[]>(() => {
+    const recurringIds = new Set(plannedExpenses.filter(item => item.isRecurring).map(item => item.id));
     const items = expandPlannedExpenses(plannedExpenses, period)
       .filter(item => item.status === ExpenseStatus.PENDING)
       .filter(item => item.type === TransactionType.EXPENSE || !item.type)
       .filter(item => !context.search || item.description.toLowerCase().includes(context.search.toLowerCase()))
       .filter(item => context.category === 'all' || item.category === context.category)
       .filter(item => context.method === 'all' || item.paymentMethod === context.method)
-      .map<ExpenseBreakdownItem>(item => ({
-        id: item.id ?? `${item.description}-${item.dueDate}`,
-        originalId: item.originalId ?? item.id,
-        description: item.description,
-        amount: item.amount,
-        competenceDate: item.dueDate,
-        originalDate: item.dueDate,
-        paymentMethod: item.paymentMethod ?? PaymentMethod.PIX,
-        category: item.category,
-        installmentNumber: item.installmentNumber ?? 1,
-        totalInstallments: item.totalInstallments ?? item.installments ?? 1,
-        recurrenceInterval: item.recurrenceInterval,
-      }))
+      .map<ExpenseBreakdownItem>(item => {
+        const originalId = item.originalId ?? item.id ?? `${item.description}-${item.dueDate}`;
+        return {
+          id: item.id ?? originalId,
+          originalId,
+          description: item.description,
+          amount: item.amount,
+          competenceDate: item.dueDate,
+          originalDate: item.dueDate,
+          paymentMethod: item.paymentMethod ?? PaymentMethod.PIX,
+          category: item.category,
+          installmentNumber: item.installmentNumber ?? 1,
+          totalInstallments: item.totalInstallments ?? item.installments ?? 1,
+          recurrenceInterval: item.recurrenceInterval,
+          recurrenceDay: item.recurrenceDay,
+          planReference: recurringIds.has(originalId) ? getPlanReference(originalId) : undefined,
+        };
+      })
       .sort((a, b) => a.competenceDate.localeCompare(b.competenceDate));
-    const recurringIds = new Set(plannedExpenses.filter(item => item.isRecurring).map(item => item.id));
     const isRecurring = (item: ExpenseBreakdownItem) => recurringIds.has(item.originalId);
     const oneTime = items.filter(item => !isRecurring(item));
     const recurring = items.filter(isRecurring);

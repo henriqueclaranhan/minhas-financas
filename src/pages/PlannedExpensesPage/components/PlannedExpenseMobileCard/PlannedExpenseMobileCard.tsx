@@ -5,6 +5,7 @@ import type { PlannedExpense } from '../../../../types';
 import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
 import '../PlannedExpense.css';
+import { getPlanReference } from '../../../../utils/planReferenceUtils';
 
 interface Props {
   p: ExpandedPlannedExpense;
@@ -37,6 +38,9 @@ export function PlannedExpenseMobileCard({ p, pressingId, onPointerDown, handleT
         <div>
           <h3 className="mobile-card-title">
             {p.description}
+            {p.isRecurring && (
+              <span className="plan-reference">{translate('planning.reference', { reference: getPlanReference(p.originalId ?? p.id!) })}</span>
+            )}
             {p.isInstallment ? (
               <span className="mobile-badge-secondary">({p.installmentNumber}/{p.totalInstallments})</span>
             ) : p.installments && p.installments > 1 ? (

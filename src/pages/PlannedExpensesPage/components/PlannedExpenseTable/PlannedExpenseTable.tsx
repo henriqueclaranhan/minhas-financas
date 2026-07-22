@@ -7,6 +7,7 @@ import type { ExpandedPlannedExpense } from '../../../../utils/financeUtils';
 import { useLocale } from '../../../../store/LocaleContext';
 import '../PlannedExpense.css';
 import { useLongPressActions } from '../../../../hooks/useLongPressActions';
+import { getPlanReference } from '../../../../utils/planReferenceUtils';
 
 interface PlannedExpenseTableProps {
   expenses: ExpandedPlannedExpense[];
@@ -61,6 +62,9 @@ export function PlannedExpenseTable({ expenses, onConfirm, onReject, onEdit, onD
                   </td>
                   <td className="td-bold">
                     {p.description}
+                    {p.isRecurring && (
+                      <span className="plan-reference">{t('planning.reference', { reference: getPlanReference(p.originalId ?? p.id!) })}</span>
+                    )}
                     {p.isInstallment ? (
                       <span className="badge-installments">
                         ({p.installmentNumber}/{p.totalInstallments})
